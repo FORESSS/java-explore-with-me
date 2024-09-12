@@ -20,31 +20,31 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StatsServiceImpl implements StatsService {
-    private final StatsRepository endpointHitRepository;
+    private final StatsRepository statsRepository;
     private final EndpointHitMapper endpointHitMapper; // Add mapper as dependency
     private final ViewStatsMapper viewStatsMapper; // Add mapper as dependency
 
     @Transactional
     @Override
-    public void save(EndpointHitDto endpointHitDto) {
+    public void saveEndpointHit(EndpointHitDto endpointHitDto) {
 
-        endpointHitRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
+        statsRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ViewStatsDto> findByParams(String start, String end, List<String> uris, boolean unique) {
+    public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
         List<ViewStats> listViewStats;
 
         if (CollectionUtils.isEmpty(uris)) {
-            uris = endpointHitRepository.findUniqueUri();
+            uris = statsRepository.findUniqueUri();
         }
         if (unique) {
-            listViewStats = endpointHitRepository.findViewStatsByUniqueIp(decodeTime(start),
+            listViewStats = statsRepository.findViewStatsByUniqueIp(decodeTime(start),
                     decodeTime(end),
                     uris);
         } else {
-            listViewStats = endpointHitRepository.findViewStatsByUri(decodeTime(start),
+            listViewStats = statsRepository.findViewStatsByUri(decodeTime(start),
                     decodeTime(end),
                     uris);
         }
