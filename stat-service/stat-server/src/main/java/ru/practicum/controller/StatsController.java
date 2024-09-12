@@ -23,10 +23,10 @@ public class StatsController {
     }
 
     @GetMapping("stats")
-    public List<ViewStatsDto> findByParams(@RequestParam String start,
+    public List<ViewStatsDto> getViewStats(@RequestParam String start,
                                            @RequestParam String end,
                                            @RequestParam(required = false) List<String> uris,
-                                           @RequestParam(required = false) @NotNull Boolean unique) {
+                                           @RequestParam(required = false) boolean unique) {
         return statsService.getViewStats(start, end, uris, unique);
     }
 }
