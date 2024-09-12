@@ -10,9 +10,8 @@ import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.mapper.ViewStatsMapper;
-import ru.practicum.model.EndpointHit;
-import ru.practicum.repository.StatsRepository;
 import ru.practicum.model.ViewStats;
+import ru.practicum.repository.StatsRepository;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
