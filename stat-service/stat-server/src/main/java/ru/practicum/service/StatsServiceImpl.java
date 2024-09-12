@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.Constants;
-import ru.practicum.EndpointHitDto;
-import ru.practicum.ViewStatsDto;
-import ru.practicum.mapper.EndpointHitMapper;
-import ru.practicum.mapper.ViewStatsMapper;
+import ru.practicum.model.EndpointHit;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
 
@@ -23,20 +20,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatsServiceImpl implements StatsService {
     private final StatsRepository endpointHitRepository;
-    private final EndpointHitMapper endpointHitMapper;
-    private final ViewStatsMapper viewStatsMapper;
 
     @Transactional
     @Override
-    public void saveEndpointHit(EndpointHitDto endpointHitDto) {
+    public void save(EndpointHit endpointHit) {
         log.info("The beginning of the process of creating a statistics record");
-        endpointHitRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
+        endpointHitRepository.save(endpointHit);
         log.info("The statistics record has been created");
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, Boolean unique) {
+    public List<ViewStats> findByParams(String start, String end, List<String> uris, boolean unique) {
         log.info("The beginning of the process of obtaining statistics of views");
         List<ViewStats> listViewStats;
 
@@ -55,7 +50,7 @@ public class StatsServiceImpl implements StatsService {
         }
 
         log.info("Getting the statistics of the views is completed");
-        return viewStatsMapper.toListViewStatsDto(listViewStats);
+        return listViewStats;
     }
 
     private LocalDateTime decodeTime(String time) {
