@@ -27,13 +27,13 @@ public class StatsServiceImpl implements StatsService {
     @Transactional
     @Override
     public void saveEndpointHit(EndpointHitDto endpointHitDto) {
-        // EndpointHit endpointHit = endpointHitMapper.toEndpointHit(endpointHitDto);
+
         endpointHitRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ViewStatsDto> findByParams(String start, String end, List<String> uris, boolean unique) {
+    public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
         List<ViewStats> listViewStats;
 
         if (CollectionUtils.isEmpty(uris)) {

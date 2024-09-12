@@ -10,5 +10,5 @@ public interface StatsService {
     void saveEndpointHit(EndpointHitDto endpointHitDto);
 
     // Метод для поиска статистики по заданным параметрам
-    List<ViewStatsDto> findByParams(String start, String end, List<String> uris, boolean unique);
+    List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique);
 }

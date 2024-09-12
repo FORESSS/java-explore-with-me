@@ -26,6 +26,6 @@ public class StatsController {
                                            @RequestParam String end,
                                            @RequestParam(required = false) List<String> uris,
                                            @RequestParam(required = false) boolean unique) {
-        return statsService.findByParams(start, end, uris, unique);
+        return statsService.getViewStats(start, end, uris, unique);
     }
 }
