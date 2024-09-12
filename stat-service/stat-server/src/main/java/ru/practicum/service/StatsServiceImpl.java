@@ -9,7 +9,6 @@ import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.mapper.ViewStatsMapper;
-import ru.practicum.model.EndpointHit;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
 
@@ -28,8 +27,8 @@ public class StatsServiceImpl implements StatsService {
     @Transactional
     @Override
     public void save(EndpointHitDto endpointHitDto) {
-        EndpointHit endpointHit = endpointHitMapper.toEndpointHit(endpointHitDto);
-        endpointHitRepository.save(endpointHit);
+
+        endpointHitRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
     }
 
     @Transactional(readOnly = true)
