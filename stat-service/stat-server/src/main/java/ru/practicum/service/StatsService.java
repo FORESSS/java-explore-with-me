@@ -2,6 +2,7 @@ package ru.practicum.service;
 
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
+import ru.practicum.model.ViewStats;
 
 import java.util.List;
 
@@ -10,5 +11,5 @@ public interface StatsService {
     void save(EndpointHitDto endpointHitDto);
 
     // Метод для поиска статистики по заданным параметрам
-    List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique);
+    List<ViewStatsDto> findByParams(String start, String end, List<String> uris, boolean unique);
 }

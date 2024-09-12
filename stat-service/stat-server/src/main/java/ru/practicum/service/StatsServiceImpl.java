@@ -9,6 +9,7 @@ import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.mapper.ViewStatsMapper;
+import ru.practicum.model.EndpointHit;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
 
@@ -20,36 +21,36 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StatsServiceImpl implements StatsService {
-    private final StatsRepository statsRepository;
+    private final StatsRepository endpointHitRepository;
     private final EndpointHitMapper endpointHitMapper; // Add mapper as dependency
     private final ViewStatsMapper viewStatsMapper; // Add mapper as dependency
 
     @Transactional
     @Override
     public void save(EndpointHitDto endpointHitDto) {
-
-        statsRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
+        EndpointHit endpointHit = endpointHitMapper.toEndpointHit(endpointHitDto);
+        endpointHitRepository.save(endpointHit);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
+    public List<ViewStatsDto> findByParams(String start, String end, List<String> uris, boolean unique) {
         List<ViewStats> listViewStats;
 
         if (CollectionUtils.isEmpty(uris)) {
-            uris = statsRepository.findUniqueUri();
+            uris = endpointHitRepository.findUniqueUri();
         }
         if (unique) {
-            listViewStats = statsRepository.findViewStatsByUniqueIp(decodeTime(start),
+            listViewStats = endpointHitRepository.findViewStatsByUniqueIp(decodeTime(start),
                     decodeTime(end),
                     uris);
         } else {
-            listViewStats = statsRepository.findViewStatsByUri(decodeTime(start),
+            listViewStats = endpointHitRepository.findViewStatsByUri(decodeTime(start),
                     decodeTime(end),
                     uris);
         }
 
-        return viewStatsMapper.toListViewStatsDto(listViewStats);
+        return viewStatsMapper.toListViewStatsDto(listViewStats); // Map to DTO
     }
 
     private LocalDateTime decodeTime(String time) {
