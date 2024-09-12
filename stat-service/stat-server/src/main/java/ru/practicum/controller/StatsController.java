@@ -26,7 +26,7 @@ public class StatsController {
     @ResponseStatus(HttpStatus.OK)
     public List<ViewStatsDto> getViewStats(@RequestParam String start, @RequestParam String end,
                                            @RequestParam(required = false) List<String> uris,
-                                           @RequestParam(required = false) @NotNull Boolean unique) {
+                                           @RequestParam(required = false) Boolean unique) {
         return statsService.getViewStats(start, end, uris, unique);
     }
 }
