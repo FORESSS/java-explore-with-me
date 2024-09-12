@@ -1,6 +1,7 @@
 package ru.practicum.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class StatsController {
     public List<ViewStatsDto> findByParams(@RequestParam String start,
                                            @RequestParam String end,
                                            @RequestParam(required = false) List<String> uris,
-                                           @RequestParam(required = false) boolean unique) {
+                                           @RequestParam(required = false) @NotNull Boolean unique) {
         return statsService.getViewStats(start, end, uris, unique);
     }
 }
