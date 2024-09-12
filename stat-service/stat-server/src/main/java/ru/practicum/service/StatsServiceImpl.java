@@ -1,4 +1,4 @@
-package ru.practicum.EndpointHit.service;
+package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.Constants;
-import ru.practicum.EndpointHit.model.EndpointHit;
-import ru.practicum.EndpointHit.repository.EndpointHitRepository;
-import ru.practicum.ViewStats.model.ViewStats;
+import ru.practicum.model.EndpointHit;
+import ru.practicum.repository.StatsRepository;
+import ru.practicum.model.ViewStats;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -18,12 +18,12 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class EndpointHitServiceImpl implements EndpointHitService {
-    private final EndpointHitRepository endpointHitRepository;
+public class StatsServiceImpl implements StatsService {
+    private final StatsRepository endpointHitRepository;
 
     @Transactional
     @Override
-    public void save(EndpointHit endpointHit) {
+    public void saveEndpointHit(EndpointHit endpointHit) {
         log.info("The beginning of the process of creating a statistics record");
         endpointHitRepository.save(endpointHit);
         log.info("The statistics record has been created");
@@ -31,7 +31,7 @@ public class EndpointHitServiceImpl implements EndpointHitService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ViewStats> findByParams(String start, String end, List<String> uris, boolean unique) {
+    public List<ViewStats> getViewStats(String start, String end, List<String> uris, boolean unique) {
         log.info("The beginning of the process of obtaining statistics of views");
         List<ViewStats> listViewStats;
 
@@ -40,11 +40,11 @@ public class EndpointHitServiceImpl implements EndpointHitService {
         }
 
         if (unique) {
-            listViewStats = endpointHitRepository.findViewStatsByStartAndEndAndUriAndUniqueIp(decodeTime(start),
+            listViewStats = endpointHitRepository.findViewStatsByUniqueIp(decodeTime(start),
                     decodeTime(end),
                     uris);
         } else {
-            listViewStats = endpointHitRepository.findViewStatsByStartAndEndAndUri(decodeTime(start),
+            listViewStats = endpointHitRepository.findViewStatsByUri(decodeTime(start),
                     decodeTime(end),
                     uris);
         }

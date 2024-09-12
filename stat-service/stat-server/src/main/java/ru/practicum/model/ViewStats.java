@@ -1,4 +1,4 @@
-package ru.practicum.ViewStats.model;
+package ru.practicum.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
