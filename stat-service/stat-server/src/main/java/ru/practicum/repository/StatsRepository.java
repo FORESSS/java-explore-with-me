@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
-
     @Query("select new ru.practicum.model.ViewStats(eh.app, eh.uri, count(distinct eh.ip)) " +
             "from EndpointHit as eh " +
             "where eh.timestamp > :start and eh.timestamp < :end and eh.uri in (:uri) " +
@@ -29,7 +28,6 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                                        @Param("end") LocalDateTime end,
                                        @Param("uri") List<String> uri);
 
-    @Query("select distinct eh.uri " +
-            "from EndpointHit as eh ")
+    @Query("select distinct eh.uri from EndpointHit as eh")
     List<String> findUniqueUri();
 }

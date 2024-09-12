@@ -1,12 +1,13 @@
 package ru.practicum.mapper;
 
 import org.mapstruct.Mapper;
-import ru.practicum.model.ViewStats;
+import org.mapstruct.MappingConstants.ComponentModel;
 import ru.practicum.ViewStatsDto;
+import ru.practicum.model.ViewStats;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = ComponentModel.SPRING)
 public interface ViewStatsMapper {
     List<ViewStatsDto> toListViewStatsDto(List<ViewStats> viewStats);
 }

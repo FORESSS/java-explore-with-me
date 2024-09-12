@@ -1,6 +1,7 @@
 package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -12,48 +13,45 @@ import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class StatsServiceImpl implements StatsService {
-    private final StatsRepository endpointHitRepository;
-    private final EndpointHitMapper endpointHitMapper; // Add mapper as dependency
-    private final ViewStatsMapper viewStatsMapper; // Add mapper as dependency
+    private final StatsRepository statsRepository;
+    private final EndpointHitMapper endpointHitMapper;
+    private final ViewStatsMapper viewStatsMapper;
 
-    @Transactional
     @Override
+    @Transactional
     public void saveEndpointHit(EndpointHitDto endpointHitDto) {
-
-        endpointHitRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
+        log.info("Получен запрос для сохранения статистики");
+        statsRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
         List<ViewStats> listViewStats;
-
         if (CollectionUtils.isEmpty(uris)) {
-            uris = endpointHitRepository.findUniqueUri();
+            uris = statsRepository.findUniqueUri();
         }
         if (unique) {
-            listViewStats = endpointHitRepository.findViewStatsByUniqueIp(decodeTime(start),
-                    decodeTime(end),
+            listViewStats = statsRepository.findViewStatsByUniqueIp(parseTime(start),
+                    parseTime(end),
                     uris);
         } else {
-            listViewStats = endpointHitRepository.findViewStatsByUri(decodeTime(start),
-                    decodeTime(end),
+            listViewStats = statsRepository.findViewStatsByUri(parseTime(start),
+                    parseTime(end),
                     uris);
         }
-
-        return viewStatsMapper.toListViewStatsDto(listViewStats); // Map to DTO
+        log.info("Получение статистики");
+        return viewStatsMapper.toListViewStatsDto(listViewStats);
     }
 
-    private LocalDateTime decodeTime(String time) {
-        String decodeTime = URLDecoder.decode(time, StandardCharsets.UTF_8);
-        return LocalDateTime.parse(decodeTime, Constants.FORMATTER);
+    private LocalDateTime parseTime(String time) {
+        return LocalDateTime.parse(time, Constants.FORMATTER);
     }
 }
