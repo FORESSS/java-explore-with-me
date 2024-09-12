@@ -19,7 +19,7 @@ public class StatsController {
     @PostMapping("hit")
     @ResponseStatus(HttpStatus.OK)
     public void saveEndpointHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
-        statsService.saveEndpointHit(endpointHitDto);
+        statsService.save(endpointHitDto);
     }
 
     @GetMapping("stats")
