@@ -21,7 +21,6 @@ import static ru.practicum.utils.Constants.FORMATTER;
 @Component
 @Slf4j
 public class StatClient {
-
     private final RestClient restClient;
 
     public StatClient(@Value("${stat-server.url}") String serverUrl) {

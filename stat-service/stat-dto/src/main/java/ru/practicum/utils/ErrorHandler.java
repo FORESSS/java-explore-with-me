@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DateTimeException.class)
-    public ErrorResponse handleValidationException(DateTimeException ex) {
+    public ErrorResponse handleDateTimeException(DateTimeException ex) {
         log.error(ex.getMessage());
         return new ErrorResponse("Ошибка валидации", ex.getMessage());
     }
