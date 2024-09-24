@@ -7,33 +7,22 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(DateTimeException.class)
-    public ErrorResponse handleDateTimeException(DateTimeException ex) {
+    @ExceptionHandler({DateTimeException.class, MethodArgumentNotValidException.class,
+            MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
+    public ErrorResponse handleBadRequest(Exception ex) {
         log.error(ex.getMessage());
-        return new ErrorResponse("Ошибка даты", ex.getMessage());
+        return new ErrorResponse("Ошибка111", ex.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleCommonException(Exception ex) {
-        return new ErrorResponse("2222", ex.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
-        return new ErrorResponse("33333", ex.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error(ex.getMessage());
-        return new ErrorResponse("Ошибка111", ex.getMessage());
+        return new ErrorResponse("Ошибка2222", ex.getMessage());
     }
 }
