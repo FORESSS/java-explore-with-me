@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +46,8 @@ public class StatClient {
         }
     }
 
-    public ResponseEntity<List<ViewStatsDto>> getStats(LocalDateTime start, LocalDateTime end,
-                                                       List<String> uris, boolean unique) {
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
+                                       List<String> uris, boolean unique) {
         log.info("Получение статистики для {}", uris);
         try {
             return restClient.get()
@@ -62,12 +61,12 @@ public class StatClient {
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError,
                             (request, response) ->
-                                    log.error("Ошибка при получении статистики для {} ", uris))
+                                    log.error("Не удалось получить статистику для {}", uris))
                     .body(new ParameterizedTypeReference<>() {
                     });
         } catch (Exception e) {
             log.error("Не удалось получить статистику для {}", uris, e);
-            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.SERVICE_UNAVAILABLE);
+            return Collections.emptyList();
         }
     }
 }
