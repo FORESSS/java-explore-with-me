@@ -8,7 +8,9 @@ import org.springframework.util.CollectionUtils;
 import ru.practicum.Constants;
 import ru.practicum.EndpointHit.model.EndpointHit;
 import ru.practicum.EndpointHit.repository.EndpointHitRepository;
+import ru.practicum.ViewStats.mapper.ViewStatsMapper;
 import ru.practicum.ViewStats.model.ViewStats;
+import ru.practicum.ViewStatsDto;
 import ru.practicum.exception.DataTimeException;
 
 import java.net.URLDecoder;
@@ -21,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EndpointHitServiceImpl implements EndpointHitService {
     private final EndpointHitRepository endpointHitRepository;
+    private final ViewStatsMapper viewStatsMapper;
 
     @Transactional
     @Override
@@ -32,7 +35,7 @@ public class EndpointHitServiceImpl implements EndpointHitService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ViewStats> findByParams(String start, String end, List<String> uris, boolean unique) {
+    public List<ViewStatsDto> findByParams(String start, String end, List<String> uris, boolean unique) {
         log.info("The beginning of the process of obtaining statistics of views");
         List<ViewStats> listViewStats;
         LocalDateTime startTime = decodeTime(start);
@@ -57,7 +60,7 @@ public class EndpointHitServiceImpl implements EndpointHitService {
         }
 
         log.info("Getting the statistics of the views is completed");
-        return listViewStats;
+        return viewStatsMapper.listViewStatsToListViewStatsDto(listViewStats);
     }
 
     private LocalDateTime decodeTime(String time) {

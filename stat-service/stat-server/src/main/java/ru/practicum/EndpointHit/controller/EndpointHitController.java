@@ -9,7 +9,6 @@ import ru.practicum.EndpointHit.mapper.EndpointHitMapper;
 import ru.practicum.EndpointHit.service.EndpointHitService;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStats.mapper.ViewStatsMapper;
-import ru.practicum.ViewStats.model.ViewStats;
 import ru.practicum.ViewStatsDto;
 
 import java.util.List;
@@ -36,7 +35,6 @@ public class EndpointHitController {
                                            @RequestParam(required = false) boolean unique) {
         log.info("Received GET request for statistics with parameters start = {}, end = {}, uris = {}, " +
                 "unique = {}", start, end, uris, unique);
-        List<ViewStats> viewStats = endpointHitService.findByParams(start, end, uris, unique);
-        return viewStatsMapper.listViewStatsToListViewStatsDto(viewStats);
+        return endpointHitService.findByParams(start, end, uris, unique);
     }
 }
