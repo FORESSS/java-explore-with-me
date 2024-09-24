@@ -49,7 +49,7 @@ public class StatClient {
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, boolean unique) {
         log.info("Getting stats for {}", uris);
-        if(start == null || end == null){
+        if (start == null || end == null) {
             throw new DateException("88888888888888888888");
         }
         try {
