@@ -1,13 +1,14 @@
 package ru.practicum;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
@@ -16,40 +17,38 @@ import java.util.List;
 
 import static ru.practicum.Constants.FORMATTER;
 
+@Component
 @Slf4j
 public class StatClient {
-    @Autowired
+
     private final RestClient restClient;
 
-    public StatClient(RestClient restClient) {
-        this.restClient = restClient;
+    public StatClient(@Value("${stat-server.url}") String serverUrl) {
+        this.restClient = RestClient.create(serverUrl);
+        log.info("Server stat run URL: {}", serverUrl);
     }
 
+    @SneakyThrows
     public void saveHit(String app, HttpServletRequest request) {
-        EndpointHitDto endpointHitDto = EndpointHitDto.builder()
-                .app(app)
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
-                .timestamp(LocalDateTime.now())
-                .build();
-
+        log.info("Saving hit for {}", app);
+        EndpointHitDto endpointHitDto = toDto(app, request);
         ResponseEntity<Void> response = restClient.post()
                 .uri("/hit")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(endpointHitDto)
                 .retrieve()
                 .toBodilessEntity();
-
         if (response.getStatusCode().is2xxSuccessful()) {
-            log.info("Сохранение информации о запросе");
+            log.info("Posted hit with code {}", response.getStatusCode());
         } else {
-            log.error("Ошибка при сохранении информации, код ошибки: {}", response.getStatusCode());
+            log.error("Posted hit with error code {}", response.getStatusCode());
         }
+        Thread.sleep(500);
     }
 
-    public ResponseEntity<List<ViewStatsDto>> getStats(LocalDateTime start, LocalDateTime end,
-                                                       List<String> uris, boolean unique) {
-        log.info("Получение статистики для {}", uris);
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
+                                       List<String> uris, boolean unique) {
+        log.info("Getting stats for {}", uris);
         try {
             return restClient.get()
                     .uri(uriBuilder ->
@@ -62,12 +61,21 @@ public class StatClient {
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError,
                             (request, response) ->
-                                    log.error("Ошибка при получении статистики для {} ", uris))
+                                    log.error("Getting stats for {} with error code {}", uris, response.getStatusCode()))
                     .body(new ParameterizedTypeReference<>() {
                     });
         } catch (Exception e) {
-            log.error("Не удалось получить статистику для {}", uris, e);
-            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.SERVICE_UNAVAILABLE);
+            log.error("Getting stats for {} failed", uris, e);
+            return Collections.emptyList();
         }
+    }
+
+    private EndpointHitDto toDto(String app, HttpServletRequest request) {
+        return EndpointHitDto.builder()
+                .app(app)
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 }

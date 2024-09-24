@@ -13,6 +13,7 @@ import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,17 +36,20 @@ public class StatsServiceImpl implements StatsService {
     @Transactional(readOnly = true)
     public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
         List<ViewStats> listViewStats;
+
+        LocalDateTime startTime = parseTime(start);
+        LocalDateTime endTime = parseTime(end);
+        if (startTime.isAfter(endTime)) {
+            throw new DateTimeException("дата указана не верно");
+        }
+
         if (CollectionUtils.isEmpty(uris)) {
             uris = statsRepository.findUniqueUri();
         }
         if (unique) {
-            listViewStats = statsRepository.findViewStatsByUniqueIp(parseTime(start),
-                    parseTime(end),
-                    uris);
+            listViewStats = statsRepository.findViewStatsByUniqueIp(startTime, endTime, uris);
         } else {
-            listViewStats = statsRepository.findViewStatsByUri(parseTime(start),
-                    parseTime(end),
-                    uris);
+            listViewStats = statsRepository.findViewStatsByUri(startTime, endTime, uris);
         }
         log.info("Получение статистики");
         return viewStatsMapper.toListViewStatsDto(listViewStats);
