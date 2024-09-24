@@ -1,4 +1,4 @@
-package ru.practicum.util;
+package ru.practicum.utils;
 
 public class DateTimeException extends RuntimeException {
     public DateTimeException(String message) {

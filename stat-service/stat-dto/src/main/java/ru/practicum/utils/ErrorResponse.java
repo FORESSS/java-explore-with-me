@@ -1,4 +1,4 @@
-package ru.practicum.util;
+package ru.practicum.utils;
 
 public record ErrorResponse(String error, String description) {
 }
