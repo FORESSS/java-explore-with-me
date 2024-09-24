@@ -22,7 +22,7 @@ public class ExceptionController {
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
-    }*/
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -35,7 +35,7 @@ public class ExceptionController {
                 .build();
     }
 
-  /*  @ExceptionHandler
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         return ApiError.builder()
