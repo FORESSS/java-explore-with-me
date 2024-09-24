@@ -1,4 +1,4 @@
-package ru.practicum.exception;
+package ru.practicum.exception.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ErrorResponse {
+public class ApiError {
     String status;
     String reason;
     String message;

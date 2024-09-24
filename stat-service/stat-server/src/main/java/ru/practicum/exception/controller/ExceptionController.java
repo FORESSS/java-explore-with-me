@@ -1,4 +1,4 @@
-package ru.practicum.exception;
+package ru.practicum.exception.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -6,16 +6,18 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.exception.DataTimeException;
+import ru.practicum.exception.model.ApiError;
 
 import java.time.LocalDateTime;
 
-@Slf4j
 @RestControllerAdvice
-public class ErrorHandler {
+@Slf4j
+public class ExceptionController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleCommonException(Exception e) {
-        return ErrorResponse.builder()
+    public ApiError handleCommonException(Exception e) {
+        return ApiError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
                 .reason("Internal Server Error")
                 .message(e.getMessage())
@@ -25,8 +27,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMissingServletRequestParameterException(DateTimeException e) {
-        return ErrorResponse.builder()
+    public ApiError handleMissingServletRequestParameterException(DataTimeException e) {
+        return ApiError.builder()
                 .status(HttpStatus.BAD_REQUEST.name())
                 .reason("Incorrectly made request")
                 .message(e.getMessage())
@@ -36,8 +38,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        return ErrorResponse.builder()
+    public ApiError handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        return ApiError.builder()
                 .status(HttpStatus.BAD_REQUEST.name())
                 .reason("Incorrectly made request")
                 .message(e.getMessage())
