@@ -11,7 +11,6 @@ import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
-import ru.practicum.util.Constants;
 import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
@@ -37,9 +36,9 @@ public class StatsServiceImpl implements StatsService {
     @Transactional(readOnly = true)
     public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
         List<ViewStats> listViewStats;
-        LocalDateTime startTime = parseTime(start);
-        LocalDateTime endTime = parseTime(end);
-        validator.checkDateTime(startTime, endTime);
+        validator.checkDateTime(start, end);
+        LocalDateTime startTime = validator.parseTime(start);
+        LocalDateTime endTime = validator.parseTime(end);
         if (CollectionUtils.isEmpty(uris)) {
             uris = statsRepository.findUniqueUri();
         }
@@ -50,9 +49,5 @@ public class StatsServiceImpl implements StatsService {
         }
         log.info("Получение статистики");
         return viewStatsMapper.toListViewStatsDto(listViewStats);
-    }
-
-    private LocalDateTime parseTime(String time) {
-        return LocalDateTime.parse(time, Constants.FORMATTER);
     }
 }

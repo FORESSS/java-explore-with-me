@@ -12,8 +12,15 @@ public class Validator {
         if (start == null || end == null) {
             throw new DateTimeException("Не указана дата");
         }
-        if (start.isAfter(end)) {
+    }
+
+    public void checkDateTime(String start, String end) {
+        if (parseTime(start).isAfter(parseTime(end))) {
             throw new DateTimeException("Не корректно указана дата");
         }
+    }
+
+    public LocalDateTime parseTime(String time) {
+        return LocalDateTime.parse(time, Constants.FORMATTER);
     }
 }
