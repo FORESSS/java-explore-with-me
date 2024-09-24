@@ -2,7 +2,6 @@ package ru.practicum.exception.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 @Slf4j
 public class ExceptionController {
-    @ExceptionHandler
+  /*  @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleCommonException(Exception e) {
         return ApiError.builder()
@@ -23,7 +22,7 @@ public class ExceptionController {
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
-    }
+    }*/
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -36,7 +35,7 @@ public class ExceptionController {
                 .build();
     }
 
-    @ExceptionHandler
+  /*  @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         return ApiError.builder()
@@ -45,5 +44,5 @@ public class ExceptionController {
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
-    }
+    }*/
 }
