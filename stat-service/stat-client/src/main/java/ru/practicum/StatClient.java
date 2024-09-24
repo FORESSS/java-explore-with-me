@@ -10,18 +10,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.practicum.utils.DateTimeException;
+import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.practicum.utils.Constants.FORMATTER;
+import static ru.practicum.util.Constants.FORMATTER;
 
 @Component
 @Slf4j
 public class StatClient {
     private final RestClient restClient;
+    private Validator validator;
 
     public StatClient(@Value("${stat-server.url}") String serverUrl) {
         this.restClient = RestClient.create(serverUrl);
@@ -49,9 +50,7 @@ public class StatClient {
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, boolean unique) {
         log.info("Getting stats for {}", uris);
-        if (start == null || end == null) {
-            throw new DateTimeException("88888888888888888888");
-        }
+        validator.checkDateTime(start, end);
         try {
             return restClient.get()
                     .uri(uriBuilder ->
