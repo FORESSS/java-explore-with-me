@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import ru.practicum.Constants;
 import ru.practicum.EndpointHit.model.EndpointHit;
 import ru.practicum.EndpointHit.repository.EndpointHitRepository;
 import ru.practicum.ViewStats.mapper.ViewStatsMapper;
 import ru.practicum.ViewStats.model.ViewStats;
 import ru.practicum.ViewStatsDto;
-import ru.practicum.exception.DataTimeException;
+import ru.practicum.utils.Constants;
+import ru.practicum.utils.DateTimeException;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +42,7 @@ public class EndpointHitServiceImpl implements EndpointHitService {
         LocalDateTime endTime = decodeTime(end);
 
         if (startTime.isAfter(endTime)) {
-            throw new DataTimeException("The start time must be later than the end time");
+            throw new DateTimeException("5665665");
         }
 
         if (CollectionUtils.isEmpty(uris)) {

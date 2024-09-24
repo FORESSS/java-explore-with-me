@@ -10,12 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import ru.practicum.utils.DateTimeException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.practicum.Constants.FORMATTER;
+import static ru.practicum.utils.Constants.FORMATTER;
 
 @Component
 @Slf4j
@@ -50,7 +51,7 @@ public class StatClient {
                                        List<String> uris, boolean unique) {
         log.info("Getting stats for {}", uris);
         if (start == null || end == null) {
-            throw new DateException("88888888888888888888");
+            throw new DateTimeException("88888888888888888888");
         }
         try {
             return restClient.get()
