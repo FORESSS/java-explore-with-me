@@ -3,24 +3,25 @@ package ru.practicum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class EndpointHitDto {
     @NotBlank
-    String app;
+    private String app;
     @NotBlank
-    String uri;
+    private String uri;
     @NotBlank
-    String ip;
+    private String ip;
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_FORMAT)
-    LocalDateTime timestamp;
+    private LocalDateTime timestamp;
 }

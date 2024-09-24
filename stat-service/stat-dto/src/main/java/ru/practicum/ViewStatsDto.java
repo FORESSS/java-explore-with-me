@@ -2,19 +2,20 @@ package ru.practicum;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ViewStatsDto {
     @NotBlank
-    String app;
+    private String app;
     @NotBlank
-    String uri;
+    private String uri;
     @NotNull
-    Long hits;
+    private Long hits;
 }
