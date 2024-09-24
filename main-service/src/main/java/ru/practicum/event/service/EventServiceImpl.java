@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -455,10 +456,13 @@ public class EventServiceImpl implements EventService {
         List<String> url = events.stream()
                 .map(event -> "/events/" + event.getId())
                 .toList();
-        Optional<List<ViewStatsDto>> viewStatsDto = Optional.ofNullable(statClient
-                .getStats(LocalDateTime.now().minusYears(20), LocalDateTime.now(), url, true)
+        ResponseEntity<List<ViewStatsDto>> response = statClient.getStats(
+                LocalDateTime.now().minusYears(20),
+                LocalDateTime.now(), url, true
+
         );
-        return viewStatsDto.orElse(Collections.emptyList());
+        return Optional.ofNullable(response.getBody())
+                .orElse(Collections.emptyList());
     }
 
     private void setViews(List<Event> events) {
