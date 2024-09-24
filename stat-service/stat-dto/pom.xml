@@ -11,7 +11,7 @@
 
     <artifactId>stat-dto</artifactId>
 
-    <name>Stat dto</name>
+    <name>Stat DTO</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
