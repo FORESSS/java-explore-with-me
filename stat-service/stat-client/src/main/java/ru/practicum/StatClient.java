@@ -51,11 +51,11 @@ public class StatClient {
         } else {
             log.error("Ошибка при сохранении информации, код ошибки: {}", response.getStatusCode());
         }
-//        try {
-//            Thread.sleep(500);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
