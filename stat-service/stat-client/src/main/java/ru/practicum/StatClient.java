@@ -3,6 +3,7 @@ package ru.practicum;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -10,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.practicum.exception.DateTimeException;
+import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -22,9 +23,12 @@ import static ru.practicum.util.Constants.FORMATTER;
 @Slf4j
 public class StatClient {
     private final RestClient restClient;
+    @Autowired
+    private final Validator validator;
 
-    public StatClient(@Value("${stat-server.url}") String serverUrl) {
+    public StatClient(@Value("${stat-server.url}") String serverUrl, Validator validator) {
         this.restClient = RestClient.create(serverUrl);
+        this.validator = validator;
         log.info("Server stat run URL: {}", serverUrl);
     }
 
@@ -49,9 +53,7 @@ public class StatClient {
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, boolean unique) {
         log.info("Getting stats for {}", uris);
-        if (start == null || end == null) {
-            throw new DateTimeException("88888888888888888888");
-        }
+        validator.checkDateTime(start, end);
         try {
             return restClient.get()
                     .uri(uriBuilder ->
