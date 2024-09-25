@@ -1,30 +1,34 @@
 package ru.practicum;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.practicum.utils.DateTimeException;
+import ru.practicum.exception.DateTimeException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.practicum.utils.Constants.FORMATTER;
+import static ru.practicum.util.Constants.FORMATTER;
 
+@Component
 @Slf4j
 public class StatClient {
-    @Autowired
     private final RestClient restClient;
 
-    public StatClient(RestClient restClient) {
-        this.restClient = restClient;
+    public StatClient(@Value("${stat-server.url}") String serverUrl) {
+        this.restClient = RestClient.create(serverUrl);
+        log.info("Server stat run URL: {}", serverUrl);
     }
 
+    @SneakyThrows
     public void saveHit(String app, HttpServletRequest request) {
         log.info("Saving hit for {}", app);
         EndpointHitDto endpointHitDto = toDto(app, request);
@@ -39,6 +43,7 @@ public class StatClient {
         } else {
             log.error("Posted hit with error code {}", response.getStatusCode());
         }
+        Thread.sleep(500);
     }
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
