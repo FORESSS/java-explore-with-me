@@ -58,7 +58,7 @@ public class StatClient {
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, boolean unique) {
-        log.info("Getting stats for {}", uris);
+        log.info("Получение статистики для {}", uris);
         validator.checkDateTime(start, end);
         try {
             return restClient.get()
@@ -72,11 +72,11 @@ public class StatClient {
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError,
                             (request, response) ->
-                                    log.error("Getting stats for {} with error code {}", uris, response.getStatusCode()))
+                                    log.error("Ошибка при получении статистики для {} ", uris))
                     .body(new ParameterizedTypeReference<>() {
                     });
         } catch (Exception e) {
-            log.error("Getting stats for {} failed", uris, e);
+            log.error("Не удалось получить статистику для {}", uris, e);
             return Collections.emptyList();
         }
     }
