@@ -12,8 +12,8 @@ import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
 import ru.practicum.util.Constants;
-import ru.practicum.util.Validator;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +24,6 @@ public class StatsServiceImpl implements StatsService {
     private final StatsRepository statsRepository;
     private final EndpointHitMapper endpointHitMapper;
     private final ViewStatsMapper viewStatsMapper;
-    private final Validator validator;
 
     @Override
     @Transactional
@@ -38,7 +37,9 @@ public class StatsServiceImpl implements StatsService {
     public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
         LocalDateTime startTime = parseTime(start);
         LocalDateTime endTime = parseTime(end);
-        validator.checkDateTime(startTime, endTime);
+        if (startTime.isAfter(endTime)) {
+            throw new DateTimeException("Не корректная дата");
+        }
         if (CollectionUtils.isEmpty(uris)) {
             uris = statsRepository.findUniqueUri();
         }
