@@ -12,8 +12,8 @@ import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
 import ru.practicum.util.Constants;
+import ru.practicum.exception.DateTimeException;
 
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,15 +35,15 @@ public class StatsServiceImpl implements StatsService {
     @Override
     @Transactional(readOnly = true)
     public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
+        List<ViewStats> listViewStats;
         LocalDateTime startTime = parseTime(start);
         LocalDateTime endTime = parseTime(end);
         if (startTime.isAfter(endTime)) {
-            throw new DateTimeException("Не корректная дата");
+            throw new DateTimeException("123");
         }
         if (CollectionUtils.isEmpty(uris)) {
             uris = statsRepository.findUniqueUri();
         }
-        List<ViewStats> listViewStats;
         if (unique) {
             listViewStats = statsRepository.findViewStatsByUniqueIp(startTime, endTime, uris);
         } else {
