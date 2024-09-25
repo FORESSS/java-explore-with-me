@@ -8,8 +8,11 @@ import java.time.LocalDateTime;
 @Component
 public class Validator {
     public void checkDateTime(LocalDateTime start, LocalDateTime end) {
+        if (start == null || end == null) {
+            throw new DateTimeException("Дата не указана");
+        }
         if (start.isAfter(end)) {
-            throw new DateTimeException("Не корректная дата");
+            throw new DateTimeException("Неправильная дата");
         }
     }
 }
