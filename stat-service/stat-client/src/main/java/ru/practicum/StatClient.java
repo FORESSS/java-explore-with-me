@@ -1,7 +1,6 @@
 package ru.practicum;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,22 +31,26 @@ public class StatClient {
         log.info("Server stat run URL: {}", serverUrl);
     }
 
-    @SneakyThrows
     public void saveHit(String app, HttpServletRequest request) {
-        log.info("Saving hit for {}", app);
-        EndpointHitDto endpointHitDto = toDto(app, request);
+        EndpointHitDto endpointHitDto = EndpointHitDto.builder()
+                .app(app)
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
+                .build();
+
         ResponseEntity<Void> response = restClient.post()
                 .uri("/hit")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(endpointHitDto)
                 .retrieve()
                 .toBodilessEntity();
+
         if (response.getStatusCode().is2xxSuccessful()) {
-            log.info("Posted hit with code {}", response.getStatusCode());
+            log.info("Сохранение информации о запросе");
         } else {
-            log.error("Posted hit with error code {}", response.getStatusCode());
+            log.error("Ошибка при сохранении информации, код ошибки: {}", response.getStatusCode());
         }
-        Thread.sleep(500);
     }
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
@@ -73,14 +76,5 @@ public class StatClient {
             log.error("Getting stats for {} failed", uris, e);
             return Collections.emptyList();
         }
-    }
-
-    private EndpointHitDto toDto(String app, HttpServletRequest request) {
-        return EndpointHitDto.builder()
-                .app(app)
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
-                .timestamp(LocalDateTime.now())
-                .build();
     }
 }
