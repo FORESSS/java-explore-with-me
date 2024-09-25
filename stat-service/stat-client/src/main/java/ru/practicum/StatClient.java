@@ -1,6 +1,7 @@
 package ru.practicum;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ public class StatClient {
         log.info("Server stat run URL: {}", serverUrl);
     }
 
+    @SneakyThrows
     public void saveHit(String app, HttpServletRequest request) {
         EndpointHitDto endpointHitDto = EndpointHitDto.builder()
                 .app(app)
@@ -51,6 +53,7 @@ public class StatClient {
         } else {
             log.error("Ошибка при сохранении информации, код ошибки: {}", response.getStatusCode());
         }
+        Thread.sleep(500);
     }
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
