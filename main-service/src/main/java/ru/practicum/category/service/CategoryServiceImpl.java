@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
@@ -51,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
+        validator.checkNewCategory(newCategoryDto);
         Category createCategory = categoryMapper.toCategory(newCategoryDto);
         categoryRepository.save(createCategory);
         log.info("Категория с id: {} создана", createCategory.getId());
@@ -61,6 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto updateCategory(long catId, UpdateCategoryDto updateCategoryDto) {
         Category updateCategory = validator.validateAndGetCategory(catId);
+        validator.checkCategory(updateCategoryDto);
         updateCategory.setName(updateCategory.getName());
         log.info("Категория с id: {} обновлена", catId);
         return categoryMapper.toCategoryDto(updateCategory);
@@ -70,6 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void deleteCategory(long catId) {
         validator.checkCategoryId(catId);
+        validator.checkCategory(catId);
         categoryRepository.deleteById(catId);
         log.info("Категория с id: {} удалена", catId);
     }

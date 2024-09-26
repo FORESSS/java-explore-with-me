@@ -2,6 +2,8 @@ package ru.practicum.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.category.dto.NewCategoryDto;
+import ru.practicum.category.dto.UpdateCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.compilation.model.Compilation;
@@ -49,6 +51,24 @@ public class Validator {
     public void checkCategoryId(long catId) {
         if (!categoryRepository.existsById(catId)) {
             throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
+        }
+    }
+
+    public void checkNewCategory(NewCategoryDto newCategoryDto) {
+        categoryRepository.findCategoriesByNameContainingIgnoreCase(newCategoryDto.getName().toLowerCase()).ifPresent(c -> {
+            throw new RestrictionsViolationException(String.format("Категория %s уже создана", newCategoryDto.getName()));
+        });
+    }
+
+    public void checkCategory(UpdateCategoryDto updateCategoryDto) {
+        categoryRepository.findCategoriesByNameContainingIgnoreCase(updateCategoryDto.getName().toLowerCase()).ifPresent(c -> {
+            throw new RestrictionsViolationException(String.format("Категория %s уже создана", updateCategoryDto.getName()));
+        });
+    }
+
+    public void checkCategory(long catId) {
+        if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
+            throw new RestrictionsViolationException("Категория уже создана");
         }
     }
 
