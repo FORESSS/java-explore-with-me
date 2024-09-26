@@ -1,11 +1,10 @@
-package ru.practicum.requests.service;
+package ru.practicum.request.service;
 
-import ru.practicum.requests.dto.ParticipationRequestDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
 
 import java.util.List;
 
 public interface RequestService {
-
     List<ParticipationRequestDto> getAllRequests(long userId);
 
     ParticipationRequestDto addRequest(long userId, long eventId);
