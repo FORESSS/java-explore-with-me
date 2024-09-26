@@ -7,59 +7,51 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import ru.practicum.exception.IntegrityViolationException;
-import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
-import ru.practicum.user.dto.mapper.UserMapper;
+import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+import ru.practicum.util.Validator;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final Validator validator;
 
     @Override
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers(List<Long> ids, int from, int size) {
-        log.info("The beginning of the process of finding all users");
         PageRequest pageRequest = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
         List<User> users;
-
         if (CollectionUtils.isEmpty(ids)) {
             users = userRepository.findAll(pageRequest).getContent();
         } else {
             users = userRepository.findAllByIdIn(ids, pageRequest).getContent();
         }
-
-        log.info("The user has been found");
-        return userMapper.listUserToListUserDto(users);
+        log.info("Получение списка пользователей");
+        return userMapper.toListUserDto(users);
     }
 
     @Override
     public UserDto createUser(UserRequestDto requestDto) {
-        log.info("The beginning of the process of creating a user");
-        User user = userMapper.userRequestDtoToUser(requestDto);
-        userRepository.findUserByEmail(user.getEmail()).ifPresent(u -> {
-            throw new IntegrityViolationException("User with email " + u.getEmail() + " already exists");
-        });
+        User user = userMapper.toUser(requestDto);
+        validator.checkEmail(user);
         userRepository.save(user);
-        log.info("The user has been created");
-        return userMapper.userToUserDto(user);
+        log.info("Добавлен пользователь с id: {}", user.getId());
+        return userMapper.toUserDto(user);
     }
 
     @Override
     public void deleteUser(long userId) {
-        log.info("The beginning of the process of deleting a user");
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id = " + userId + " not found"));
+        validator.validateAndGetUser(userId);
         userRepository.deleteById(userId);
-        log.info("The user has been deleted");
+        log.info("Пользователь с id: {} удалён", userId);
     }
 }
