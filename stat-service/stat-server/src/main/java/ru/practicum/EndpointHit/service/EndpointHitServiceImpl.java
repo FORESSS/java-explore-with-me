@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import ru.practicum.Constants;
+import ru.practicum.util.Constants;
 import ru.practicum.EndpointHit.model.EndpointHit;
 import ru.practicum.EndpointHit.repository.EndpointHitRepository;
 import ru.practicum.ViewStats.model.ViewStats;
