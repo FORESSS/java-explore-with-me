@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.practicum.Constants.FORMATTER;
+import static ru.practicum.util.Constants.FORMATTER;
 
 @Component
 @Slf4j
