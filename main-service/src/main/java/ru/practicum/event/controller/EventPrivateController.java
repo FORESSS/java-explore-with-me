@@ -14,9 +14,9 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.service.EventService;
-import ru.practicum.request.dto.ParticipationRequestDto;
-import ru.practicum.request.dto.RequestUpdateResultDto;
-import ru.practicum.request.dto.UpdateRequestDto;
+import ru.practicum.requests.dto.EventRequestStatusUpdateRequestDto;
+import ru.practicum.requests.dto.EventRequestStatusUpdateResultDto;
+import ru.practicum.requests.dto.ParticipationRequestDto;
 
 import java.util.List;
 
@@ -75,11 +75,11 @@ public class EventPrivateController {
     }
 
     @PatchMapping("/{eventId}/requests")
-    public RequestUpdateResultDto updateRequestByEventId(@RequestBody
-                                                         @Valid
-                                                         UpdateRequestDto updateRequests,
-                                                         @PathVariable long userId,
-                                                         @PathVariable long eventId) {
+    public EventRequestStatusUpdateResultDto updateRequestByEventId(@RequestBody
+                                                                    @Valid
+                                                                    EventRequestStatusUpdateRequestDto updateRequests,
+                                                                    @PathVariable long userId,
+                                                                    @PathVariable long eventId) {
         log.info("Received a PATCH request to update request with an eventId = {} from a user with an userId = {}, " +
                 "request body {}", eventId, userId, updateRequests);
         return eventService.updateRequestByEventId(updateRequests, userId, eventId);

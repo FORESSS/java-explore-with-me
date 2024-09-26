@@ -6,13 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.dto.NewCategoryDto;
-import ru.practicum.category.dto.UpdateCategoryDto;
-import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.util.Validator;
+import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.IntegrityViolationException;
+import ru.practicum.exception.NotFoundException;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,58 +20,75 @@ import java.util.List;
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper;
-    private final Validator validator;
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CategoryDto> getAllCategories(int from, int size) {
-        PageRequest pageRequest = PageRequest.of(from, size);
-        Page<Category> pageCategories = categoryRepository.findAll(pageRequest);
-        List<Category> categories;
-        if (pageCategories.hasContent()) {
-            categories = pageCategories.getContent();
-        } else {
-            categories = Collections.emptyList();
-        }
-        log.info("Получение всех категорий");
-        return categoryMapper.toListCategoryDto(categories);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public CategoryDto getCategory(long catId) {
-        Category category = validator.validateAndGetCategory(catId);
-        log.info("Получение категории с id: {}", catId);
-        return categoryMapper.toCategoryDto(category);
-    }
+    private final EventRepository eventRepository;
 
     @Override
     @Transactional
-    public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
-        validator.checkNewCategory(newCategoryDto);
-        Category createCategory = categoryMapper.toCategory(newCategoryDto);
-        categoryRepository.save(createCategory);
-        log.info("Категория с id: {} создана", createCategory.getId());
-        return categoryMapper.toCategoryDto(createCategory);
-    }
-
-    @Override
-    @Transactional
-    public CategoryDto updateCategory(long catId, UpdateCategoryDto updateCategoryDto) {
-        Category updateCategory = validator.validateAndGetCategory(catId);
-        validator.checkCategory(updateCategoryDto);
-        updateCategory.setName(updateCategory.getName());
-        log.info("Категория с id: {} обновлена", catId);
-        return categoryMapper.toCategoryDto(updateCategory);
+    public Category addCategory(Category category) {
+        log.info("The beginning of the process of creating a category");
+        categoryRepository.findCategoriesByNameContainingIgnoreCase(category.getName().toLowerCase()).ifPresent(c -> {
+            throw new IntegrityViolationException("Category name " + category.getName() + " already exists");
+        });
+        Category createCategory = categoryRepository.save(category);
+        log.info("The category has been created");
+        return createCategory;
     }
 
     @Override
     @Transactional
     public void deleteCategory(long catId) {
-        validator.checkCategoryId(catId);
-        validator.checkCategory(catId);
+        log.info("The beginning of the process of deleting a category");
+        categoryRepository.findById(catId).orElseThrow(
+                () -> new NotFoundException("Category " + catId + " does not exist"));
+        if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
+            throw new IntegrityViolationException("Category " + catId + " already exists");
+        }
         categoryRepository.deleteById(catId);
-        log.info("Категория с id: {} удалена", catId);
+        log.info("The category has been deleted");
+    }
+
+    @Override
+    @Transactional
+    public Category updateCategory(long catId, Category newCategory) {
+        log.info("The beginning of the process of updating a category");
+        Category updateCategory = categoryRepository.findById(catId).orElseThrow(
+                () -> new NotFoundException("Category with id=" + catId + " does not exist"));
+        categoryRepository.findCategoriesByNameContainingIgnoreCase(
+                newCategory.getName().toLowerCase()).ifPresent(c -> {
+            if (c.getId() != catId) {
+                throw new IntegrityViolationException("Category name " + newCategory.getName() + " already exists");
+            }
+        });
+        updateCategory.setName(newCategory.getName());
+        log.info("The category has been updated");
+        return updateCategory;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Category> getAllCategories(int from, int size) {
+        log.info("The beginning of the process of finding a categories");
+        PageRequest pageRequest = PageRequest.of(from, size);
+        Page<Category> pageCategories = categoryRepository.findAll(pageRequest);
+        List<Category> categories;
+
+        if (pageCategories.hasContent()) {
+            categories = pageCategories.getContent();
+        } else {
+            categories = Collections.emptyList();
+        }
+
+        log.info("The categories was found");
+        return categories;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Category getCategory(long catId) {
+        log.info("The beginning of the process of finding a category");
+        Category category = categoryRepository.findById(catId).orElseThrow(
+                () -> new NotFoundException("Category with id=" + catId + " does not exist"));
+        log.info("The category was found");
+        return category;
     }
 }
