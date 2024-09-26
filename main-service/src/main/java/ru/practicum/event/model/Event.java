@@ -3,10 +3,8 @@ package ru.practicum.event.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.category.model.Category;
 import ru.practicum.user.model.User;
 
@@ -14,59 +12,76 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
+
     @NotBlank
     @Column
-    private String annotation;
+    String annotation;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category category;
+    Category category;
+
     @NotNull
     @Column
-    private LocalDateTime createdOn;
+    LocalDateTime createdOn;
+
     @NotBlank
     @Column
-    private String description;
+    String description;
+
     @NotNull
     @Column
-    private LocalDateTime eventDate;
+    LocalDateTime eventDate;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id")
-    private User initiator;
+    User initiator;
+
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")
-    private Location location;
+    Location location;
+
     @NotNull
     @Column
-    private Boolean paid;
+    Boolean paid;
+
     @NotNull
     @Column
-    private Long participantLimit;
+    Long participantLimit;
+
     @NotNull
     @Column
-    private LocalDateTime publishedOn;
+    LocalDateTime publishedOn;
+
     @NotNull
     @Column
-    private Boolean requestModeration;
+    Boolean requestModeration;
+
     @NotNull
     @Column
-    private @Enumerated(value = EnumType.STRING)
+    @Enumerated(value = EnumType.STRING)
     State state;
+
     @NotBlank
     @Column
-    private String title;
+    String title;
+
     @Column(name = "confirmed_requests")
-    private Long confirmedRequests;
+    Long confirmedRequests;
+
     @Transient
-    private Long views;
+    Long views;
 }
