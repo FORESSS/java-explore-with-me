@@ -68,7 +68,7 @@ public class Validator {
 
     public void checkCategory(long catId) {
         if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
-            throw new RestrictionsViolationException("Категория уже создана");
+            throw new RestrictionsViolationException("Категория не найдена");
         }
     }
 
