@@ -12,9 +12,9 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.DateTimeException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
-import ru.practicum.request.model.Request;
-import ru.practicum.request.model.Status;
-import ru.practicum.request.repository.RequestsRepository;
+import ru.practicum.requests.model.Request;
+import ru.practicum.requests.model.Status;
+import ru.practicum.requests.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
