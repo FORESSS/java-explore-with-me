@@ -51,7 +51,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
-        validator.checkNewCategory(newCategoryDto);
         Category createCategory = categoryMapper.toCategory(newCategoryDto);
         categoryRepository.save(createCategory);
         log.info("Категория с id: {} создана", createCategory.getId());
@@ -61,7 +60,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto updateCategory(long catId, UpdateCategoryDto updateCategoryDto) {
-        validator.checkCategory(updateCategoryDto);
         Category updateCategory = validator.validateAndGetCategory(catId);
         updateCategory.setName(updateCategory.getName());
         log.info("Категория с id: {} обновлена", catId);
@@ -71,8 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCategory(long catId) {
-        validator.validateAndGetCategory(catId);
-        validator.checkCategory(catId);
+        validator.checkCategoryId(catId);
         categoryRepository.deleteById(catId);
         log.info("Категория с id: {} удалена", catId);
     }

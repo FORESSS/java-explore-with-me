@@ -1,10 +1,10 @@
-package ru.practicum.requests.dto;
+package ru.practicum.request.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.requests.model.Status;
+import ru.practicum.request.model.Status;
 
 import java.time.LocalDateTime;
 

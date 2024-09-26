@@ -4,9 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.model.State;
-import ru.practicum.requests.dto.ParticipationRequestDto;
-import ru.practicum.requests.dto.RequestUpdateResultDto;
-import ru.practicum.requests.dto.UpdateRequestDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.dto.RequestUpdateResultDto;
+import ru.practicum.request.dto.UpdateRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

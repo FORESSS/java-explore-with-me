@@ -1,12 +1,12 @@
-package ru.practicum.requests.mapper;
+package ru.practicum.request.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
-import ru.practicum.requests.dto.EventRequestStatusUpdateResultDto;
-import ru.practicum.requests.dto.ParticipationRequestDto;
-import ru.practicum.requests.model.Request;
-import ru.practicum.requests.model.Status;
+import ru.practicum.request.dto.RequestUpdateResultDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.Status;
 
 import java.util.List;
 
@@ -34,5 +34,5 @@ public interface RequestMapper {
 
     @Mapping(target = "confirmedRequests", expression = "java(getConfirmedRequests(requests))")
     @Mapping(target = "rejectedRequests", expression = "java(getRejectedRequests(requests))")
-    EventRequestStatusUpdateResultDto toEventRequestStatusResult(Integer dummy, List<Request> requests);
+    RequestUpdateResultDto toEventRequestStatusResult(Integer dummy, List<Request> requests);
 }

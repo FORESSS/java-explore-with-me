@@ -1,15 +1,15 @@
-package ru.practicum.requests.service;
+package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
-import ru.practicum.requests.dto.ParticipationRequestDto;
-import ru.practicum.requests.mapper.RequestMapper;
-import ru.practicum.requests.model.Request;
-import ru.practicum.requests.model.Status;
-import ru.practicum.requests.repository.RequestsRepository;
+import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.mapper.RequestMapper;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.Status;
+import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.util.Validator;
 
@@ -27,7 +27,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getAllRequests(long userId) {
-        validator.validateAndGetUser(userId);
+        validator.checkUserId(userId);
         List<Request> requests = requestsRepository.findAllByRequesterId(userId);
         log.info("Получение списка всех пользователей");
         return requestMapper.toListParticipationRequestDto(requests);
@@ -60,7 +60,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public ParticipationRequestDto cancelRequest(long userId, long requestId) {
-        validator.validateAndGetUser(userId);
+        validator.checkUserId(userId);
         Request request = validator.validateAndGetRequest(requestId);
         request.setStatus(Status.CANCELED);
         log.info("Запрос пользователя с id: {} отменён", userId);

@@ -43,7 +43,7 @@ public class CompilationServiceImpl implements CompilationService {
             compilationsDto = compilationMapper.toListCompilationDto(
                     compilationRepository.findAllByPinnedFalse(pageRequest).getContent());
         }
-        log.info("Получение всех подборок событий");
+        log.info("Получение подборок событий");
         return compilationsDto;
     }
 
@@ -87,7 +87,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public void deleteCompilation(long compId) {
-        validator.validateAndGetCompilation(compId);
+        validator.checkCompilationId(compId);
         compilationRepository.deleteById(compId);
         log.info("Подборка с id: {} удалена", compId);
     }

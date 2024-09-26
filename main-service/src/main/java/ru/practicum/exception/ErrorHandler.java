@@ -21,8 +21,8 @@ public class ErrorHandler {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler({IntegrityViolationException.class, RestrictionsViolationException.class})
-    public ErrorResponse handleConflict(Exception ex) {
+    @ExceptionHandler( RestrictionsViolationException.class)
+    public ErrorResponse handleConflict(RestrictionsViolationException ex) {
         log.error(ex.getMessage());
         return new ErrorResponse("Конфликт", ex.getMessage());
     }

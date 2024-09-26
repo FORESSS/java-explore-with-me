@@ -1,9 +1,9 @@
-package ru.practicum.requests.repository;
+package ru.practicum.request.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.practicum.requests.model.Request;
-import ru.practicum.requests.model.Status;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.Status;
 
 import java.util.List;
 import java.util.Optional;

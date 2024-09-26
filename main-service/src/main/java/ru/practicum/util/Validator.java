@@ -9,13 +9,16 @@ import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.IntegrityViolationException;
+import ru.practicum.exception.DateTimeException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.requests.model.Request;
-import ru.practicum.requests.repository.RequestsRepository;
+import ru.practicum.exception.RestrictionsViolationException;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.Status;
+import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -32,9 +35,21 @@ public class Validator {
                 .orElseThrow(() -> new NotFoundException(String.format("Подборка событий с id: %d не найдена", compId)));
     }
 
+    public void checkCompilationId(long compId) {
+        if (!compilationRepository.existsById(compId)) {
+            throw new NotFoundException(String.format("Подборка событий с id: %d не найдена", compId));
+        }
+    }
+
     public Category validateAndGetCategory(long catId) {
         return categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
+    }
+
+    public void checkCategoryId(long catId) {
+        if (!categoryRepository.existsById(catId)) {
+            throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
+        }
     }
 
     public User validateAndGetUser(long userId) {
@@ -42,9 +57,15 @@ public class Validator {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id: %d не найден", userId)));
     }
 
+    public void checkUserId(long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
+        }
+    }
+
     public void checkEmail(User user) {
         userRepository.findUserByEmail(user.getEmail()).ifPresent(u -> {
-            throw new IntegrityViolationException("Email уже используется");
+            throw new RestrictionsViolationException("Email уже используется");
         });
     }
 
@@ -55,13 +76,19 @@ public class Validator {
 
     public void checkRequest(long userId, long eventId) {
         requestsRepository.findByEventIdAndRequesterId(userId, eventId).ifPresent(r -> {
-            throw new IntegrityViolationException("Запрос уже создан");
+            throw new RestrictionsViolationException("Запрос уже создан");
         });
     }
 
     public void checkCountRequests(Event event, List<Request> requests) {
         if ((!event.getParticipantLimit().equals(0L)) && (event.getParticipantLimit() == requests.size())) {
-            throw new IntegrityViolationException("Превышено количество запросов");
+            throw new RestrictionsViolationException("Превышено количество запросов");
+        }
+    }
+
+    public void checkRequestStatus(List<Request> requests) {
+        if (requests.stream().map(Request::getStatus).anyMatch(status -> !status.equals(Status.PENDING))) {
+            throw new RestrictionsViolationException("Нельзя изменить статус");
         }
     }
 
@@ -70,15 +97,45 @@ public class Validator {
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id: %d не найдено", eventId)));
     }
 
+    public void checkEventId(long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException(String.format("Событие с id: %d не найдено", eventId));
+        }
+    }
+
     public void checkEvent(long userId, long eventId) {
         eventRepository.findByIdAndInitiatorId(eventId, userId).ifPresent(r -> {
-            throw new IntegrityViolationException("Событие уже создано");
+            throw new RestrictionsViolationException("Событие уже создано");
         });
     }
 
     public void checkPublishedEvent(Event event) {
         if (!event.getState().equals(State.PUBLISHED)) {
-            throw new IntegrityViolationException("Событие не опубликовано");
+            throw new RestrictionsViolationException("Событие не опубликовано");
         }
+    }
+
+    public void checkDate(LocalDateTime start, LocalDateTime end) {
+        if (end.isBefore(start)) {
+            throw new DateTimeException("Некорректная дата");
+        }
+    }
+
+    public void publishEvent(Event event) {
+        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
+            throw new DateTimeException("Некорректная дата публикации");
+        }
+        if (!event.getState().equals(State.PENDING)) {
+            throw new RestrictionsViolationException("Событие должно быть в состоянии ожидания публикации");
+        }
+        event.setState(State.PUBLISHED);
+        event.setPublishedOn(LocalDateTime.now());
+    }
+
+    public void rejectEvent(Event event) {
+        if (event.getState().equals(State.PUBLISHED)) {
+            throw new RestrictionsViolationException("Опубликованное событие не может быть отклонено");
+        }
+        event.setState(State.CANCELED);
     }
 }
