@@ -12,6 +12,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=stat
       - SPRING_DATASOURCE_PASSWORD=stat
 
+
   stats-db:
     image: postgres:16.1
     container_name: postgres-stat
