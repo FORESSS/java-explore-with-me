@@ -15,12 +15,14 @@ import ru.practicum.event.service.EventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 @RestController
 @RequestMapping("/events")
 @Validated
 @RequiredArgsConstructor
 public class EventPublicController {
     private final EventService eventService;
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getAllPublicEvents(@RequestParam(required = false) String text,
