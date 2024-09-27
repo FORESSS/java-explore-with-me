@@ -1,0 +1,80 @@
+package ru.practicum.util;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import ru.practicum.category.model.Category;
+import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.compilation.model.Compilation;
+import ru.practicum.compilation.repository.CompilationRepository;
+import ru.practicum.event.model.Event;
+import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.NotFoundException;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.repository.RequestsRepository;
+import ru.practicum.user.model.User;
+import ru.practicum.user.repository.UserRepository;
+
+@Component
+@RequiredArgsConstructor
+public class Validator {
+    private final UserRepository userRepository;
+    private final EventRepository eventRepository;
+    private final RequestsRepository requestsRepository;
+    private final CategoryRepository categoryRepository;
+    private final CompilationRepository compilationRepository;
+
+    public void checkUserId(long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
+        }
+    }
+
+    public void checkEventId(long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException(String.format("Событие с id: %d не найдено", eventId));
+        }
+    }
+
+    public void checkRequestId(long requestId) {
+        if (!requestsRepository.existsById(requestId)) {
+            throw new NotFoundException(String.format("Запрос с id: %d не найден", requestId));
+        }
+    }
+
+    public void checkCategoryId(long catId) {
+        if (!categoryRepository.existsById(catId)) {
+            throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
+        }
+    }
+
+    public void checkCompilationId(long compId) {
+        if (!compilationRepository.existsById(compId)) {
+            throw new NotFoundException(String.format("Подборка событий с id: %d не найдена", compId));
+        }
+    }
+
+    public User validateAndGetUser(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id: %d не найден", userId)));
+    }
+
+    public Event validateAndGetEvent(long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format("Событие с id: %d не найдено", eventId)));
+    }
+
+    public Request validateAndGetRequest(long requestId) {
+        return requestsRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException(String.format("Запрос с id: %d не найден", requestId)));
+    }
+
+    public Category validateAndGetCategory(long catId) {
+        return categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
+    }
+
+    public Compilation validateAndGetCompilation(long compId) {
+        return compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(String.format("Подборка событий с id: %d не найдена", compId)));
+    }
+}
