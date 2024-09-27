@@ -2,6 +2,7 @@ package ru.practicum;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -9,21 +10,25 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.practicum.stat_util.StatValidator;
+import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.practicum.stat_util.Constants.FORMATTER;
+import static ru.practicum.util.Constants.FORMATTER;
 
 @Component
 @Slf4j
 public class StatClient {
     private final RestClient restClient;
+    @Autowired
+    private final Validator validator;
 
-    public StatClient(@Value("${stat-server.url}") String serverUrl) {
+    public StatClient(@Value("${stat-server.url}") String serverUrl, Validator validator) {
         this.restClient = RestClient.create(serverUrl);
+        this.validator = validator;
+        log.info("Server stat run URL: {}", serverUrl);
     }
 
     public void saveHit(String app, HttpServletRequest request) {
@@ -56,7 +61,7 @@ public class StatClient {
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, boolean unique) {
         log.info("Получение статистики для {}", uris);
-        StatValidator.checkDateTime(start, end);
+        validator.checkDateTime(start, end);
         try {
             return restClient.get()
                     .uri(uriBuilder ->

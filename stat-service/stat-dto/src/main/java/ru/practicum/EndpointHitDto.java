@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.stat_util.Constants;
+import ru.practicum.util.Constants;
 
 import java.time.LocalDateTime;
 

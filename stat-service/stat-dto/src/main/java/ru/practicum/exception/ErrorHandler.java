@@ -13,6 +13,6 @@ public class ErrorHandler {
     @ExceptionHandler(DateTimeException.class)
     public ErrorResponse handleDateTimeException(DateTimeException ex) {
         log.error(ex.getMessage());
-        return new ErrorResponse("Некорректная дата", ex.getMessage());
+        return new ErrorResponse("Ошибка валидации", ex.getMessage());
     }
 }
