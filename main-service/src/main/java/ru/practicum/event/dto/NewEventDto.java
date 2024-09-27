@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.event.model.Location;
-import ru.practicum.utility.Constants;
+import ru.practicum.util.Constants;
 
 import java.time.LocalDateTime;
 
