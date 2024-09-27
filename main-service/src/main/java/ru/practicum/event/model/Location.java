@@ -7,21 +7,18 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "location")
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
     @NotNull
     @Column
     Float lat;
-
     @NotNull
     @Column
     Float lon;
