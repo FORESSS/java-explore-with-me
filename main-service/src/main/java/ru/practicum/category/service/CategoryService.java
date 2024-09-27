@@ -1,17 +1,18 @@
 package ru.practicum.category.service;
 
-import ru.practicum.category.model.Category;
+import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.category.dto.RequestCategoryDto;
 
 import java.util.List;
 
 public interface CategoryService {
-    Category addCategory(Category category);
+    CategoryDto addCategory(RequestCategoryDto requestCategoryDto);
+
+    CategoryDto updateCategory(long catId, RequestCategoryDto requestCategoryDto);
 
     void deleteCategory(long catId);
 
-    Category updateCategory(long catId, Category category);
+    List<CategoryDto> getAllCategories(int from, int size);
 
-    List<Category> getAllCategories(int from, int size);
-
-    Category getCategory(long catId);
+    CategoryDto getCategory(long catId);
 }
