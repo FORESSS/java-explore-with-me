@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface CategoryMapper {
-    Category toCategory(RequestCategoryDto requestCategoryDto);
+    Category toCategory(RequestCategoryDto newCategoryDto);
 
     CategoryDto toCategoryDto(Category category);
 

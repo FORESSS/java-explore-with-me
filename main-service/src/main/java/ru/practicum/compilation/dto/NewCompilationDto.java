@@ -1,11 +1,12 @@
 package ru.practicum.compilation.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.event.dto.EventShortDto;
 
 import java.util.List;
 
@@ -13,9 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CompilationDto {
-    List<EventShortDto> events;
-    Long id;
-    Boolean pinned;
+public class NewCompilationDto {
+    List<Long> events;
+    Boolean pinned = false;
+    @NotBlank
+    @Size(min = 1, max = 50)
     String title;
 }
