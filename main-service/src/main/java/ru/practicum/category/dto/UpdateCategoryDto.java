@@ -1,21 +1,19 @@
-package ru.practicum.compilation.dto;
+package ru.practicum.category.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.event.dto.EventShortDto;
-
-import java.util.List;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CompilationDto {
-    List<EventShortDto> events;
-    Long id;
-    Boolean pinned;
-    String title;
+public class UpdateCategoryDto {
+    @NotBlank
+    @Length(min = 1, max = 50)
+    String name;
 }

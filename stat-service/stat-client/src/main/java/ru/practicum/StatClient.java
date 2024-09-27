@@ -10,22 +10,22 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.practicum.util.Validator;
+import ru.practicum.stat_util.StatValidator;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.practicum.util.Constants.FORMATTER;
+import static ru.practicum.stat_util.Constants.FORMATTER;
 
 @Component
 @Slf4j
 public class StatClient {
     private final RestClient restClient;
     @Autowired
-    private final Validator validator;
+    private final StatValidator validator;
 
-    public StatClient(@Value("${stat-server.url}") String serverUrl, Validator validator) {
+    public StatClient(@Value("${stat-server.url}") String serverUrl, StatValidator validator) {
         this.restClient = RestClient.create(serverUrl);
         this.validator = validator;
         log.info("Server stat run URL: {}", serverUrl);
