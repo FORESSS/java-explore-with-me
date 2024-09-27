@@ -15,9 +15,9 @@ import ru.practicum.ViewStatsDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.dto.*;
-import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.enums.StateActionAdmin;
+import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
@@ -40,8 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static ru.practicum.event.model.QEvent.event;
 
 @Service
 @Slf4j
