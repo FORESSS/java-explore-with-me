@@ -14,7 +14,7 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.service.EventService;
-import ru.practicum.utils.Constants;
+import ru.practicum.utility.Constants;
 
 import java.time.LocalDateTime;
 import java.util.List;

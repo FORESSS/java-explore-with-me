@@ -12,7 +12,7 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.model.State;
 import ru.practicum.event.service.EventService;
-import ru.practicum.utils.Constants;
+import ru.practicum.utility.Constants;
 
 import java.time.LocalDateTime;
 import java.util.List;
