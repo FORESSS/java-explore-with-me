@@ -9,10 +9,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "compilations")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation {
     @Id

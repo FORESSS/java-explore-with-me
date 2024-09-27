@@ -1,4 +1,4 @@
-package ru.practicum.util;
+package ru.practicum.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
