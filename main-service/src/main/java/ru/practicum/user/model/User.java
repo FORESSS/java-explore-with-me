@@ -7,11 +7,10 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     @Id
