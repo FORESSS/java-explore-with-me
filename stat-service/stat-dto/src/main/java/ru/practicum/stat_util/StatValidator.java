@@ -1,11 +1,11 @@
 package ru.practicum.stat_util;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.exception.DateTimeException;
 
 import java.time.LocalDateTime;
 
-@Component
+@UtilityClass
 public class StatValidator {
     public void checkDateTime(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null) {

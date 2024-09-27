@@ -2,7 +2,6 @@ package ru.practicum;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -22,13 +21,9 @@ import static ru.practicum.stat_util.Constants.FORMATTER;
 @Slf4j
 public class StatClient {
     private final RestClient restClient;
-    @Autowired
-    private final StatValidator validator;
 
-    public StatClient(@Value("${stat-server.url}") String serverUrl, StatValidator validator) {
+    public StatClient(@Value("${stat-server.url}") String serverUrl) {
         this.restClient = RestClient.create(serverUrl);
-        this.validator = validator;
-        log.info("Server stat run URL: {}", serverUrl);
     }
 
     public void saveHit(String app, HttpServletRequest request) {
@@ -61,7 +56,7 @@ public class StatClient {
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, boolean unique) {
         log.info("Получение статистики для {}", uris);
-        validator.checkDateTime(start, end);
+        StatValidator.checkDateTime(start, end);
         try {
             return restClient.get()
                     .uri(uriBuilder ->
