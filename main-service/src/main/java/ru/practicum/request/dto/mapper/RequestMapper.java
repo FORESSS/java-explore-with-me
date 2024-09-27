@@ -1,12 +1,12 @@
-package ru.practicum.requests.dto.mapper;
+package ru.practicum.request.dto.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import ru.practicum.requests.dto.EventRequestStatusUpdateResultDto;
-import ru.practicum.requests.dto.ParticipationRequestDto;
-import ru.practicum.requests.model.Request;
-import ru.practicum.requests.model.Status;
+import ru.practicum.request.dto.EventRequestStatusUpdateResultDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.Status;
 
 import java.util.List;
 
