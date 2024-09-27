@@ -12,8 +12,8 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NewCategoryDto {
+public class RequestCategoryDto {
     @NotBlank
-    @Length(min = 1, max = 50)
+    @Length(max = 50)
     String name;
 }
