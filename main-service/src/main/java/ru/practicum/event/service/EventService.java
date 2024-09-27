@@ -3,9 +3,9 @@ package ru.practicum.event.service;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.model.State;
-import ru.practicum.requests.dto.EventRequestStatusUpdateRequestDto;
-import ru.practicum.requests.dto.EventRequestStatusUpdateResultDto;
-import ru.practicum.requests.dto.ParticipationRequestDto;
+import ru.practicum.request.dto.EventRequestStatusUpdateRequestDto;
+import ru.practicum.request.dto.EventRequestStatusUpdateResultDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
