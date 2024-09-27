@@ -1,6 +1,5 @@
 package ru.practicum.compilation.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,10 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RequestCompilationDto {
+public class UpdateCompilationDto {
     List<Long> events;
-    Boolean pinned = false;
-    @NotBlank
+    Boolean pinned;
     @Length(max = 50)
     String title;
 }
