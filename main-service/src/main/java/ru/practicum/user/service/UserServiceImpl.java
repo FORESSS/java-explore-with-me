@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.exception.IntegrityViolationException;
-import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
 import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+import ru.practicum.utils.Validator;
 
 import java.util.List;
 
@@ -24,6 +24,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final Validator validator;
 
     @Override
     @Transactional(readOnly = true)
@@ -57,8 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(long userId) {
         log.info("The beginning of the process of deleting a user");
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id = " + userId + " not found"));
+        validator.checkUserId(userId);
         userRepository.deleteById(userId);
         log.info("The user has been deleted");
     }
