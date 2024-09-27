@@ -10,7 +10,7 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.model.Location;
 import ru.practicum.event.model.State;
 import ru.practicum.user.dto.UserShortDto;
-import ru.practicum.utils.Constants;
+import ru.practicum.utility.Constants;
 
 import java.time.LocalDateTime;
 
