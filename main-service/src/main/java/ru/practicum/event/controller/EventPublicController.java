@@ -14,6 +14,7 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.service.EventService;
+import ru.practicum.utility.Constants;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,10 +34,10 @@ public class EventPublicController {
                                                   @RequestParam(required = false) List<Long> categories,
                                                   @RequestParam(required = false) Boolean paid,
                                                   @RequestParam(required = false)
-                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                  @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
                                                   LocalDateTime rangeStart,
                                                   @RequestParam(required = false)
-                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                  @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
                                                   LocalDateTime rangeEnd,
                                                   @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                                   @RequestParam(defaultValue = "EVENT_DATE") EventPublicSort sort,

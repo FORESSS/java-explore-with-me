@@ -1,4 +1,4 @@
-package ru.practicum.request.dto;
+package ru.practicum.requests.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

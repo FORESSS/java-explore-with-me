@@ -14,9 +14,9 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.service.EventService;
-import ru.practicum.request.dto.EventRequestStatusUpdateRequestDto;
-import ru.practicum.request.dto.EventRequestStatusUpdateResultDto;
-import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.requests.dto.EventRequestStatusUpdateRequestDto;
+import ru.practicum.requests.dto.EventRequestStatusUpdateResultDto;
+import ru.practicum.requests.dto.ParticipationRequestDto;
 
 import java.util.List;
 
