@@ -1,7 +1,9 @@
 package ru.practicum.utils;
 
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import ru.practicum.user.repository.UserRepository;
 
-@UtilityClass
+@RequiredArgsConstructor
 public class Validator {
+    private final UserRepository userRepository;
 }
