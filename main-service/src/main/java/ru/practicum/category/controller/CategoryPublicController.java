@@ -3,6 +3,7 @@ package ru.practicum.category.controller;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.category.dto.CategoryDto;
@@ -20,12 +21,14 @@ public class CategoryPublicController {
     private final CategoryMapper categoryMapper;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<CategoryDto> getAllCategories(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                               @RequestParam(defaultValue = "10") @Positive Integer size) {
         return categoryMapper.toListCategoryDto(categoryService.getAllCategories(from, size));
     }
 
     @GetMapping("/{catId}")
+    @ResponseStatus(HttpStatus.OK)
     public CategoryDto getCategory(@PathVariable Long catId) {
         return categoryMapper.toCategoryDto(categoryService.getCategory(catId));
     }
