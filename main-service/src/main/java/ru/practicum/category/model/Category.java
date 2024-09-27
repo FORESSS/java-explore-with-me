@@ -7,8 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "categories")
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
