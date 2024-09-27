@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.event.enums.StateActionAdmin;
 import ru.practicum.event.model.Location;
-import ru.practicum.utility.Constants;
+import ru.practicum.utils.Constants;
 
 import java.time.LocalDateTime;
 
