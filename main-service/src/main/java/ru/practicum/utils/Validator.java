@@ -1,7 +1,6 @@
 package ru.practicum.utils;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.compilation.model.Compilation;
@@ -14,7 +13,6 @@ import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
-@Component
 @RequiredArgsConstructor
 public class Validator {
     private final UserRepository userRepository;
