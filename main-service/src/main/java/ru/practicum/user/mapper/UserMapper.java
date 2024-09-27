@@ -1,4 +1,4 @@
-package ru.practicum.user.dto.mapper;
+package ru.practicum.user.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

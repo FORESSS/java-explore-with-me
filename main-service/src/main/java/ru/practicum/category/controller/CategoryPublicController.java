@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.dto.mapper.CategoryMapper;
+import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.service.CategoryService;
 
 import java.util.List;

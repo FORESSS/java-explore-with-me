@@ -10,7 +10,7 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.IntegrityViolationException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.request.dto.ParticipationRequestDto;
-import ru.practicum.request.dto.mapper.RequestMapper;
+import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
 import ru.practicum.request.repository.RequestsRepository;

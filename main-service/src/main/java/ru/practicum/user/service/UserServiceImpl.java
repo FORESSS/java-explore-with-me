@@ -11,7 +11,7 @@ import ru.practicum.exception.IntegrityViolationException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
-import ru.practicum.user.dto.mapper.UserMapper;
+import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 

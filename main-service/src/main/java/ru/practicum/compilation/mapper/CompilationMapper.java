@@ -1,4 +1,4 @@
-package ru.practicum.compilation.dto.mapper;
+package ru.practicum.compilation.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
