@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.event.enums.StateActionUser;
 import ru.practicum.event.model.Location;
-import ru.practicum.util.Constants;
 
 import java.time.LocalDateTime;
 
@@ -26,7 +25,7 @@ public class UpdateEventUserRequest {
     Long category;
     @Size(min = 20, max = 7000)
     String description;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
     Location location;
     Boolean paid;
