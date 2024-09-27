@@ -1,5 +1,4 @@
 package ru.practicum.event.controller;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -12,11 +11,9 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.model.State;
 import ru.practicum.event.service.EventService;
-import ru.practicum.utility.Constants;
-
+import ru.practicum.util.Constants;
 import java.time.LocalDateTime;
 import java.util.List;
-
 @RestController
 @RequestMapping("/admin/events")
 @Slf4j

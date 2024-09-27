@@ -1,4 +1,4 @@
-package ru.practicum.requests.dto;
+package ru.practicum.request.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.requests.model.Status;
+import ru.practicum.request.model.Status;
 
 import java.util.Set;
 
