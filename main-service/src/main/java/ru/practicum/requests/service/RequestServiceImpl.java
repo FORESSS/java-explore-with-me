@@ -1,4 +1,4 @@
-package ru.practicum.request.service;
+package ru.practicum.requests.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,11 +9,11 @@ import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.IntegrityViolationException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.request.dto.ParticipationRequestDto;
-import ru.practicum.request.dto.mapper.RequestMapper;
-import ru.practicum.request.model.Request;
-import ru.practicum.request.model.Status;
-import ru.practicum.request.repository.RequestsRepository;
+import ru.practicum.requests.dto.ParticipationRequestDto;
+import ru.practicum.requests.dto.mapper.RequestMapper;
+import ru.practicum.requests.model.Request;
+import ru.practicum.requests.model.Status;
+import ru.practicum.requests.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 

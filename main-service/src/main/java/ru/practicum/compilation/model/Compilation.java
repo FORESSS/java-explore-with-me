@@ -1,10 +1,7 @@
 package ru.practicum.compilation.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.event.model.Event;
 
@@ -12,7 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "compilations")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
