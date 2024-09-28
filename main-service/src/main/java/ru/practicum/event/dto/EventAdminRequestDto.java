@@ -3,12 +3,12 @@ package ru.practicum.event.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.validator.constraints.Length;
 import ru.practicum.event.enums.StateActionAdmin;
 import ru.practicum.event.model.Location;
 import ru.practicum.util.Constants;
@@ -19,12 +19,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateEventAdminRequest {
-    @Size(min = 20, max = 2000)
+public class EventAdminRequestDto {
+    @Length(max = 2000)
     String annotation;
     @Positive
     Long category;
-    @Size(min = 20, max = 7000)
+    @Length(max = 2000)
     String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_FORMAT)
     LocalDateTime eventDate;
@@ -33,7 +33,7 @@ public class UpdateEventAdminRequest {
     @PositiveOrZero
     Long participantLimit;
     Boolean requestModeration;
-    @Size(min = 3, max = 120)
+    @Length(max = 100)
     String title;
     StateActionAdmin stateAction;
 }

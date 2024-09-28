@@ -24,9 +24,9 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.DateException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
-import ru.practicum.request.dto.EventRequestStatusUpdateRequestDto;
-import ru.practicum.request.dto.EventRequestStatusUpdateResultDto;
-import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.dto.UpdateRequestDto;
+import ru.practicum.request.dto.RequestUpdateStatusDto;
+import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
@@ -145,7 +145,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateEvent(UpdateEventUserRequest updateEvent, long userId, long eventId) {
+    public EventFullDto updateEvent(EventUserRequestDto updateEvent, long userId, long eventId) {
         log.info("The beginning of the process of updates a event");
 
         if (!userRepository.existsById(userId)) {
@@ -208,7 +208,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ParticipationRequestDto> findRequestByEventId(long userId, long eventId) {
+    public List<RequestDto> findRequestByEventId(long userId, long eventId) {
         log.info("The beginning of the process of finding a requests");
 
         if (!userRepository.existsById(userId)) {
@@ -227,9 +227,9 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventRequestStatusUpdateResultDto updateRequestByEventId(EventRequestStatusUpdateRequestDto updateRequests,
-                                                                    long userId,
-                                                                    long eventId) {
+    public RequestUpdateStatusDto updateRequestByEventId(UpdateRequestDto updateRequests,
+                                                         long userId,
+                                                         long eventId) {
         log.info("The beginning of the process of update a requests");
 
         if (!userRepository.existsById(userId)) {
@@ -238,7 +238,7 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(eventId, Status.CONFIRMED);
+        List<Request> confirmedRequests = requestsRepository.findAllByStatusAndEventId(Status.CONFIRMED, eventId);
 
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == confirmedRequests.size()) {
             throw new RestrictionsViolationException("The limit on applications for this event has been reached, " +
@@ -366,7 +366,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateEventAdmin(UpdateEventAdminRequest updateEvent, long eventId) {
+    public EventFullDto updateEventAdmin(EventAdminRequestDto updateEvent, long eventId) {
         log.info("The beginning of the process of updates a event by admin");
 
         Event event = eventRepository.findById(eventId)

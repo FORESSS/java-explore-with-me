@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.UpdateEventAdminRequest;
+import ru.practicum.event.dto.EventAdminRequestDto;
 import ru.practicum.event.model.State;
 import ru.practicum.event.service.EventService;
 import ru.practicum.util.Constants;
@@ -43,7 +43,7 @@ public class EventAdminController {
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEventAdmin(@RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest,
+    public EventFullDto updateEventAdmin(@RequestBody @Valid EventAdminRequestDto updateEventAdminRequest,
                                          @PathVariable long eventId) {
         log.info("Received a PATCH request to update event with an eventId = {} request body {}",
                 eventId, updateEventAdminRequest);
