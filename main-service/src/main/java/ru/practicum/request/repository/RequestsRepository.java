@@ -1,6 +1,7 @@
 package ru.practicum.request.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
 
@@ -8,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Repository
 public interface RequestsRepository extends JpaRepository<Request, Long> {
-
     List<Request> findByEventId(long eventId);
 
-    List<Request> findByIdIn(Set<Long> id);
+    List<Request> findByIdIn(Set<Long> ids);
 
-    List<Request> findAllByRequesterId(long id);
+    List<Request> findAllByRequesterId(long requestId);
 
-    Optional<Request> findByEventIdAndRequesterId(long eventId, long requesterId);
+    Optional<Request> findByEventIdAndRequesterId(long requesterId, long eventId);
 
-    List<Request> findAllByStatusAndEventId(Status status, long eventId);
+    List<Request> findAllByStatusAndEventId(long eventId, Status status);
 }

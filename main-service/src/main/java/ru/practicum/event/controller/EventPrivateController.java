@@ -14,9 +14,9 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.service.EventService;
-import ru.practicum.request.dto.EventRequestStatusUpdateRequestDto;
-import ru.practicum.request.dto.EventRequestStatusUpdateResultDto;
-import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.dto.UpdateRequestDto;
+import ru.practicum.request.dto.RequestStatusUpdateDto;
+import ru.practicum.request.dto.RequestDto;
 
 import java.util.List;
 
@@ -68,18 +68,18 @@ public class EventPrivateController {
     }
 
     @GetMapping("/{eventId}/requests")
-    public List<ParticipationRequestDto> findRequestByEventId(@PathVariable long userId, @PathVariable long eventId) {
+    public List<RequestDto> findRequestByEventId(@PathVariable long userId, @PathVariable long eventId) {
         log.info("Received a GET request to find request by event id = {} from a user with an userId = {}",
                 eventId, userId);
         return eventService.findRequestByEventId(userId, eventId);
     }
 
     @PatchMapping("/{eventId}/requests")
-    public EventRequestStatusUpdateResultDto updateRequestByEventId(@RequestBody
+    public RequestStatusUpdateDto updateRequestByEventId(@RequestBody
                                                                     @Valid
-                                                                    EventRequestStatusUpdateRequestDto updateRequests,
-                                                                    @PathVariable long userId,
-                                                                    @PathVariable long eventId) {
+                                                                        UpdateRequestDto updateRequests,
+                                                         @PathVariable long userId,
+                                                         @PathVariable long eventId) {
         log.info("Received a PATCH request to update request with an eventId = {} from a user with an userId = {}, " +
                 "request body {}", eventId, userId, updateRequests);
         return eventService.updateRequestByEventId(updateRequests, userId, eventId);

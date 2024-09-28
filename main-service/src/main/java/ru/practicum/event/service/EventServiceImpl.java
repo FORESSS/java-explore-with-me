@@ -24,9 +24,9 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.DateException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
-import ru.practicum.request.dto.EventRequestStatusUpdateRequestDto;
-import ru.practicum.request.dto.EventRequestStatusUpdateResultDto;
-import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.dto.UpdateRequestDto;
+import ru.practicum.request.dto.RequestStatusUpdateDto;
+import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
@@ -208,7 +208,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ParticipationRequestDto> findRequestByEventId(long userId, long eventId) {
+    public List<RequestDto> findRequestByEventId(long userId, long eventId) {
         log.info("The beginning of the process of finding a requests");
 
         if (!userRepository.existsById(userId)) {
@@ -222,14 +222,14 @@ public class EventServiceImpl implements EventService {
         List<Request> requests = requestsRepository.findByEventId(eventId);
 
         log.info("The requests was found");
-        return requestMapper.listRequestToListParticipationRequestDto(requests);
+        return requestMapper.toListRequestDto(requests);
     }
 
     @Transactional
     @Override
-    public EventRequestStatusUpdateResultDto updateRequestByEventId(EventRequestStatusUpdateRequestDto updateRequests,
-                                                                    long userId,
-                                                                    long eventId) {
+    public RequestStatusUpdateDto updateRequestByEventId(UpdateRequestDto updateRequests,
+                                                         long userId,
+                                                         long eventId) {
         log.info("The beginning of the process of update a requests");
 
         if (!userRepository.existsById(userId)) {
@@ -259,7 +259,7 @@ public class EventServiceImpl implements EventService {
         }
 
         log.info("The requests was updated");
-        return requestMapper.toEventRequestStatusResult(null, requests);
+        return requestMapper.toRequestStatusUpdateDto(null, requests);
     }
 
     @Override
