@@ -131,7 +131,7 @@ public class Validator {
     }
 
     public void checkRequestLimit(Event event) {
-        List<Request> confirmedRequests = requestsRepository.findAllByStatusAndEventId(event.getId(), Status.CONFIRMED);
+        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(event.getId(), Status.CONFIRMED);
         if ((!event.getParticipantLimit().equals(0L))
                 && (event.getParticipantLimit() == confirmedRequests.size())) {
             throw new RestrictionsViolationException("Лимит запросов превышен");
