@@ -1,21 +1,18 @@
 package ru.practicum.category.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingConstants.ComponentModel;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.dto.NewCategoryDto;
-import ru.practicum.category.dto.UpdateCategoryDto;
+import ru.practicum.category.dto.RequestCategoryDto;
 import ru.practicum.category.model.Category;
 
 import java.util.List;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = ComponentModel.SPRING)
 public interface CategoryMapper {
-    Category newCategoryDtoToCategory(NewCategoryDto newCategoryDto);
+    Category toCategory(RequestCategoryDto requestCategoryDto);
 
-    CategoryDto categoryToCategoryDto(Category category);
+    CategoryDto toCategoryDto(Category category);
 
-    Category updateCategoryDtoToCategory(UpdateCategoryDto updateCategoryDto);
-
-    List<CategoryDto> listCategoryToListCategoryDto(List<Category> categoryList);
+    List<CategoryDto> toListCategoryDto(List<Category> categoryList);
 }

@@ -84,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Category getCategory(long catId) {
+    public Category getCategoryById(long catId) {
         log.info("The beginning of the process of finding a category");
         Category category = categoryRepository.findById(catId).orElseThrow(
                 () -> new NotFoundException("Category with id=" + catId + " does not exist"));

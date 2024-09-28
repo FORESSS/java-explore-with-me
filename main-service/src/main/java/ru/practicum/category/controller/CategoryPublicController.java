@@ -27,13 +27,13 @@ public class CategoryPublicController {
                                               @RequestParam(defaultValue = "10")
                                               @Positive Integer size) {
         log.info("getAllCategories: from={}, size={}", from, size);
-        return categoryMapper.listCategoryToListCategoryDto(categoryService.getAllCategories(from, size));
+        return categoryMapper.toListCategoryDto(categoryService.getAllCategories(from, size));
     }
 
     @GetMapping("/{catId}")
     public CategoryDto getCategory(@PathVariable Long catId) {
         log.info("getCategory: catId={}", catId);
-        return categoryMapper.categoryToCategoryDto(categoryService.getCategory(catId));
+        return categoryMapper.toCategoryDto(categoryService.getCategoryById(catId));
     }
 
 }
