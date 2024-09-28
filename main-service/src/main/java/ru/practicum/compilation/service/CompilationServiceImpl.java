@@ -70,19 +70,16 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional(readOnly = true)
     public List<CompilationDto> getAllCompilations(Boolean pinned, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from, size);
-        List<CompilationDto> compilationsDto;
+        List<Compilation> compilations;
         if (pinned == null) {
-            compilationsDto = compilationMapper.toListCompilationDto(compilationRepository
-                    .findAll(pageRequest).getContent());
+            compilations = compilationRepository.findAll(pageRequest).getContent();
         } else if (pinned) {
-            compilationsDto = compilationMapper.toListCompilationDto(
-                    compilationRepository.findAllByPinnedTrue(pageRequest).getContent());
+            compilations = compilationRepository.findAllByPinnedTrue(pageRequest).getContent();
         } else {
-            compilationsDto = compilationMapper.toListCompilationDto(
-                    compilationRepository.findAllByPinnedFalse(pageRequest).getContent());
+            compilations = compilationRepository.findAllByPinnedFalse(pageRequest).getContent();
         }
         log.info("Получение списка подборок событий");
-        return compilationsDto;
+        return compilationMapper.toListCompilationDto(compilations);
     }
 
     @Override

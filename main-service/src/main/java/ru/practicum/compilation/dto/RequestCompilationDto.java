@@ -16,7 +16,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RequestCompilationDto {
     List<Long> events;
-    Boolean pinned = false;
+    Boolean pinned;
     @NotBlank
     @Size(max = 50)
     String title;
