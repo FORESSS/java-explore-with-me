@@ -24,7 +24,7 @@ public class NewEventDto {
     @Positive
     Long category;
     @NotBlank
-    @Size(min = 20, max = 7000)
+    @Size(min = 20, max = 2000)
     String description;
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_FORMAT)

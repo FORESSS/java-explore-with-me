@@ -19,12 +19,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateEventAdminRequest {
+public class EventAdminRequestDto {
     @Size(min = 20, max = 2000)
     String annotation;
     @Positive
     Long category;
-    @Size(min = 20, max = 7000)
+    @Size(min = 20, max = 2000)
     String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_FORMAT)
     LocalDateTime eventDate;
