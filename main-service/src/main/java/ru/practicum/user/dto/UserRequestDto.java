@@ -13,10 +13,10 @@ import org.hibernate.validator.constraints.Length;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserRequestDto {
     @NotBlank
-    @Length(max = 255)
+    @Length(min = 6, max = 250)
     @Email
     String email;
     @NotBlank
-    @Length(max = 255)
+    @Length(min = 2, max = 250)
     String name;
 }
