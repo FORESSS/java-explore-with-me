@@ -2,6 +2,7 @@ package ru.practicum.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.category.dto.RequestCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.compilation.model.Compilation;
@@ -34,6 +35,9 @@ public class Validator {
     }
 
     public void checkCategoryId(long catId) {
+        if (!categoryRepository.existsById(catId)) {
+            throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
+        }
     }
 
     public void checkRequestId(long requestId) {
@@ -51,7 +55,8 @@ public class Validator {
     }
 
     public Category validateAndGetCategory(long catId) {
-        return null;
+        return categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
     }
 
     public Request validateAndGetRequest(long requestId) {
@@ -66,5 +71,26 @@ public class Validator {
         userRepository.findUserByEmail(user.getEmail()).ifPresent(u -> {
             throw new RestrictionsViolationException("Email уже используется");
         });
+    }
+
+    public void checkCategory(Category category) {
+        categoryRepository.findCategoriesByNameContainingIgnoreCase(category.getName().toLowerCase()).ifPresent(c -> {
+            throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", category.getName()));
+        });
+    }
+
+    public void checkCategory(long catId, RequestCategoryDto requestCategoryDto) {
+        categoryRepository.findCategoriesByNameContainingIgnoreCase(
+                requestCategoryDto.getName().toLowerCase()).ifPresent(c -> {
+            if (c.getId() != catId) {
+                throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", requestCategoryDto.getName()));
+            }
+        });
+    }
+
+    public void checkCategory(long catId) {
+        if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
+            throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
+        }
     }
 }
