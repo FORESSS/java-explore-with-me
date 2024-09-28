@@ -80,7 +80,7 @@ public class EventServiceImpl implements EventService {
             newEventDto.setParticipantLimit(0L);
         }
 
-        Event newEvent = eventMapper.newEventDtoToEvent(newEventDto);
+        Event newEvent = eventMapper.toEvent(newEventDto);
         newEvent.setCategory(category);
         newEvent.setCreatedOn(LocalDateTime.now());
         newEvent.setInitiator(initiator);
@@ -89,7 +89,7 @@ public class EventServiceImpl implements EventService {
         newEvent.setConfirmedRequests(0L);
 
         Event event = eventRepository.save(newEvent);
-        EventFullDto eventFullDto = eventMapper.eventToEventFullDto(event);
+        EventFullDto eventFullDto = eventMapper.toEventFullDto(event);
         eventFullDto.setViews(0L);
 
         log.info("The event has been created");
@@ -110,7 +110,7 @@ public class EventServiceImpl implements EventService {
 
         List<ViewStatsDto> viewStats = getViewStats(List.of(event));
 
-        EventFullDto eventFullDto = eventMapper.eventToEventFullDto(event);
+        EventFullDto eventFullDto = eventMapper.toEventFullDto(event);
 
         if (!CollectionUtils.isEmpty(viewStats)) {
             eventFullDto.setViews(viewStats.getFirst().getHits());
@@ -137,7 +137,7 @@ public class EventServiceImpl implements EventService {
         List<Event> events = pageEvents.getContent();
         setViews(events);
 
-        List<EventShortDto> eventsShortDto = eventMapper.listEventToListEventShortDto(events);
+        List<EventShortDto> eventsShortDto = eventMapper.toListEventShortDto(events);
 
         log.info("The events was found");
         return eventsShortDto;
@@ -203,7 +203,7 @@ public class EventServiceImpl implements EventService {
         }
 
         log.info("The events was update");
-        return eventMapper.eventToEventFullDto(event);
+        return eventMapper.toEventFullDto(event);
     }
 
     @Transactional(readOnly = true)
@@ -222,7 +222,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requests = requestsRepository.findByEventId(eventId);
 
         log.info("The requests was found");
-        return requestMapper.listRequestToListParticipationRequestDto(requests);
+        return requestMapper.toListRequestDto(requests);
     }
 
     @Transactional
@@ -259,7 +259,7 @@ public class EventServiceImpl implements EventService {
         }
 
         log.info("The requests was updated");
-        return requestMapper.toEventRequestStatusResult(null, requests);
+        return requestMapper.toRequestStatusResultDto(null, requests);
     }
 
     @Override
@@ -306,7 +306,7 @@ public class EventServiceImpl implements EventService {
 
         setViews(events.getContent());
         log.info("The events was found by public");
-        return eventMapper.listEventToListEventShortDto(events.getContent());
+        return eventMapper.toListEventShortDto(events.getContent());
     }
 
     @Override
@@ -317,7 +317,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Event with id=" + id + " was not found"));
         setViews(List.of(event));
         log.info("The event was found by public");
-        return eventMapper.eventToEventFullDto(event);
+        return eventMapper.toEventFullDto(event);
     }
 
     @Transactional(readOnly = true)
@@ -361,7 +361,7 @@ public class EventServiceImpl implements EventService {
         List<Event> events = pageEvents.getContent();
         setViews(events);
         log.info("The events was found by admin");
-        return eventMapper.listEventToListEventFullDto(events);
+        return eventMapper.toListEventFullDto(events);
     }
 
     @Transactional
@@ -412,7 +412,7 @@ public class EventServiceImpl implements EventService {
         }
 
         log.info("The events was update by admin");
-        return eventMapper.eventToEventFullDto(event);
+        return eventMapper.toEventFullDto(event);
     }
 
     private void setStateByAdmin(Event event, StateActionAdmin stateActionAdmin) {

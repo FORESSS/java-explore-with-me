@@ -37,7 +37,7 @@ public class RequestServiceImpl implements RequestService {
                 "User with id = " + userId + " not found"));
         List<Request> requests = requestsRepository.findAllByRequesterId(userId);
         log.info("The all requests has been found");
-        return requestMapper.listRequestToListParticipationRequestDto(requests);
+        return requestMapper.toListRequestDto(requests);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class RequestServiceImpl implements RequestService {
 
         request = requestsRepository.save(request);
         log.info("The request has been created");
-        return requestMapper.requestToParticipationRequestDto(request);
+        return requestMapper.toRequestDto(request);
     }
 
     @Override
@@ -99,6 +99,6 @@ public class RequestServiceImpl implements RequestService {
         ));
         request.setStatus(Status.CANCELED);
         log.info("The request has been canceled");
-        return requestMapper.requestToParticipationRequestDto(request);
+        return requestMapper.toRequestDto(request);
     }
 }
