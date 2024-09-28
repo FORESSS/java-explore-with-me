@@ -238,7 +238,7 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-        List<Request> confirmedRequests = requestsRepository.findAllByStatusAndEventId(Status.CONFIRMED, eventId);
+        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(eventId, Status.CONFIRMED);
 
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == confirmedRequests.size()) {
             throw new RestrictionsViolationException("The limit on applications for this event has been reached, " +

@@ -44,7 +44,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public ParticipationRequestDto addRequest(long userId, long eventId) {
         log.info("The beginning of the process of creating a request");
-        requestsRepository.findByEventIdAndRequesterId(eventId, userId).ifPresent(
+        requestsRepository.findByRequesterIdAndEventId(userId, eventId).ifPresent(
                 r -> {
                     throw new RestrictionsViolationException(
                             "Request with userId " + userId + " eventId " + eventId + " exists");
@@ -65,7 +65,7 @@ public class RequestServiceImpl implements RequestService {
             throw new RestrictionsViolationException("Event with id = " + eventId + " is not published");
         }
 
-        List<Request> confirmedRequests = requestsRepository.findAllByStatusAndEventId(Status.CONFIRMED, eventId);
+        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(eventId, Status.CONFIRMED);
 
         if ((!event.getParticipantLimit().equals(0L))
                 && (event.getParticipantLimit() == confirmedRequests.size())) {
