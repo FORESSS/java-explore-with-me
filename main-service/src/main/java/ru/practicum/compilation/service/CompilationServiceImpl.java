@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.compilation.dto.CompilationDto;
-import ru.practicum.compilation.dto.RequestCompilationDto;
+import ru.practicum.compilation.dto.NewCompilationDto;
+import ru.practicum.compilation.dto.UpdateCompilationDto;
 import ru.practicum.compilation.mapper.CompilationMapper;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
@@ -28,9 +29,9 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public CompilationDto addCompilation(RequestCompilationDto requestCompilationDto) {
-        Compilation compilation = compilationMapper.toCompilation(requestCompilationDto);
-        List<Long> ids = requestCompilationDto.getEvents();
+    public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
+        Compilation compilation = compilationMapper.toCompilation(newCompilationDto);
+        List<Long> ids = newCompilationDto.getEvents();
         if (!CollectionUtils.isEmpty(ids)) {
             compilation.setEvents(eventRepository.findAllByIdIn(ids));
         } else {
@@ -43,16 +44,16 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public CompilationDto updateCompilation(long compId, RequestCompilationDto requestCompilationDto) {
+    public CompilationDto updateCompilation(long compId, UpdateCompilationDto updateCompilationDto) {
         Compilation compilation = validator.validateAndGetCompilation(compId);
-        if (!CollectionUtils.isEmpty(requestCompilationDto.getEvents())) {
-            compilation.setEvents(eventRepository.findAllByIdIn(requestCompilationDto.getEvents()));
+        if (!CollectionUtils.isEmpty(updateCompilationDto.getEvents())) {
+            compilation.setEvents(eventRepository.findAllByIdIn(updateCompilationDto.getEvents()));
         }
-        if (requestCompilationDto.getPinned() != null) {
-            compilation.setPinned(requestCompilationDto.getPinned());
+        if (updateCompilationDto.getPinned() != null) {
+            compilation.setPinned(updateCompilationDto.getPinned());
         }
-        if (requestCompilationDto.getTitle() != null) {
-            compilation.setTitle(requestCompilationDto.getTitle());
+        if (updateCompilationDto.getTitle() != null) {
+            compilation.setTitle(updateCompilationDto.getTitle());
         }
         log.info("Подборка событий с id: {} обновлена", compId);
         return compilationMapper.toCompilationDto(compilation);
