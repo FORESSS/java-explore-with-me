@@ -8,13 +8,17 @@ import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.model.Request;
+import ru.practicum.request.model.Status;
 import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +36,9 @@ public class Validator {
     }
 
     public void checkEventId(long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException(String.format("Событие с id: %d не найдено", eventId));
+        }
     }
 
     public void checkCategoryId(long catId) {
@@ -41,6 +48,9 @@ public class Validator {
     }
 
     public void checkRequestId(long requestId) {
+        if (!requestsRepository.existsById(requestId)) {
+            throw new NotFoundException(String.format("Запрос с id: %d не найден", requestId));
+        }
     }
 
     public void checkCompilationId(long compId) {
@@ -50,11 +60,13 @@ public class Validator {
     }
 
     public User validateAndGetUser(long userId) {
-        return null;
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id: %d не найдено", userId)));
     }
 
     public Event validateAndGetEvent(long eventId) {
-        return null;
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format("Событие с id: %d не найдено", eventId)));
     }
 
     public Category validateAndGetCategory(long catId) {
@@ -63,7 +75,8 @@ public class Validator {
     }
 
     public Request validateAndGetRequest(long requestId) {
-        return null;
+        return requestsRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException(String.format("Запрос с id: %d не найден", requestId)));
     }
 
     public Compilation validateAndGetCompilation(long compId) {
@@ -95,6 +108,31 @@ public class Validator {
     public void checkCategory(long catId) {
         if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
             throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
+        }
+    }
+
+    public void checkRequest(long userId, long eventId) {
+        requestsRepository.findByEventIdAndRequesterId(userId, eventId).ifPresent(
+                r -> {
+                    throw new RestrictionsViolationException("Запрос уже существует");
+                });
+        eventRepository.findByIdAndInitiatorId(userId, eventId).ifPresent(
+                r -> {
+                    throw new RestrictionsViolationException(String.format("Пользователь с id: %d создаёт событие с id: %d", userId, eventId));
+                });
+    }
+
+    public void checkEventPublished(Event event) {
+        if (!event.getState().equals(State.PUBLISHED)) {
+            throw new RestrictionsViolationException(String.format("Событие с id: %d не опубликовано", event.getId()));
+        }
+    }
+
+    public void checkRequestLimit(Event event) {
+        List<Request> confirmedRequests = requestsRepository.findAllByStatusAndEventId(event.getId(), Status.CONFIRMED);
+        if ((!event.getParticipantLimit().equals(0L))
+                && (event.getParticipantLimit() == confirmedRequests.size())) {
+            throw new RestrictionsViolationException("Лимит запросов превышен");
         }
     }
 }
