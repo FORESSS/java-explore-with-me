@@ -44,6 +44,9 @@ public class Validator {
     }
 
     public void checkCompilationId(long compId) {
+        if (!compilationRepository.existsById(compId)) {
+            throw new NotFoundException(String.format("Подборка событий с id: %d не найдена", compId));
+        }
     }
 
     public User validateAndGetUser(long userId) {
@@ -64,7 +67,8 @@ public class Validator {
     }
 
     public Compilation validateAndGetCompilation(long compId) {
-        return null;
+        return compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(String.format("Подборка событий с id: %d не найдена", compId)));
     }
 
     public void checkEmail(User user) {
