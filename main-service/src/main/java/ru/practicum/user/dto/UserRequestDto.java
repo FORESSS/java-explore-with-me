@@ -8,15 +8,15 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserRequestDto {
     @NotBlank
-    @Length(min = 6, max = 254)
+    @Length(max = 255)
     @Email
     String email;
     @NotBlank
-    @Length(min = 2, max = 250)
+    @Length(max = 255)
     String name;
 }
