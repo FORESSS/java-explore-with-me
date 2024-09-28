@@ -11,8 +11,8 @@ import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
-import ru.practicum.util.Constants;
-import ru.practicum.util.Validator;
+import ru.practicum.util.StatConstants;
+import ru.practicum.util.StatValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +24,7 @@ public class StatsServiceImpl implements StatsService {
     private final StatsRepository statsRepository;
     private final EndpointHitMapper endpointHitMapper;
     private final ViewStatsMapper viewStatsMapper;
-    private final Validator validator;
+    private final StatValidator validator;
 
     @Override
     @Transactional
@@ -53,6 +53,6 @@ public class StatsServiceImpl implements StatsService {
     }
 
     private LocalDateTime parseTime(String time) {
-        return LocalDateTime.parse(time, Constants.FORMATTER);
+        return LocalDateTime.parse(time, StatConstants.FORMATTER);
     }
 }

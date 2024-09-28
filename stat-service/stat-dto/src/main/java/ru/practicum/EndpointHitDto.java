@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.util.Constants;
+import ru.practicum.util.StatConstants;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +22,6 @@ public class EndpointHitDto {
     @NotBlank
     String ip;
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = StatConstants.DATE_TIME_FORMAT)
     LocalDateTime timestamp;
 }
