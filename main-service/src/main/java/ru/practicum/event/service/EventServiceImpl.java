@@ -15,13 +15,13 @@ import ru.practicum.ViewStatsDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.dto.*;
-import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.enums.StateActionAdmin;
+import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.DataTimeException;
+import ru.practicum.exception.DateException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequestDto;
@@ -55,8 +55,8 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final RequestMapper requestMapper;
 
-    @Transactional
     @Override
+    @Transactional
     public EventFullDto addEvent(NewEventDto newEventDto, long userId) {
         log.info("The beginning of the process of creating a event");
         User initiator = userRepository.findById(userId)
@@ -66,7 +66,7 @@ public class EventServiceImpl implements EventService {
                         + " was not found"));
 
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new DataTimeException("The date and time for which the event is scheduled cannot be " +
+            throw new DateException("The date and time for which the event is scheduled cannot be " +
                     "earlier than two hours from the current moment");
         }
 
@@ -174,7 +174,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEvent.getEventDate() != null) {
             if (updateEvent.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new DataTimeException("The date and time for which the event is scheduled cannot be " +
+                throw new DateException("The date and time for which the event is scheduled cannot be " +
                         "earlier than two hours from the current moment");
             } else {
                 event.setEventDate(updateEvent.getEventDate());
@@ -270,7 +270,7 @@ public class EventServiceImpl implements EventService {
         log.info("The beginning of the process of finding a events by public");
 
         if ((rangeStart != null) && (rangeEnd != null) && (rangeStart.isAfter(rangeEnd))) {
-            throw new DataTimeException("Start time after end time");
+            throw new DateException("Start time after end time");
         }
         Page<Event> events;
         PageRequest pageRequest = getCustomPage(from, size, sort);
@@ -343,7 +343,7 @@ public class EventServiceImpl implements EventService {
 
         if (rangeStart != null && rangeEnd != null) {
             if (rangeStart.isAfter(rangeEnd)) {
-                throw new DataTimeException("Start time after end time");
+                throw new DateException("Start time after end time");
             }
             builder.and(event.eventDate.between(rangeStart, rangeEnd));
         } else if (rangeStart == null && rangeEnd != null) {
@@ -386,7 +386,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEvent.getEventDate() != null) {
             if (updateEvent.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new DataTimeException("The date and time for which the event is scheduled cannot be " +
+                throw new DateException("The date and time for which the event is scheduled cannot be " +
                         "earlier than two hours from the current moment");
             } else {
                 event.setEventDate(updateEvent.getEventDate());
@@ -418,7 +418,7 @@ public class EventServiceImpl implements EventService {
     private void setStateByAdmin(Event event, StateActionAdmin stateActionAdmin) {
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)) &&
                 stateActionAdmin.equals(StateActionAdmin.PUBLISH_EVENT)) {
-            throw new DataTimeException("The start date of the event to be modified must be no earlier " +
+            throw new DateException("The start date of the event to be modified must be no earlier " +
                     "than one hour from the date of publication.");
         }
 

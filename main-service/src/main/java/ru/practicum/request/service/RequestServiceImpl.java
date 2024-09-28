@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.IntegrityViolationException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
@@ -46,13 +46,13 @@ public class RequestServiceImpl implements RequestService {
         log.info("The beginning of the process of creating a request");
         requestsRepository.findByEventIdAndRequesterId(eventId, userId).ifPresent(
                 r -> {
-                    throw new IntegrityViolationException(
+                    throw new RestrictionsViolationException(
                             "Request with userId " + userId + " eventId " + eventId + " exists");
                 });
 
         eventRepository.findByIdAndInitiatorId(eventId, userId).ifPresent(
                 r -> {
-                    throw new IntegrityViolationException(
+                    throw new RestrictionsViolationException(
                             "UserId " + userId + " initiates  eventId " + eventId);
                 });
 
@@ -62,14 +62,14 @@ public class RequestServiceImpl implements RequestService {
                 "Event with id = " + eventId + " not found"));
 
         if (!event.getState().equals(State.PUBLISHED)) {
-            throw new IntegrityViolationException("Event with id = " + eventId + " is not published");
+            throw new RestrictionsViolationException("Event with id = " + eventId + " is not published");
         }
 
         List<Request> confirmedRequests = requestsRepository.findAllByStatusAndEventId(Status.CONFIRMED, eventId);
 
         if ((!event.getParticipantLimit().equals(0L))
                 && (event.getParticipantLimit() == confirmedRequests.size())) {
-            throw new IntegrityViolationException("Request limit exceeded");
+            throw new RestrictionsViolationException("Request limit exceeded");
         }
 
         Request request = new Request();

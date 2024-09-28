@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.IntegrityViolationException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.RestrictionsViolationException;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category addCategory(Category category) {
         log.info("The beginning of the process of creating a category");
         categoryRepository.findCategoriesByNameContainingIgnoreCase(category.getName().toLowerCase()).ifPresent(c -> {
-            throw new IntegrityViolationException("Category name " + category.getName() + " already exists");
+            throw new RestrictionsViolationException("Category name " + category.getName() + " already exists");
         });
         Category createCategory = categoryRepository.save(category);
         log.info("The category has been created");
@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.findById(catId).orElseThrow(
                 () -> new NotFoundException("Category " + catId + " does not exist"));
         if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
-            throw new IntegrityViolationException("Category " + catId + " already exists");
+            throw new RestrictionsViolationException("Category " + catId + " already exists");
         }
         categoryRepository.deleteById(catId);
         log.info("The category has been deleted");
@@ -56,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.findCategoriesByNameContainingIgnoreCase(
                 newCategory.getName().toLowerCase()).ifPresent(c -> {
             if (c.getId() != catId) {
-                throw new IntegrityViolationException("Category name " + newCategory.getName() + " already exists");
+                throw new RestrictionsViolationException("Category name " + newCategory.getName() + " already exists");
             }
         });
         updateCategory.setName(newCategory.getName());
