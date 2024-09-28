@@ -1,6 +1,5 @@
-package ru.practicum.compilation.dto;
+package ru.practicum.request.dto;
 
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,9 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateCompilationDto {
-    List<Long> events;
-    Boolean pinned;
-    @Size(max = 50)
-    String title;
+public class EventRequestStatusUpdateResultDto {
+    List<ParticipationRequestDto> confirmedRequests;
+    List<ParticipationRequestDto> rejectedRequests;
 }
