@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateEventUserRequest {
+public class EventUserRequestDto {
     @Size(min = 20, max = 2000)
     String annotation;
     @Positive
