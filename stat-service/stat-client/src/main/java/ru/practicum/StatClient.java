@@ -1,9 +1,8 @@
 package ru.practicum;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -20,16 +19,10 @@ import static ru.practicum.util.Constants.FORMATTER;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class StatClient {
     private final RestClient restClient;
-    @Autowired
     private final Validator validator;
-
-    public StatClient(@Value("${stat-server.url}") String serverUrl, Validator validator) {
-        this.restClient = RestClient.create(serverUrl);
-        this.validator = validator;
-        log.info("Server stat run URL: {}", serverUrl);
-    }
 
     public void saveHit(String app, HttpServletRequest request) {
         EndpointHitDto endpointHitDto = EndpointHitDto.builder()
