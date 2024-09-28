@@ -9,7 +9,7 @@ import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
-import ru.practicum.request.dto.RequestDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
@@ -31,7 +31,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RequestDto> getAllRequests(long userId) {
+    public List<ParticipationRequestDto> getAllRequests(long userId) {
         log.info("The beginning of the process of finding all requests");
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id = " + userId + " not found"));
@@ -42,7 +42,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public RequestDto addRequest(long userId, long eventId) {
+    public ParticipationRequestDto addRequest(long userId, long eventId) {
         log.info("The beginning of the process of creating a request");
         requestsRepository.findByEventIdAndRequesterId(eventId, userId).ifPresent(
                 r -> {
@@ -90,7 +90,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public RequestDto cancelRequest(long userId, long requestId) {
+    public ParticipationRequestDto cancelRequest(long userId, long requestId) {
         log.info("The beginning of the process of canceling a request");
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id = " + userId + " not found"));
