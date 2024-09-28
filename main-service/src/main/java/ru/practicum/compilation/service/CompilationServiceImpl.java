@@ -30,7 +30,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto addCompilation(NewCompilationDto compilationDto) {
         log.info("The beginning of the process of creating a compilation");
-        Compilation compilation = compilationMapper.newCompilationDtoToCompilation(compilationDto);
+        Compilation compilation = compilationMapper.toCompilation(compilationDto);
         List<Long> ids = compilationDto.getEvents();
 
         if (!CollectionUtils.isEmpty(ids)) {
@@ -41,7 +41,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation createdCompilation = compilationRepository.save(compilation);
         log.info("The compilation has been created");
-        return compilationMapper.compilationToCompilationDto(createdCompilation);
+        return compilationMapper.toCompilationDto(createdCompilation);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (request.getTitle() != null) compilation.setTitle(request.getTitle());
 
         log.info("The compilation has been updated");
-        return compilationMapper.compilationToCompilationDto(compilation);
+        return compilationMapper.toCompilationDto(compilation);
     }
 
     @Override
@@ -79,13 +79,13 @@ public class CompilationServiceImpl implements CompilationService {
         List<CompilationDto> compilationsDto;
 
         if (pinned == null) {
-            compilationsDto = compilationMapper.listCompilationToListCompilationDto(compilationRepository
+            compilationsDto = compilationMapper.toListCompilationDto(compilationRepository
                     .findAll(pageRequest).getContent());
         } else if (pinned) {
-            compilationsDto = compilationMapper.listCompilationToListCompilationDto(
+            compilationsDto = compilationMapper.toListCompilationDto(
                     compilationRepository.findAllByPinnedTrue(pageRequest).getContent());
         } else {
-            compilationsDto = compilationMapper.listCompilationToListCompilationDto(
+            compilationsDto = compilationMapper.toListCompilationDto(
                     compilationRepository.findAllByPinnedFalse(pageRequest).getContent());
         }
 
@@ -100,6 +100,6 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(
                 () -> new NotFoundException("Compilation with id " + compId + " not found"));
         log.info("The all compilations by id has been found");
-        return compilationMapper.compilationToCompilationDto(compilation);
+        return compilationMapper.toCompilationDto(compilation);
     }
 }
