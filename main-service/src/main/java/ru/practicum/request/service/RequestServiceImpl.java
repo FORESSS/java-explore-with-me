@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
@@ -43,48 +41,22 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public RequestDto addRequest(long userId, long eventId) {
-        log.info("The beginning of the process of creating a request");
-        requestsRepository.findByRequesterIdAndEventId(userId, eventId).ifPresent(
-                r -> {
-                    throw new RestrictionsViolationException(
-                            "Request with userId " + userId + " eventId " + eventId + " exists");
-                });
-
-        eventRepository.findByIdAndInitiatorId(eventId, userId).ifPresent(
-                r -> {
-                    throw new RestrictionsViolationException(
-                            "UserId " + userId + " initiates  eventId " + eventId);
-                });
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id = " + userId + " not found"));
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(
-                "Event with id = " + eventId + " not found"));
-
-        if (!event.getState().equals(State.PUBLISHED)) {
-            throw new RestrictionsViolationException("Event with id = " + eventId + " is not published");
-        }
-
-        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(eventId, Status.CONFIRMED);
-
-        if ((!event.getParticipantLimit().equals(0L))
-                && (event.getParticipantLimit() == confirmedRequests.size())) {
-            throw new RestrictionsViolationException("Request limit exceeded");
-        }
-
+        validator.checkRequest(userId, eventId);
+        User user = validator.validateAndGetUser(userId);
+        Event event = validator.validateAndGetEvent(eventId);
+        validator.checkRequestLimit(eventId);
+        validator.checkRequestCreationConditions(userId, eventId);
         Request request = new Request();
         request.setCreated(LocalDateTime.now());
         request.setRequester(user);
         request.setEvent(event);
-
         if ((event.getParticipantLimit().equals(0L)) || (!event.getRequestModeration())) {
             request.setStatus(Status.CONFIRMED);
         } else {
             request.setStatus(Status.PENDING);
         }
-
-        request = requestsRepository.save(request);
-        log.info("The request has been created");
+        requestsRepository.save(request);
+        log.info("Запрос с id: {} создан", request.getId());
         return requestMapper.toRequestDto(request);
     }
 

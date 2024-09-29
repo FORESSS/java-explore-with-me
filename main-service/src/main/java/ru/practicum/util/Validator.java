@@ -8,13 +8,17 @@ import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.model.Request;
+import ru.practicum.request.model.Status;
 import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -104,6 +108,36 @@ public class Validator {
     public void checkCategory(long catId) {
         if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
             throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
+        }
+    }
+
+    public void checkRequest(long userId, long eventId) {
+        requestsRepository.findByRequesterIdAndEventId(userId, eventId).ifPresent(
+                r -> {
+                    throw new RestrictionsViolationException(String.format(
+                            "Запрос пользователя с id: %d для события с id: %d уже существует", userId, eventId));
+                });
+        eventRepository.findByIdAndInitiatorId(eventId, userId).ifPresent(
+                r -> {
+                    throw new RestrictionsViolationException(String.format(
+                            "Пользователь с id: %d инициирует событие с id: %d", userId, eventId));
+                });
+    }
+
+    public void checkRequestCreationConditions(long userId, long eventId) {
+        checkRequest(userId, eventId);
+        if (!eventRepository.findById(eventId).orElseThrow().getState().equals(State.PUBLISHED)) {
+            throw new RestrictionsViolationException("Event with id = " + eventId + " is not published");
+        }
+    }
+
+    public void checkRequestLimit(long eventId) {
+        Event event = validateAndGetEvent(eventId);
+        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(eventId, Status.CONFIRMED);
+
+        if ((!event.getParticipantLimit().equals(0L))
+                && (event.getParticipantLimit() == confirmedRequests.size())) {
+            throw new RestrictionsViolationException("Request limit exceeded");
         }
     }
 }
