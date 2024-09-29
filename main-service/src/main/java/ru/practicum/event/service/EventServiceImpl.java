@@ -14,7 +14,6 @@ import org.springframework.util.CollectionUtils;
 import ru.practicum.StatClient;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.category.model.Category;
-import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.config.AppConfig;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.enums.EventPublicSort;
@@ -31,7 +30,6 @@ import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
 import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
 import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
@@ -48,8 +46,6 @@ import static ru.practicum.event.model.QEvent.event;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
     private final RequestsRepository requestsRepository;
     private final StatClient statClient;
     private final EventMapper eventMapper;
@@ -98,7 +94,7 @@ public class EventServiceImpl implements EventService {
         } else {
             eventFullDto.setViews(0L);
         }
-        saveHit(request);
+        statClient.saveHit(appConfig.getAppName(), request);
         log.info("Получение события с id: {}", eventId);
         return eventFullDto;
     }
@@ -113,7 +109,7 @@ public class EventServiceImpl implements EventService {
         List<Event> events = pageEvents.getContent();
         setViews(events);
         List<EventShortDto> eventsShortDto = eventMapper.toListEventShortDto(events);
-        saveHit(request);
+        statClient.saveHit(appConfig.getAppName(), request);
         log.info("Получение списка событий для пользователя с id: {}", userId);
         return eventsShortDto;
     }
@@ -269,7 +265,9 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllPublicEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                                   LocalDateTime rangeEnd, boolean onlyAvailable, EventPublicSort sort,
                                                   int from, int size, HttpServletRequest request) {
-        validator.checkEventDate(rangeStart, rangeEnd);
+        if ((rangeStart != null) && (rangeEnd != null) && (rangeStart.isAfter(rangeEnd))) {
+            throw new DateException("Start time after end time");
+        }
         Page<Event> events;
         PageRequest pageRequest = getCustomPage(from, size, sort);
         BooleanBuilder builder = new BooleanBuilder();
@@ -280,7 +278,13 @@ public class EventServiceImpl implements EventService {
         if (!CollectionUtils.isEmpty(categories)) {
             builder.and(event.category.id.in(categories));
         }
-        builder.and(event.eventDate.between(rangeStart, rangeEnd));
+        if (rangeStart != null && rangeEnd != null) {
+            builder.and(event.eventDate.between(rangeStart, rangeEnd));
+        } else if (rangeStart == null && rangeEnd != null) {
+            builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));
+        } else if (rangeStart != null) {
+            builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
+        }
         if (onlyAvailable) {
             builder.and(event.participantLimit.eq(0L))
                     .or(event.participantLimit.gt(event.confirmedRequests));
@@ -291,7 +295,7 @@ public class EventServiceImpl implements EventService {
             events = eventRepository.findAll(pageRequest);
         }
         setViews(events.getContent());
-        saveHit(request);
+        statClient.saveHit(appConfig.getAppName(), request);
         log.info("Получение списка событий");
         return eventMapper.toListEventShortDto(events.getContent());
     }
@@ -301,7 +305,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getPublicEventById(long id, HttpServletRequest request) {
         Event event = validator.validateAndGetPublishedEvent(id);
         setViews(List.of(event));
-        saveHit(request);
+        statClient.saveHit(appConfig.getAppName(), request);
         log.info("Получение опубликованного события с id: {}", id);
         return eventMapper.toEventFullDto(event);
     }
@@ -347,9 +351,5 @@ public class EventServiceImpl implements EventService {
         for (Event event : events) {
             event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L));
         }
-    }
-
-    private void saveHit(HttpServletRequest request) {
-        statClient.saveHit(appConfig.getAppName(), request);
     }
 }
