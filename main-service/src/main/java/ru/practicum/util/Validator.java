@@ -117,7 +117,7 @@ public class Validator {
                     throw new RestrictionsViolationException(String.format(
                             "Запрос пользователя с id: %d для события с id: %d уже существует", userId, eventId));
                 });
-        eventRepository.findByIdAndInitiatorId(eventId, userId).ifPresent(
+        eventRepository.findByInitiatorIdAndId(userId, eventId).ifPresent(
                 r -> {
                     throw new RestrictionsViolationException(String.format(
                             "Пользователь с id: %d инициирует событие с id: %d", userId, eventId));
