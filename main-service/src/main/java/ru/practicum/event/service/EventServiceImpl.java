@@ -189,6 +189,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<EventFullDto> getAllAdminEvents(List<Long> users, State state, List<Long> categories,
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+        Page<Event> pageEvents;
         PageRequest pageRequest = getCustomPage(from, size, null);
         BooleanBuilder builder = new BooleanBuilder();
         if (!CollectionUtils.isEmpty(users) && !users.contains(0L)) {
@@ -200,11 +201,19 @@ public class EventServiceImpl implements EventService {
         if (!CollectionUtils.isEmpty(categories) && !categories.contains(0L)) {
             builder.and(event.category.id.in(categories));
         }
-        if (rangeStart != null || rangeEnd != null) {
-            builder.and(event.eventDate.between(rangeStart == null ? LocalDateTime.MIN : rangeStart,
-                    rangeEnd == null ? LocalDateTime.MAX : rangeEnd));
+        if (rangeStart != null && rangeEnd != null) {
+            validator.checkEventDate(rangeStart, rangeEnd);
+            builder.and(event.eventDate.between(rangeStart, rangeEnd));
+        } else if (rangeStart == null && rangeEnd != null) {
+            builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));
+        } else if (rangeStart != null) {
+            builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
         }
-        Page<Event> pageEvents = eventRepository.findAll(builder.getValue(), pageRequest);
+        if (builder.getValue() != null) {
+            pageEvents = eventRepository.findAll(builder.getValue(), pageRequest);
+        } else {
+            pageEvents = eventRepository.findAll(pageRequest);
+        }
         List<Event> events = pageEvents.getContent();
         setViews(events);
         log.info("Получение списка событий администратора");
@@ -257,6 +266,7 @@ public class EventServiceImpl implements EventService {
                                                   LocalDateTime rangeEnd, boolean onlyAvailable, EventPublicSort sort,
                                                   int from, int size, HttpServletRequest request) {
         validator.checkEventDate(rangeStart, rangeEnd);
+        Page<Event> events;
         PageRequest pageRequest = getCustomPage(from, size, sort);
         BooleanBuilder builder = new BooleanBuilder();
         if (text != null) {
@@ -266,18 +276,25 @@ public class EventServiceImpl implements EventService {
         if (!CollectionUtils.isEmpty(categories)) {
             builder.and(event.category.id.in(categories));
         }
-        if (rangeStart != null || rangeEnd != null) {
-            builder.and(event.eventDate.between(rangeStart == null ? LocalDateTime.MIN : rangeStart,
-                    rangeEnd == null ? LocalDateTime.MAX : rangeEnd));
+        if (rangeStart != null && rangeEnd != null) {
+            builder.and(event.eventDate.between(rangeStart, rangeEnd));
+        } else if (rangeStart == null && rangeEnd != null) {
+            builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));
+        } else if (rangeStart != null) {
+            builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
         }
         if (onlyAvailable) {
             builder.and(event.participantLimit.eq(0L))
                     .or(event.participantLimit.gt(event.confirmedRequests));
         }
-        Page<Event> events = eventRepository.findAll(builder.getValue(), pageRequest);
+        if (builder.getValue() != null) {
+            events = eventRepository.findAll(builder.getValue(), pageRequest);
+        } else {
+            events = eventRepository.findAll(pageRequest);
+        }
         setViews(events.getContent());
         statClient.saveHit(appConfig.getAppName(), request);
-        log.info("Получение списка публичных событий");
+        log.info("Получение списка событий");
         return eventMapper.toListEventShortDto(events.getContent());
     }
 
@@ -304,10 +321,7 @@ public class EventServiceImpl implements EventService {
 
     private PageRequest getCustomPage(int from, int size, EventPublicSort sort) {
         if (sort != null) {
-            return switch (sort) {
-                case EVENT_DATE -> PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "eventDate"));
-                case VIEWS -> PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "views"));
-            };
+            return PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, sort.name()));
         } else {
             return PageRequest.of(from, size);
         }
