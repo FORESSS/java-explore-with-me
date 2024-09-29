@@ -40,7 +40,7 @@ public class RequestServiceImpl implements RequestService {
         User user = validator.validateAndGetUser(userId);
         Event event = validator.validateAndGetEvent(eventId);
         validator.checkRequestLimit(event);
-        validator.checkRequestCreationConditions(userId, eventId);
+        validator.checkRequestConditions(eventId);
         Request request = new Request();
         request.setCreated(LocalDateTime.now());
         request.setRequester(user);

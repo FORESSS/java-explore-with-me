@@ -24,7 +24,6 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.DateException;
-import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.dto.RequestStatusDto;
@@ -272,22 +271,17 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllPublicEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                                   LocalDateTime rangeEnd, boolean onlyAvailable, EventPublicSort sort,
                                                   int from, int size, HttpServletRequest request) {
-        if ((rangeStart != null) && (rangeEnd != null) && (rangeStart.isAfter(rangeEnd))) {
-            throw new DateException("Start time after end time");
-        }
+        validator.checkEventDate(rangeStart, rangeEnd);
         Page<Event> events;
         PageRequest pageRequest = getCustomPage(from, size, sort);
         BooleanBuilder builder = new BooleanBuilder();
-
         if (text != null) {
             builder.and(event.annotation.containsIgnoreCase(text.toLowerCase())
                     .or(event.description.containsIgnoreCase(text.toLowerCase())));
         }
-
         if (!CollectionUtils.isEmpty(categories)) {
             builder.and(event.category.id.in(categories));
         }
-
         if (rangeStart != null && rangeEnd != null) {
             builder.and(event.eventDate.between(rangeStart, rangeEnd));
         } else if (rangeStart == null && rangeEnd != null) {
@@ -295,33 +289,28 @@ public class EventServiceImpl implements EventService {
         } else if (rangeStart != null) {
             builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
         }
-
         if (onlyAvailable) {
             builder.and(event.participantLimit.eq(0L))
                     .or(event.participantLimit.gt(event.confirmedRequests));
         }
-
         if (builder.getValue() != null) {
             events = eventRepository.findAll(builder.getValue(), pageRequest);
         } else {
             events = eventRepository.findAll(pageRequest);
         }
-
         setViews(events.getContent());
         saveHit(request);
-        log.info("The events was found by public");
+        log.info("Получение списка событий");
         return eventMapper.toListEventShortDto(events.getContent());
     }
 
     @Override
     @Transactional(readOnly = true)
     public EventFullDto getPublicEventById(long id, HttpServletRequest request) {
-        log.info("The beginning of the process of finding a event by public");
-        Event event = eventRepository.findByIdAndState(id, State.PUBLISHED)
-                .orElseThrow(() -> new NotFoundException("Event with id=" + id + " was not found"));
+        Event event = validator.validateAndGetPublishedEvent(id);
         setViews(List.of(event));
-        log.info("The event was found by public");
         saveHit(request);
+        log.info("Получение опубликованного события с id: {}", id);
         return eventMapper.toEventFullDto(event);
     }
 
@@ -331,7 +320,6 @@ public class EventServiceImpl implements EventService {
             throw new DateException("The start date of the event to be modified must be no earlier " +
                     "than one hour from the date of publication.");
         }
-
         if (stateActionAdmin.equals(StateActionAdmin.PUBLISH_EVENT)) {
             if (!event.getState().equals(State.PENDING)) {
                 throw new RestrictionsViolationException("An event can be published only if it is in the waiting state " +
@@ -346,7 +334,6 @@ public class EventServiceImpl implements EventService {
             }
             event.setState(State.CANCELED);
         }
-
     }
 
     private PageRequest getCustomPage(int from, int size, EventPublicSort sort) {
@@ -358,7 +345,6 @@ public class EventServiceImpl implements EventService {
         } else {
             return PageRequest.of(from, size);
         }
-
     }
 
     private List<ViewStatsDto> getViewStats(List<Event> events) {
@@ -377,7 +363,6 @@ public class EventServiceImpl implements EventService {
         }
         Map<String, Long> mapUriAndHits = getViewStats(events).stream()
                 .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
-
         for (Event event : events) {
             event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L));
         }

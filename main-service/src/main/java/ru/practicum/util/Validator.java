@@ -49,12 +49,6 @@ public class Validator {
         }
     }
 
-    public void checkRequestId(long requestId) {
-        if (!requestsRepository.existsById(requestId)) {
-            throw new NotFoundException(String.format("Запрос с id: %d не найден", requestId));
-        }
-    }
-
     public void checkCompilationId(long compId) {
         if (!compilationRepository.existsById(compId)) {
             throw new NotFoundException(String.format("Подборка с id: %d не найдена", compId));
@@ -69,6 +63,11 @@ public class Validator {
     public Event validateAndGetEvent(long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id: %d не найдено", eventId)));
+    }
+
+    public Event validateAndGetPublishedEvent(long eventId) {
+        return eventRepository.findByIdAndState(eventId, State.PUBLISHED)
+                .orElseThrow(() -> new NotFoundException(String.format("Опубликованное событие с id: %d не найдено", eventId)));
     }
 
     public Category validateAndGetCategory(long catId) {
@@ -126,7 +125,7 @@ public class Validator {
                 });
     }
 
-    public void checkRequestCreationConditions(long userId, long eventId) {
+    public void checkRequestConditions(long eventId) {
         if (!eventRepository.findById(eventId).orElseThrow().getState().equals(State.PUBLISHED)) {
             throw new RestrictionsViolationException(String.format("Событие с id: %d не опубликовано", eventId));
         }
