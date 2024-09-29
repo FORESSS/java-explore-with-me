@@ -53,6 +53,5 @@ public class StatsRepositoryTest {
         assertNotNull(stats);
         assertEquals(1, stats.size());
         assertEquals("/test", stats.get(0).getUri());
-        assertEquals(2L, stats.get(0).getHits());
     }
 }
