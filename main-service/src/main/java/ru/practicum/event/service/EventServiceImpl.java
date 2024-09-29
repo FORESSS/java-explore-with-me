@@ -33,10 +33,8 @@ import ru.practicum.user.model.User;
 import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.QEvent.event;
@@ -321,10 +319,7 @@ public class EventServiceImpl implements EventService {
 
     private PageRequest getCustomPage(int from, int size, EventPublicSort sort) {
         if (sort != null) {
-            return switch (sort) {
-                case EVENT_DATE -> PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "eventDate"));
-                case VIEWS -> PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "views"));
-            };
+            return PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, sort.name()));
         } else {
             return PageRequest.of(from, size);
         }
@@ -334,10 +329,7 @@ public class EventServiceImpl implements EventService {
         List<String> url = events.stream()
                 .map(event -> "/events/" + event.getId())
                 .toList();
-        Optional<List<ViewStatsDto>> viewStatsDto = Optional.ofNullable(statClient
-                .getStats(LocalDateTime.now().minusYears(20), LocalDateTime.now(), url, true)
-        );
-        return viewStatsDto.orElse(Collections.emptyList());
+        return statClient.getStats(LocalDateTime.now().minusYears(20), LocalDateTime.now(), url, true);
     }
 
     private void setViews(List<Event> events) {
@@ -346,8 +338,6 @@ public class EventServiceImpl implements EventService {
         }
         Map<String, Long> mapUriAndHits = getViewStats(events).stream()
                 .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
-        for (Event event : events) {
-            event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L));
-        }
+        events.forEach(event -> event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L)));
     }
 }
