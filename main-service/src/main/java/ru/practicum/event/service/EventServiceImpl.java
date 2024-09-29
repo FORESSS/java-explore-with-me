@@ -341,8 +341,6 @@ public class EventServiceImpl implements EventService {
         }
         Map<String, Long> mapUriAndHits = getViewStats(events).stream()
                 .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
-        for (Event event : events) {
-            event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L));
-        }
+        events.forEach(event -> event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L)));
     }
 }
