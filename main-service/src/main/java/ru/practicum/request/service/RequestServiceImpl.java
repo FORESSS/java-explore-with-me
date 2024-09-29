@@ -37,10 +37,10 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public RequestDto addRequest(long userId, long eventId) {
         validator.checkRequest(userId, eventId);
-        validator.checkRequestLimit(eventId);
-        validator.checkRequestCreationConditions(userId, eventId);
         User user = validator.validateAndGetUser(userId);
         Event event = validator.validateAndGetEvent(eventId);
+        validator.checkRequestLimit(event);
+        validator.checkRequestCreationConditions(userId, eventId);
         Request request = new Request();
         request.setCreated(LocalDateTime.now());
         request.setRequester(user);

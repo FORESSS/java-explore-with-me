@@ -132,9 +132,8 @@ public class Validator {
         }
     }
 
-    public void checkRequestLimit(long eventId) {
-        Event event = validateAndGetEvent(eventId);
-        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(eventId, Status.CONFIRMED);
+    public void checkRequestLimit(Event event) {
+        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(event.getId(), Status.CONFIRMED);
         if ((!event.getParticipantLimit().equals(0L))
                 && (event.getParticipantLimit() == confirmedRequests.size())) {
             throw new RestrictionsViolationException("Превышен лимит запросов");
@@ -150,6 +149,12 @@ public class Validator {
     public void checkEventState(State state) {
         if (state.equals(State.PUBLISHED)) {
             throw new RestrictionsViolationException("Событие в опубликованном состоянии не может быть изменено");
+        }
+    }
+
+    public void checkEventStatus(List<Request> requests) {
+        if (requests.stream().map(Request::getStatus).anyMatch(s -> !s.equals(Status.PENDING))) {
+            throw new RestrictionsViolationException("Статус может быть изменен только для запросов, находящихся в состоянии ожидания");
         }
     }
 }

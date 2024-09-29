@@ -176,62 +176,38 @@ public class EventServiceImpl implements EventService {
         return requestMapper.toListRequestDto(requests);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public RequestStatusDto updateRequestByEventId(long userId, long eventId, RequestUpdateStatusDto requestUpdateStatusDto) {
-        log.info("The beginning of the process of update a requests");
-
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User with id=" + userId + " was not found");
-        }
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(eventId, Status.CONFIRMED);
-
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == confirmedRequests.size()) {
-            throw new RestrictionsViolationException("The limit on applications for this event has been reached, " +
-                    "there are " + (event.getParticipantLimit() - event.getConfirmedRequests()) + " free places");
-        }
-
+        validator.checkUserId(userId);
+        Event event = validator.validateAndGetEvent(eventId);
+        validator.checkRequestLimit(event);
         List<Request> requests = requestsRepository.findByIdIn(requestUpdateStatusDto.getRequestIds());
-
-        if (requests.stream().map(Request::getStatus).anyMatch(status -> !status.equals(Status.PENDING))) {
-            throw new RestrictionsViolationException("The status can only be changed for applications that are " +
-                    "in the PENDING state");
-        }
-
+        validator.checkEventStatus(requests);
         requests.forEach(request -> request.setStatus(requestUpdateStatusDto.getStatus()));
-
         if (requestUpdateStatusDto.getStatus().equals(Status.CONFIRMED)) {
             event.setConfirmedRequests(event.getConfirmedRequests() + requestUpdateStatusDto.getRequestIds().size());
         }
-
-        log.info("The requests was updated");
+        log.info("Статус запроса обновлён");
         return requestMapper.toRequestStatusDto(null, requests);
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<EventFullDto> getAllAdminEvents(List<Long> users, State state, List<Long> categories,
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
-        log.info("The beginning of the process of finding a events by admin");
         Page<Event> pageEvents;
         PageRequest pageRequest = getCustomPage(from, size, null);
         BooleanBuilder builder = new BooleanBuilder();
-
         if (!CollectionUtils.isEmpty(users) && !users.contains(0L)) {
             builder.and(event.initiator.id.in(users));
         }
-
         if (state != null) {
             builder.and(event.state.eq(state));
         }
-
         if (!CollectionUtils.isEmpty(categories) && !categories.contains(0L)) {
             builder.and(event.category.id.in(categories));
         }
-
         if (rangeStart != null && rangeEnd != null) {
             if (rangeStart.isAfter(rangeEnd)) {
                 throw new DateException("Start time after end time");
@@ -242,16 +218,14 @@ public class EventServiceImpl implements EventService {
         } else if (rangeStart != null) {
             builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
         }
-
         if (builder.getValue() != null) {
             pageEvents = eventRepository.findAll(builder.getValue(), pageRequest);
         } else {
             pageEvents = eventRepository.findAll(pageRequest);
         }
-
         List<Event> events = pageEvents.getContent();
         setViews(events);
-        log.info("The events was found by admin");
+        log.info("Получение списка событий администратора");
         return eventMapper.toListEventFullDto(events);
     }
 
