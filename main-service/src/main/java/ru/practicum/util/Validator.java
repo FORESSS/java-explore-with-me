@@ -7,6 +7,7 @@ import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
+import ru.practicum.event.enums.StateActionAdmin;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
@@ -160,6 +161,25 @@ public class Validator {
     public void checkEventStatus(List<Request> requests) {
         if (requests.stream().map(Request::getStatus).anyMatch(s -> !s.equals(Status.PENDING))) {
             throw new RestrictionsViolationException("Статус может быть изменен только для запросов, находящихся в состоянии ожидания");
+        }
+    }
+
+    public void checkEventDateForPublish(Event event, StateActionAdmin stateActionAdmin) {
+        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)) &&
+                stateActionAdmin.equals(StateActionAdmin.PUBLISH_EVENT)) {
+            throw new DateException("Некорректная дата");
+        }
+    }
+
+    public void checkEventStateForPublish(Event event, StateActionAdmin stateActionAdmin) {
+        if (stateActionAdmin.equals(StateActionAdmin.PUBLISH_EVENT)) {
+            if (!event.getState().equals(State.PENDING)) {
+                throw new RestrictionsViolationException("Событие можно опубликовать только если оно находится в состоянии ожидания");
+            }
+        } else {
+            if (event.getState().equals(State.PUBLISHED)) {
+                throw new RestrictionsViolationException("Событие можно отклонить только если оно не было опубликовано");
+            }
         }
     }
 }

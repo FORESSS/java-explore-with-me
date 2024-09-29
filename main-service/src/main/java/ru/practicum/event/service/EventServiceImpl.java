@@ -23,8 +23,6 @@ import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.DateException;
-import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.dto.RequestStatusDto;
 import ru.practicum.request.dto.RequestUpdateStatusDto;
@@ -282,13 +280,7 @@ public class EventServiceImpl implements EventService {
         if (!CollectionUtils.isEmpty(categories)) {
             builder.and(event.category.id.in(categories));
         }
-        if (rangeStart != null && rangeEnd != null) {
-            builder.and(event.eventDate.between(rangeStart, rangeEnd));
-        } else if (rangeStart == null && rangeEnd != null) {
-            builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));
-        } else if (rangeStart != null) {
-            builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
-        }
+        builder.and(event.eventDate.between(rangeStart, rangeEnd));
         if (onlyAvailable) {
             builder.and(event.participantLimit.eq(0L))
                     .or(event.participantLimit.gt(event.confirmedRequests));
@@ -315,23 +307,12 @@ public class EventServiceImpl implements EventService {
     }
 
     private void setStateByAdmin(Event event, StateActionAdmin stateActionAdmin) {
-        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)) &&
-                stateActionAdmin.equals(StateActionAdmin.PUBLISH_EVENT)) {
-            throw new DateException("The start date of the event to be modified must be no earlier " +
-                    "than one hour from the date of publication.");
-        }
+        validator.checkEventDateForPublish(event, stateActionAdmin);
+        validator.checkEventStateForPublish(event, stateActionAdmin);
         if (stateActionAdmin.equals(StateActionAdmin.PUBLISH_EVENT)) {
-            if (!event.getState().equals(State.PENDING)) {
-                throw new RestrictionsViolationException("An event can be published only if it is in the waiting state " +
-                        "for publication");
-            }
             event.setState(State.PUBLISHED);
             event.setPublishedOn(LocalDateTime.now());
         } else {
-            if (event.getState().equals(State.PUBLISHED)) {
-                throw new RestrictionsViolationException("AAn event can be rejected only if it has not been " +
-                        "published yet");
-            }
             event.setState(State.CANCELED);
         }
     }
