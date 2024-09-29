@@ -33,8 +33,10 @@ import ru.practicum.user.model.User;
 import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.QEvent.event;
@@ -187,7 +189,6 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<EventFullDto> getAllAdminEvents(List<Long> users, State state, List<Long> categories,
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
-        Page<Event> pageEvents;
         PageRequest pageRequest = getCustomPage(from, size, null);
         BooleanBuilder builder = new BooleanBuilder();
         if (!CollectionUtils.isEmpty(users) && !users.contains(0L)) {
@@ -199,19 +200,11 @@ public class EventServiceImpl implements EventService {
         if (!CollectionUtils.isEmpty(categories) && !categories.contains(0L)) {
             builder.and(event.category.id.in(categories));
         }
-        if (rangeStart != null && rangeEnd != null) {
-            validator.checkEventDate(rangeStart, rangeEnd);
-            builder.and(event.eventDate.between(rangeStart, rangeEnd));
-        } else if (rangeStart == null && rangeEnd != null) {
-            builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));
-        } else if (rangeStart != null) {
-            builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
+        if (rangeStart != null || rangeEnd != null) {
+            builder.and(event.eventDate.between(rangeStart == null ? LocalDateTime.MIN : rangeStart,
+                    rangeEnd == null ? LocalDateTime.MAX : rangeEnd));
         }
-        if (builder.getValue() != null) {
-            pageEvents = eventRepository.findAll(builder.getValue(), pageRequest);
-        } else {
-            pageEvents = eventRepository.findAll(pageRequest);
-        }
+        Page<Event> pageEvents = eventRepository.findAll(builder.getValue(), pageRequest);
         List<Event> events = pageEvents.getContent();
         setViews(events);
         log.info("Получение списка событий администратора");
@@ -264,7 +257,6 @@ public class EventServiceImpl implements EventService {
                                                   LocalDateTime rangeEnd, boolean onlyAvailable, EventPublicSort sort,
                                                   int from, int size, HttpServletRequest request) {
         validator.checkEventDate(rangeStart, rangeEnd);
-        Page<Event> events;
         PageRequest pageRequest = getCustomPage(from, size, sort);
         BooleanBuilder builder = new BooleanBuilder();
         if (text != null) {
@@ -274,25 +266,18 @@ public class EventServiceImpl implements EventService {
         if (!CollectionUtils.isEmpty(categories)) {
             builder.and(event.category.id.in(categories));
         }
-        if (rangeStart != null && rangeEnd != null) {
-            builder.and(event.eventDate.between(rangeStart, rangeEnd));
-        } else if (rangeStart == null && rangeEnd != null) {
-            builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));
-        } else if (rangeStart != null) {
-            builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
+        if (rangeStart != null || rangeEnd != null) {
+            builder.and(event.eventDate.between(rangeStart == null ? LocalDateTime.MIN : rangeStart,
+                    rangeEnd == null ? LocalDateTime.MAX : rangeEnd));
         }
         if (onlyAvailable) {
             builder.and(event.participantLimit.eq(0L))
                     .or(event.participantLimit.gt(event.confirmedRequests));
         }
-        if (builder.getValue() != null) {
-            events = eventRepository.findAll(builder.getValue(), pageRequest);
-        } else {
-            events = eventRepository.findAll(pageRequest);
-        }
+        Page<Event> events = eventRepository.findAll(builder.getValue(), pageRequest);
         setViews(events.getContent());
         statClient.saveHit(appConfig.getAppName(), request);
-        log.info("Получение списка событий");
+        log.info("Получение списка публичных событий");
         return eventMapper.toListEventShortDto(events.getContent());
     }
 
@@ -319,7 +304,10 @@ public class EventServiceImpl implements EventService {
 
     private PageRequest getCustomPage(int from, int size, EventPublicSort sort) {
         if (sort != null) {
-            return PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, sort.name()));
+            return switch (sort) {
+                case EVENT_DATE -> PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "eventDate"));
+                case VIEWS -> PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "views"));
+            };
         } else {
             return PageRequest.of(from, size);
         }
@@ -329,7 +317,10 @@ public class EventServiceImpl implements EventService {
         List<String> url = events.stream()
                 .map(event -> "/events/" + event.getId())
                 .toList();
-        return statClient.getStats(LocalDateTime.now().minusYears(20), LocalDateTime.now(), url, true);
+        Optional<List<ViewStatsDto>> viewStatsDto = Optional.ofNullable(statClient
+                .getStats(LocalDateTime.now().minusYears(20), LocalDateTime.now(), url, true)
+        );
+        return viewStatsDto.orElse(Collections.emptyList());
     }
 
     private void setViews(List<Event> events) {
@@ -338,6 +329,8 @@ public class EventServiceImpl implements EventService {
         }
         Map<String, Long> mapUriAndHits = getViewStats(events).stream()
                 .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
-        events.forEach(event -> event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L)));
+        for (Event event : events) {
+            event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L));
+        }
     }
 }
