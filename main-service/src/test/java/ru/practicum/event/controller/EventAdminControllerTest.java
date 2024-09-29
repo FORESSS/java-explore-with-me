@@ -71,9 +71,9 @@ public class EventAdminControllerTest {
     @Test
     public void updateEventAdminTest() throws Exception {
         EventAdminRequestDto eventAdminRequestDto = new EventAdminRequestDto();
-        eventAdminRequestDto.setAnnotation("Annotation" .repeat(20)); // Длина аннотации должна быть не менее 20 символов
+        eventAdminRequestDto.setAnnotation("Annotation".repeat(20)); // Длина аннотации должна быть не менее 20 символов
         eventAdminRequestDto.setCategory(1L);
-        eventAdminRequestDto.setDescription("Description" .repeat(20)); // Длина описания должна быть не менее 20 символов
+        eventAdminRequestDto.setDescription("Description".repeat(20)); // Длина описания должна быть не менее 20 символов
         eventAdminRequestDto.setEventDate(LocalDateTime.now());
         eventAdminRequestDto.setPaid(true);
         eventAdminRequestDto.setParticipantLimit(10L);
