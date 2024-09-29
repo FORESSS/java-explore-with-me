@@ -2,6 +2,7 @@ package ru.practicum.event.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import ru.practicum.StatClient;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.config.AppConfig;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.enums.StateActionAdmin;
@@ -54,6 +56,7 @@ public class EventServiceImpl implements EventService {
     private final StatClient statClient;
     private final EventMapper eventMapper;
     private final RequestMapper requestMapper;
+    private final AppConfig appConfig;
 
     @Override
     @Transactional
@@ -262,64 +265,6 @@ public class EventServiceImpl implements EventService {
         return requestMapper.toRequestStatusDto(null, requests);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<EventShortDto> getAllPublicEvents(String text, List<Long> categories, Boolean paid,
-                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                                  boolean onlyAvailable, EventPublicSort sort, int from, int size) {
-        log.info("The beginning of the process of finding a events by public");
-
-        if ((rangeStart != null) && (rangeEnd != null) && (rangeStart.isAfter(rangeEnd))) {
-            throw new DateException("Start time after end time");
-        }
-        Page<Event> events;
-        PageRequest pageRequest = getCustomPage(from, size, sort);
-        BooleanBuilder builder = new BooleanBuilder();
-
-        if (text != null) {
-            builder.and(event.annotation.containsIgnoreCase(text.toLowerCase())
-                    .or(event.description.containsIgnoreCase(text.toLowerCase())));
-        }
-
-        if (!CollectionUtils.isEmpty(categories)) {
-            builder.and(event.category.id.in(categories));
-        }
-
-        if (rangeStart != null && rangeEnd != null) {
-            builder.and(event.eventDate.between(rangeStart, rangeEnd));
-        } else if (rangeStart == null && rangeEnd != null) {
-            builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));
-        } else if (rangeStart != null) {
-            builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
-        }
-
-        if (onlyAvailable) {
-            builder.and(event.participantLimit.eq(0L))
-                    .or(event.participantLimit.gt(event.confirmedRequests));
-        }
-
-        if (builder.getValue() != null) {
-            events = eventRepository.findAll(builder.getValue(), pageRequest);
-        } else {
-            events = eventRepository.findAll(pageRequest);
-        }
-
-        setViews(events.getContent());
-        log.info("The events was found by public");
-        return eventMapper.toListEventShortDto(events.getContent());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public EventFullDto getPublicEventById(long id) {
-        log.info("The beginning of the process of finding a event by public");
-        Event event = eventRepository.findByIdAndState(id, State.PUBLISHED)
-                .orElseThrow(() -> new NotFoundException("Event with id=" + id + " was not found"));
-        setViews(List.of(event));
-        log.info("The event was found by public");
-        return eventMapper.toEventFullDto(event);
-    }
-
     @Transactional(readOnly = true)
     @Override
     public List<EventFullDto> getAllAdminEvents(List<Long> users, State state, List<Long> categories,
@@ -415,6 +360,66 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toEventFullDto(event);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventShortDto> getAllPublicEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+                                                  LocalDateTime rangeEnd, boolean onlyAvailable, EventPublicSort sort,
+                                                  int from, int size, HttpServletRequest request) {
+        log.info("The beginning of the process of finding a events by public");
+
+        if ((rangeStart != null) && (rangeEnd != null) && (rangeStart.isAfter(rangeEnd))) {
+            throw new DateException("Start time after end time");
+        }
+        Page<Event> events;
+        PageRequest pageRequest = getCustomPage(from, size, sort);
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (text != null) {
+            builder.and(event.annotation.containsIgnoreCase(text.toLowerCase())
+                    .or(event.description.containsIgnoreCase(text.toLowerCase())));
+        }
+
+        if (!CollectionUtils.isEmpty(categories)) {
+            builder.and(event.category.id.in(categories));
+        }
+
+        if (rangeStart != null && rangeEnd != null) {
+            builder.and(event.eventDate.between(rangeStart, rangeEnd));
+        } else if (rangeStart == null && rangeEnd != null) {
+            builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));
+        } else if (rangeStart != null) {
+            builder.and(event.eventDate.between(rangeStart, LocalDateTime.MAX));
+        }
+
+        if (onlyAvailable) {
+            builder.and(event.participantLimit.eq(0L))
+                    .or(event.participantLimit.gt(event.confirmedRequests));
+        }
+
+        if (builder.getValue() != null) {
+            events = eventRepository.findAll(builder.getValue(), pageRequest);
+        } else {
+            events = eventRepository.findAll(pageRequest);
+        }
+
+        setViews(events.getContent());
+        saveHit(request);
+        log.info("The events was found by public");
+        return eventMapper.toListEventShortDto(events.getContent());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EventFullDto getPublicEventById(long id, HttpServletRequest request) {
+        log.info("The beginning of the process of finding a event by public");
+        Event event = eventRepository.findByIdAndState(id, State.PUBLISHED)
+                .orElseThrow(() -> new NotFoundException("Event with id=" + id + " was not found"));
+        setViews(List.of(event));
+        log.info("The event was found by public");
+        saveHit(request);
+        return eventMapper.toEventFullDto(event);
+    }
+
     private void setStateByAdmin(Event event, StateActionAdmin stateActionAdmin) {
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)) &&
                 stateActionAdmin.equals(StateActionAdmin.PUBLISH_EVENT)) {
@@ -471,5 +476,9 @@ public class EventServiceImpl implements EventService {
         for (Event event : events) {
             event.setViews(mapUriAndHits.getOrDefault("/events/" + event.getId(), 0L));
         }
+    }
+
+    private void saveHit(HttpServletRequest request) {
+        statClient.saveHit(appConfig.getAppName(), request);
     }
 }
