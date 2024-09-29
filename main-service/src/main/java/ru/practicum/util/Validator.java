@@ -147,7 +147,7 @@ public class Validator {
     }
 
     public void checkEventDate(LocalDateTime start, LocalDateTime end) {
-        if (start.isAfter(end)) {
+        if ((start != null) && (end != null) && (start.isAfter(end))) {
             throw new DateException("Некорректная дата");
         }
     }
