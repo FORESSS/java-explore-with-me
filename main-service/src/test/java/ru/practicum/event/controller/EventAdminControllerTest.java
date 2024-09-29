@@ -57,7 +57,7 @@ public class EventAdminControllerTest {
         eventFullDto.setCreatedOn(LocalDateTime.now());
         eventFullDto.setDescription("Description");
         eventFullDto.setEventDate(LocalDateTime.now());
-        eventFullDto.setInitiator(new ru.practicum.user.dto.UserShortDto(123L, "123"));
+        eventFullDto.setInitiator(new ru.practicum.user.dto.UserShortDto());
         eventFullDto.setLocation(new ru.practicum.event.model.Location());
         eventFullDto.setPaid(true);
         eventFullDto.setParticipantLimit(10L);
