@@ -366,49 +366,49 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateEventAdmin(EventAdminRequestDto updateEvent, long eventId) {
+    public EventFullDto updateEventAdmin(long eventId, EventAdminRequestDto eventAdminRequestDto) {
         log.info("The beginning of the process of updates a event by admin");
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
 
-        if (updateEvent.getAnnotation() != null && !updateEvent.getAnnotation().isBlank()) {
-            event.setAnnotation(updateEvent.getAnnotation());
+        if (eventAdminRequestDto.getAnnotation() != null && !eventAdminRequestDto.getAnnotation().isBlank()) {
+            event.setAnnotation(eventAdminRequestDto.getAnnotation());
         }
-        if (updateEvent.getCategory() != null) {
-            Category category = categoryRepository.findById(updateEvent.getCategory())
-                    .orElseThrow(() -> new NotFoundException("Category with id=" + updateEvent.getCategory()
+        if (eventAdminRequestDto.getCategory() != null) {
+            Category category = categoryRepository.findById(eventAdminRequestDto.getCategory())
+                    .orElseThrow(() -> new NotFoundException("Category with id=" + eventAdminRequestDto.getCategory()
                             + " was not found"));
             event.setCategory(category);
         }
-        if (updateEvent.getDescription() != null && !updateEvent.getDescription().isBlank()) {
-            event.setDescription(updateEvent.getDescription());
+        if (eventAdminRequestDto.getDescription() != null && !eventAdminRequestDto.getDescription().isBlank()) {
+            event.setDescription(eventAdminRequestDto.getDescription());
         }
-        if (updateEvent.getEventDate() != null) {
-            if (updateEvent.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+        if (eventAdminRequestDto.getEventDate() != null) {
+            if (eventAdminRequestDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
                 throw new DateException("The date and time for which the event is scheduled cannot be " +
                         "earlier than two hours from the current moment");
             } else {
-                event.setEventDate(updateEvent.getEventDate());
+                event.setEventDate(eventAdminRequestDto.getEventDate());
             }
         }
-        if (updateEvent.getLocation() != null) {
-            event.setLocation(updateEvent.getLocation());
+        if (eventAdminRequestDto.getLocation() != null) {
+            event.setLocation(eventAdminRequestDto.getLocation());
         }
-        if (updateEvent.getPaid() != null) {
-            event.setPaid(updateEvent.getPaid());
+        if (eventAdminRequestDto.getPaid() != null) {
+            event.setPaid(eventAdminRequestDto.getPaid());
         }
-        if (updateEvent.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEvent.getParticipantLimit());
+        if (eventAdminRequestDto.getParticipantLimit() != null) {
+            event.setParticipantLimit(eventAdminRequestDto.getParticipantLimit());
         }
-        if (updateEvent.getRequestModeration() != null) {
-            event.setRequestModeration(updateEvent.getRequestModeration());
+        if (eventAdminRequestDto.getRequestModeration() != null) {
+            event.setRequestModeration(eventAdminRequestDto.getRequestModeration());
         }
-        if (updateEvent.getTitle() != null && !updateEvent.getTitle().isBlank()) {
-            event.setTitle(updateEvent.getTitle());
+        if (eventAdminRequestDto.getTitle() != null && !eventAdminRequestDto.getTitle().isBlank()) {
+            event.setTitle(eventAdminRequestDto.getTitle());
         }
-        if (updateEvent.getStateAction() != null) {
-            setStateByAdmin(event, updateEvent.getStateAction());
+        if (eventAdminRequestDto.getStateAction() != null) {
+            setStateByAdmin(event, eventAdminRequestDto.getStateAction());
         }
 
         log.info("The events was update by admin");

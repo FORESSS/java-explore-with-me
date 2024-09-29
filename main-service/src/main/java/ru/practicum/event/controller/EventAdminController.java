@@ -4,12 +4,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventAdminRequestDto;
+import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.model.State;
 import ru.practicum.event.service.EventService;
 import ru.practicum.util.Constants;
@@ -19,34 +19,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/events")
-@Slf4j
-@Validated
 @RequiredArgsConstructor
+@Validated
 public class EventAdminController {
     private final EventService eventService;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> getAllAdminEvents(@RequestParam(required = false) List<Long> users,
                                                 @RequestParam(required = false) State state,
                                                 @RequestParam(required = false) List<Long> categories,
                                                 @RequestParam(required = false)
-                                                @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
-                                                LocalDateTime rangeStart,
+                                                @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT) LocalDateTime rangeStart,
                                                 @RequestParam(required = false)
-                                                @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
-                                                LocalDateTime rangeEnd,
-                                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                @RequestParam(defaultValue = "10") @Positive int size) {
-        log.info("Get all admin events by users {}, state {}, categories {}, rangeStart {}, rangeEnd {}, from {}, " +
-                "size {}", users, state, categories, rangeStart, rangeEnd, from, size);
+                                                @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT) LocalDateTime rangeEnd,
+                                                @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                @RequestParam(defaultValue = "10") @Positive Integer size) {
         return eventService.getAllAdminEvents(users, state, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEventAdmin(@RequestBody @Valid EventAdminRequestDto updateEventAdminRequest,
-                                         @PathVariable long eventId) {
-        log.info("Received a PATCH request to update event with an eventId = {} request body {}",
-                eventId, updateEventAdminRequest);
-        return eventService.updateEventAdmin(updateEventAdminRequest, eventId);
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto updateEventAdmin(@PathVariable Long eventId,
+                                         @RequestBody @Valid EventAdminRequestDto eventAdminRequestDto) {
+        return eventService.updateEventAdmin(eventId, eventAdminRequestDto);
     }
 }

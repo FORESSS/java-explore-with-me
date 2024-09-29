@@ -6,6 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.StatClient;
@@ -30,6 +31,7 @@ public class EventPublicController {
     private final AppConfig appConfig;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getAllPublicEvents(@RequestParam(required = false) String text,
                                                   @RequestParam(required = false) List<Long> categories,
                                                   @RequestParam(required = false) Boolean paid,
@@ -52,6 +54,7 @@ public class EventPublicController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public EventFullDto getPublicEventById(@PathVariable Long id, HttpServletRequest request) {
         log.info("Get public event by id {}", id);
         EventFullDto publicEventById = eventService.getPublicEventById(id);

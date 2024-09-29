@@ -38,6 +38,7 @@ public class EventPrivateController {
     }
 
     @GetMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
     public EventFullDto findEventById(@PathVariable long userId,
                                       @PathVariable long eventId,
                                       HttpServletRequest request) throws InterruptedException {
@@ -48,6 +49,7 @@ public class EventPrivateController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> findEventsByUser(@PathVariable long userId,
                                                 @RequestParam(defaultValue = "0") int from,
                                                 @RequestParam(defaultValue = "10") int size,
@@ -59,6 +61,7 @@ public class EventPrivateController {
     }
 
     @PatchMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEvent(@RequestBody @Valid EventUserRequestDto updateEventUserRequest,
                                     @PathVariable long userId,
                                     @PathVariable long eventId) {
@@ -68,6 +71,7 @@ public class EventPrivateController {
     }
 
     @GetMapping("/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
     public List<RequestDto> findRequestByEventId(@PathVariable long userId, @PathVariable long eventId) {
         log.info("Received a GET request to find request by event id = {} from a user with an userId = {}",
                 eventId, userId);
@@ -75,6 +79,7 @@ public class EventPrivateController {
     }
 
     @PatchMapping("/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
     public RequestStatusDto updateRequestByEventId(@RequestBody
                                                                     @Valid
                                                                         RequestUpdateStatusDto updateRequests,
