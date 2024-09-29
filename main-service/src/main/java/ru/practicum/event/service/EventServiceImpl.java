@@ -35,6 +35,7 @@ import ru.practicum.request.model.Status;
 import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -57,22 +58,14 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final RequestMapper requestMapper;
     private final AppConfig appConfig;
+    private final Validator validator;
 
     @Override
     @Transactional
     public EventFullDto addEvent(long userId, NewEventDto newEventDto) {
-        log.info("The beginning of the process of creating a event");
-        User initiator = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found"));
-        Category category = categoryRepository.findById(newEventDto.getCategory())
-                .orElseThrow(() -> new NotFoundException("Category with id=" + newEventDto.getCategory()
-                        + " was not found"));
-
-        if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new DateException("The date and time for which the event is scheduled cannot be " +
-                    "earlier than two hours from the current moment");
-        }
-
+        User initiator = validator.validateAndGetUser(userId);
+        Category category = validator.validateAndGetCategory(newEventDto.getCategory());
+        validator.checkEventDate(newEventDto.getEventDate());
         if (newEventDto.getPaid() == null) {
             newEventDto.setPaid(false);
         }
@@ -82,7 +75,6 @@ public class EventServiceImpl implements EventService {
         if (newEventDto.getParticipantLimit() == null) {
             newEventDto.setParticipantLimit(0L);
         }
-
         Event newEvent = eventMapper.toEvent(newEventDto);
         newEvent.setCategory(category);
         newEvent.setCreatedOn(LocalDateTime.now());
@@ -90,12 +82,10 @@ public class EventServiceImpl implements EventService {
         newEvent.setPublishedOn(LocalDateTime.now());
         newEvent.setState(State.PENDING);
         newEvent.setConfirmedRequests(0L);
-
-        Event event = eventRepository.save(newEvent);
-        EventFullDto eventFullDto = eventMapper.toEventFullDto(event);
+        eventRepository.save(newEvent);
+        EventFullDto eventFullDto = eventMapper.toEventFullDto(newEvent);
         eventFullDto.setViews(0L);
-
-        log.info("The event has been created");
+        log.info("Событие с id: {} создано", eventFullDto.getId());
         return eventFullDto;
     }
 

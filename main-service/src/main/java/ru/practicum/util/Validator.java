@@ -10,6 +10,7 @@ import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.DateException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.model.Request;
@@ -18,6 +19,7 @@ import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -138,6 +140,12 @@ public class Validator {
         if ((!event.getParticipantLimit().equals(0L))
                 && (event.getParticipantLimit() == confirmedRequests.size())) {
             throw new RestrictionsViolationException("Request limit exceeded");
+        }
+    }
+
+    public void checkEventDate(LocalDateTime eventDate) {
+        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new DateException("Некорректная дата");
         }
     }
 }
