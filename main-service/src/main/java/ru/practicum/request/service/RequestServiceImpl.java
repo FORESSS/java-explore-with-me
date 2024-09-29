@@ -16,27 +16,27 @@ import ru.practicum.request.model.Status;
 import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
     private final RequestsRepository requestsRepository;
     private final RequestMapper requestMapper;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final Validator validator;
 
     @Override
     @Transactional(readOnly = true)
     public List<RequestDto> getAllRequests(long userId) {
-        log.info("The beginning of the process of finding all requests");
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id = " + userId + " not found"));
+        validator.checkUserId(userId);
         List<Request> requests = requestsRepository.findAllByRequesterId(userId);
-        log.info("The all requests has been found");
+        log.info("Получение всех запросов пользователя с id: {}", userId);
         return requestMapper.toListRequestDto(requests);
     }
 

@@ -32,6 +32,9 @@ public class Validator {
     }
 
     public void checkEventId(long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException(String.format("Событие с id: %d не найдено", eventId));
+        }
     }
 
     public void checkCategoryId(long catId) {
@@ -41,17 +44,25 @@ public class Validator {
     }
 
     public void checkRequestId(long requestId) {
+        if (!requestsRepository.existsById(requestId)) {
+            throw new NotFoundException(String.format("Запрос с id: %d не найден", requestId));
+        }
     }
 
     public void checkCompilationId(long compId) {
+        if (!compilationRepository.existsById(compId)) {
+            throw new NotFoundException(String.format("Подборка с id: %d не найдена", compId));
+        }
     }
 
     public User validateAndGetUser(long userId) {
-        return null;
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id: %d не найден", userId)));
     }
 
     public Event validateAndGetEvent(long eventId) {
-        return null;
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format("Событие с id: %d не найдено", eventId)));
     }
 
     public Category validateAndGetCategory(long catId) {
@@ -60,11 +71,13 @@ public class Validator {
     }
 
     public Request validateAndGetRequest(long requestId) {
-        return null;
+        return requestsRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException(String.format("Запрос с id: %d не найден", requestId)));
     }
 
     public Compilation validateAndGetCompilation(long compId) {
-        return null;
+        return compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(String.format("Подборка с id: %d не найдена", compId)));
     }
 
     public void checkEmail(User user) {
