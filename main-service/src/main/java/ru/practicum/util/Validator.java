@@ -127,25 +127,28 @@ public class Validator {
     }
 
     public void checkRequestCreationConditions(long userId, long eventId) {
-        checkRequest(userId, eventId);
         if (!eventRepository.findById(eventId).orElseThrow().getState().equals(State.PUBLISHED)) {
-            throw new RestrictionsViolationException("Event with id = " + eventId + " is not published");
+            throw new RestrictionsViolationException(String.format("Событие с id: %d не опубликовано", eventId));
         }
     }
 
     public void checkRequestLimit(long eventId) {
         Event event = validateAndGetEvent(eventId);
         List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(eventId, Status.CONFIRMED);
-
         if ((!event.getParticipantLimit().equals(0L))
                 && (event.getParticipantLimit() == confirmedRequests.size())) {
-            throw new RestrictionsViolationException("Request limit exceeded");
+            throw new RestrictionsViolationException("Превышен лимит запросов");
         }
     }
 
     public void checkEventDate(LocalDateTime eventDate) {
         if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new DateException("Некорректная дата");
+        }
+    }
+    public void checkEventState(State state) {
+        if (state.equals(State.PUBLISHED)) {
+            throw new RestrictionsViolationException("Событие в опубликованном состоянии не может быть изменено");
         }
     }
 }

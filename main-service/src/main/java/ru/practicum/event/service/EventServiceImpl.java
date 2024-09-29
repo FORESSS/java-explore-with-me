@@ -121,42 +121,25 @@ public class EventServiceImpl implements EventService {
         return eventsShortDto;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public EventFullDto updateEvent(long userId, long eventId, EventUserRequestDto eventUserRequestDto) {
-        log.info("The beginning of the process of updates a event");
-
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User with id=" + userId + " was not found");
-        }
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-
-        if (event.getState().equals(State.PUBLISHED)) {
-            throw new RestrictionsViolationException("You can only change canceled events or events in the waiting state " +
-                    "for moderation");
-        }
-
+        validator.checkUserId(userId);
+        Event event = validator.validateAndGetEvent(eventId);
+        validator.checkEventState(event.getState());
         if (eventUserRequestDto.getAnnotation() != null && !eventUserRequestDto.getAnnotation().isBlank()) {
             event.setAnnotation(eventUserRequestDto.getAnnotation());
         }
         if (eventUserRequestDto.getCategory() != null) {
-            Category category = categoryRepository.findById(eventUserRequestDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException("Category with id=" + eventUserRequestDto.getCategory()
-                            + " was not found"));
+            Category category = validator.validateAndGetCategory(eventUserRequestDto.getCategory());
             event.setCategory(category);
         }
         if (eventUserRequestDto.getDescription() != null && !eventUserRequestDto.getDescription().isBlank()) {
             event.setDescription(eventUserRequestDto.getDescription());
         }
         if (eventUserRequestDto.getEventDate() != null) {
-            if (eventUserRequestDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new DateException("The date and time for which the event is scheduled cannot be " +
-                        "earlier than two hours from the current moment");
-            } else {
-                event.setEventDate(eventUserRequestDto.getEventDate());
-            }
+            validator.checkEventDate(eventUserRequestDto.getEventDate());
+            event.setEventDate(eventUserRequestDto.getEventDate());
         }
         if (eventUserRequestDto.getLocation() != null) {
             event.setLocation(eventUserRequestDto.getLocation());
@@ -179,8 +162,7 @@ public class EventServiceImpl implements EventService {
                 case SEND_TO_REVIEW -> event.setState(State.PENDING);
             }
         }
-
-        log.info("The events was update");
+        log.info("Событие с id: {} обновлено", eventId);
         return eventMapper.toEventFullDto(event);
     }
 
