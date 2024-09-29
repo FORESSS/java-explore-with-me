@@ -227,33 +227,23 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toListEventFullDto(events);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public EventFullDto updateEventAdmin(long eventId, EventAdminRequestDto eventAdminRequestDto) {
-        log.info("The beginning of the process of updates a event by admin");
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-
+        Event event = validator.validateAndGetEvent(eventId);
         if (eventAdminRequestDto.getAnnotation() != null && !eventAdminRequestDto.getAnnotation().isBlank()) {
             event.setAnnotation(eventAdminRequestDto.getAnnotation());
         }
         if (eventAdminRequestDto.getCategory() != null) {
-            Category category = categoryRepository.findById(eventAdminRequestDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException("Category with id=" + eventAdminRequestDto.getCategory()
-                            + " was not found"));
+            Category category = validator.validateAndGetCategory(eventAdminRequestDto.getCategory());
             event.setCategory(category);
         }
         if (eventAdminRequestDto.getDescription() != null && !eventAdminRequestDto.getDescription().isBlank()) {
             event.setDescription(eventAdminRequestDto.getDescription());
         }
         if (eventAdminRequestDto.getEventDate() != null) {
-            if (eventAdminRequestDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new DateException("The date and time for which the event is scheduled cannot be " +
-                        "earlier than two hours from the current moment");
-            } else {
-                event.setEventDate(eventAdminRequestDto.getEventDate());
-            }
+            validator.checkEventDate(eventAdminRequestDto.getEventDate());
+            event.setEventDate(eventAdminRequestDto.getEventDate());
         }
         if (eventAdminRequestDto.getLocation() != null) {
             event.setLocation(eventAdminRequestDto.getLocation());
@@ -273,8 +263,7 @@ public class EventServiceImpl implements EventService {
         if (eventAdminRequestDto.getStateAction() != null) {
             setStateByAdmin(event, eventAdminRequestDto.getStateAction());
         }
-
-        log.info("The events was update by admin");
+        log.info("Событие с id: {} обновлено администратором", eventId);
         return eventMapper.toEventFullDto(event);
     }
 
@@ -283,8 +272,6 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllPublicEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                                   LocalDateTime rangeEnd, boolean onlyAvailable, EventPublicSort sort,
                                                   int from, int size, HttpServletRequest request) {
-        log.info("The beginning of the process of finding a events by public");
-
         if ((rangeStart != null) && (rangeEnd != null) && (rangeStart.isAfter(rangeEnd))) {
             throw new DateException("Start time after end time");
         }
