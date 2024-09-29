@@ -89,50 +89,35 @@ public class EventServiceImpl implements EventService {
         return eventFullDto;
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public EventFullDto getEventById(long userId, long eventId, HttpServletRequest request) {
-        log.info("The beginning of the process of finding a event");
-
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User with id=" + userId + " was not found");
-        }
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-
+        validator.checkUserId(userId);
+        Event event = validator.validateAndGetEvent(eventId);
         List<ViewStatsDto> viewStats = getViewStats(List.of(event));
-
         EventFullDto eventFullDto = eventMapper.toEventFullDto(event);
-
         if (!CollectionUtils.isEmpty(viewStats)) {
             eventFullDto.setViews(viewStats.getFirst().getHits());
         } else {
             eventFullDto.setViews(0L);
         }
         saveHit(request);
-        log.info("The event was found");
+        log.info("Получение события с id: {}", eventId);
         return eventFullDto;
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getEventsByUser(long userId, int from, int size, HttpServletRequest request) {
-        log.info("The beginning of the process of finding a events");
-
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User with id=" + userId + " was not found");
-        }
-
+        validator.checkUserId(userId);
         PageRequest pageRequest = PageRequest.of(from, size);
         BooleanExpression byUserId = event.initiator.id.eq(userId);
         Page<Event> pageEvents = eventRepository.findAll(byUserId, pageRequest);
         List<Event> events = pageEvents.getContent();
         setViews(events);
-
         List<EventShortDto> eventsShortDto = eventMapper.toListEventShortDto(events);
         saveHit(request);
-        log.info("The events was found");
+        log.info("Получение списка событий для пользователя с id: {}", userId);
         return eventsShortDto;
     }
 
