@@ -60,7 +60,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto addEvent(NewEventDto newEventDto, long userId) {
+    public EventFullDto addEvent(long userId, NewEventDto newEventDto) {
         log.info("The beginning of the process of creating a event");
         User initiator = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found"));
@@ -101,7 +101,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     @Override
-    public EventFullDto findEventById(long userId, long eventId) {
+    public EventFullDto getEventById(long userId, long eventId, HttpServletRequest request) {
         log.info("The beginning of the process of finding a event");
 
         if (!userRepository.existsById(userId)) {
@@ -120,14 +120,14 @@ public class EventServiceImpl implements EventService {
         } else {
             eventFullDto.setViews(0L);
         }
-
+        saveHit(request);
         log.info("The event was found");
         return eventFullDto;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<EventShortDto> findEventsByUser(long userId, int from, int size) {
+    public List<EventShortDto> getEventsByUser(long userId, int from, int size, HttpServletRequest request) {
         log.info("The beginning of the process of finding a events");
 
         if (!userRepository.existsById(userId)) {
@@ -141,14 +141,14 @@ public class EventServiceImpl implements EventService {
         setViews(events);
 
         List<EventShortDto> eventsShortDto = eventMapper.toListEventShortDto(events);
-
+        saveHit(request);
         log.info("The events was found");
         return eventsShortDto;
     }
 
     @Transactional
     @Override
-    public EventFullDto updateEvent(EventUserRequestDto updateEvent, long userId, long eventId) {
+    public EventFullDto updateEvent(long userId, long eventId, EventUserRequestDto eventUserRequestDto) {
         log.info("The beginning of the process of updates a event");
 
         if (!userRepository.existsById(userId)) {
@@ -163,43 +163,43 @@ public class EventServiceImpl implements EventService {
                     "for moderation");
         }
 
-        if (updateEvent.getAnnotation() != null && !updateEvent.getAnnotation().isBlank()) {
-            event.setAnnotation(updateEvent.getAnnotation());
+        if (eventUserRequestDto.getAnnotation() != null && !eventUserRequestDto.getAnnotation().isBlank()) {
+            event.setAnnotation(eventUserRequestDto.getAnnotation());
         }
-        if (updateEvent.getCategory() != null) {
-            Category category = categoryRepository.findById(updateEvent.getCategory())
-                    .orElseThrow(() -> new NotFoundException("Category with id=" + updateEvent.getCategory()
+        if (eventUserRequestDto.getCategory() != null) {
+            Category category = categoryRepository.findById(eventUserRequestDto.getCategory())
+                    .orElseThrow(() -> new NotFoundException("Category with id=" + eventUserRequestDto.getCategory()
                             + " was not found"));
             event.setCategory(category);
         }
-        if (updateEvent.getDescription() != null && !updateEvent.getDescription().isBlank()) {
-            event.setDescription(updateEvent.getDescription());
+        if (eventUserRequestDto.getDescription() != null && !eventUserRequestDto.getDescription().isBlank()) {
+            event.setDescription(eventUserRequestDto.getDescription());
         }
-        if (updateEvent.getEventDate() != null) {
-            if (updateEvent.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+        if (eventUserRequestDto.getEventDate() != null) {
+            if (eventUserRequestDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
                 throw new DateException("The date and time for which the event is scheduled cannot be " +
                         "earlier than two hours from the current moment");
             } else {
-                event.setEventDate(updateEvent.getEventDate());
+                event.setEventDate(eventUserRequestDto.getEventDate());
             }
         }
-        if (updateEvent.getLocation() != null) {
-            event.setLocation(updateEvent.getLocation());
+        if (eventUserRequestDto.getLocation() != null) {
+            event.setLocation(eventUserRequestDto.getLocation());
         }
-        if (updateEvent.getPaid() != null) {
-            event.setPaid(updateEvent.getPaid());
+        if (eventUserRequestDto.getPaid() != null) {
+            event.setPaid(eventUserRequestDto.getPaid());
         }
-        if (updateEvent.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEvent.getParticipantLimit());
+        if (eventUserRequestDto.getParticipantLimit() != null) {
+            event.setParticipantLimit(eventUserRequestDto.getParticipantLimit());
         }
-        if (updateEvent.getRequestModeration() != null) {
-            event.setRequestModeration(updateEvent.getRequestModeration());
+        if (eventUserRequestDto.getRequestModeration() != null) {
+            event.setRequestModeration(eventUserRequestDto.getRequestModeration());
         }
-        if (updateEvent.getTitle() != null && !updateEvent.getTitle().isBlank()) {
-            event.setTitle(updateEvent.getTitle());
+        if (eventUserRequestDto.getTitle() != null && !eventUserRequestDto.getTitle().isBlank()) {
+            event.setTitle(eventUserRequestDto.getTitle());
         }
-        if (updateEvent.getStateAction() != null) {
-            switch (updateEvent.getStateAction()) {
+        if (eventUserRequestDto.getStateAction() != null) {
+            switch (eventUserRequestDto.getStateAction()) {
                 case CANCEL_REVIEW -> event.setState(State.CANCELED);
                 case SEND_TO_REVIEW -> event.setState(State.PENDING);
             }
@@ -211,7 +211,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<RequestDto> findRequestByEventId(long userId, long eventId) {
+    public List<RequestDto> getRequestByEventId(long userId, long eventId) {
         log.info("The beginning of the process of finding a requests");
 
         if (!userRepository.existsById(userId)) {
@@ -230,9 +230,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public RequestStatusDto updateRequestByEventId(RequestUpdateStatusDto updateRequests,
-                                                   long userId,
-                                                   long eventId) {
+    public RequestStatusDto updateRequestByEventId(long userId, long eventId, RequestUpdateStatusDto requestUpdateStatusDto) {
         log.info("The beginning of the process of update a requests");
 
         if (!userRepository.existsById(userId)) {
@@ -248,17 +246,17 @@ public class EventServiceImpl implements EventService {
                     "there are " + (event.getParticipantLimit() - event.getConfirmedRequests()) + " free places");
         }
 
-        List<Request> requests = requestsRepository.findByIdIn(updateRequests.getRequestIds());
+        List<Request> requests = requestsRepository.findByIdIn(requestUpdateStatusDto.getRequestIds());
 
         if (requests.stream().map(Request::getStatus).anyMatch(status -> !status.equals(Status.PENDING))) {
             throw new RestrictionsViolationException("The status can only be changed for applications that are " +
                     "in the PENDING state");
         }
 
-        requests.forEach(request -> request.setStatus(updateRequests.getStatus()));
+        requests.forEach(request -> request.setStatus(requestUpdateStatusDto.getStatus()));
 
-        if (updateRequests.getStatus().equals(Status.CONFIRMED)) {
-            event.setConfirmedRequests(event.getConfirmedRequests() + updateRequests.getRequestIds().size());
+        if (requestUpdateStatusDto.getStatus().equals(Status.CONFIRMED)) {
+            event.setConfirmedRequests(event.getConfirmedRequests() + requestUpdateStatusDto.getRequestIds().size());
         }
 
         log.info("The requests was updated");

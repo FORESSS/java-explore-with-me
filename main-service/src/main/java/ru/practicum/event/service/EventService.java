@@ -12,19 +12,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
-    EventFullDto addEvent(NewEventDto newEventDto, long userId);
+    EventFullDto addEvent(long userId, NewEventDto newEventDto);
 
-    EventFullDto findEventById(long userId, long eventId);
+    EventFullDto getEventById(long userId, long eventId, HttpServletRequest request);
 
-    List<EventShortDto> findEventsByUser(long userId, int from, int size);
+    List<EventShortDto> getEventsByUser(long userId, int from, int size, HttpServletRequest request);
 
-    EventFullDto updateEvent(EventUserRequestDto updateEventUserRequest, long userId, long eventId);
+    EventFullDto updateEvent(long userId, long eventId, EventUserRequestDto eventUserRequestDto);
 
-    List<RequestDto> findRequestByEventId(long userId, long eventId);
+    List<RequestDto> getRequestByEventId(long userId, long eventId);
 
-    RequestStatusDto updateRequestByEventId(RequestUpdateStatusDto updateRequest,
-                                            long userId,
-                                            long eventId);
+    RequestStatusDto updateRequestByEventId(long userId, long eventId, RequestUpdateStatusDto requestUpdateStatusDto);
 
     List<EventFullDto> getAllAdminEvents(List<Long> users, State state, List<Long> categories, LocalDateTime rangeStart,
                                          LocalDateTime rangeEnd, int from, int size);

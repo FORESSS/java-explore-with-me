@@ -38,8 +38,7 @@ public class EventPublicController {
                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                   @RequestParam(defaultValue = "10") @Positive Integer size,
                                                   HttpServletRequest request) {
-        return eventService.getAllPublicEvents(text, categories, paid,
-                rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
+        return eventService.getAllPublicEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("/{id}")

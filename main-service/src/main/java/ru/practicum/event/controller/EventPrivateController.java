@@ -3,90 +3,64 @@ package ru.practicum.event.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.StatClient;
-import ru.practicum.config.AppConfig;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.EventUserRequestDto;
+import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.service.EventService;
+import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.dto.RequestStatusDto;
 import ru.practicum.request.dto.RequestUpdateStatusDto;
-import ru.practicum.request.dto.RequestDto;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("users/{userId}/events")
 @RequiredArgsConstructor
-@Slf4j
 @Validated
 public class EventPrivateController {
     private final EventService eventService;
-    private final StatClient statClient;
-    private final AppConfig appConfig;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventFullDto addEvent(@RequestBody @Valid NewEventDto newEventDto, @PathVariable long userId) {
-        log.info("Received a POST request to add event {} from a user with an userId = {}", newEventDto, userId);
-        return eventService.addEvent(newEventDto, userId);
+    public EventFullDto addEvent(@PathVariable Long userId, @RequestBody @Valid NewEventDto newEventDto) {
+        return eventService.addEvent(userId, newEventDto);
     }
 
     @GetMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public EventFullDto findEventById(@PathVariable long userId,
-                                      @PathVariable long eventId,
-                                      HttpServletRequest request) throws InterruptedException {
-        log.info("Received a GET request to find event by id {} from a user with an userId = {}", eventId, userId);
-        EventFullDto event = eventService.findEventById(userId, eventId);
-        statClient.saveHit(appConfig.getAppName(), request);
-        return event;
+    public EventFullDto getEventById(@PathVariable Long userId, @PathVariable Long eventId,
+                                     HttpServletRequest request) throws InterruptedException {
+        return eventService.getEventById(userId, eventId, request);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<EventShortDto> findEventsByUser(@PathVariable long userId,
-                                                @RequestParam(defaultValue = "0") int from,
-                                                @RequestParam(defaultValue = "10") int size,
-                                                HttpServletRequest request) {
-        log.info("Received a GET request to find events by userId = {} from = {} size = {}", userId, from, size);
-        List<EventShortDto> events = eventService.findEventsByUser(userId, from, size);
-        statClient.saveHit(appConfig.getAppName(), request);
-        return events;
+    public List<EventShortDto> getEventsByUser(@PathVariable Long userId, @RequestParam(defaultValue = "0") Integer from,
+                                               @RequestParam(defaultValue = "10") Integer size, HttpServletRequest request) {
+        return eventService.getEventsByUser(userId, from, size, request);
     }
 
     @PatchMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public EventFullDto updateEvent(@RequestBody @Valid EventUserRequestDto updateEventUserRequest,
-                                    @PathVariable long userId,
-                                    @PathVariable long eventId) {
-        log.info("Received a PATCH request to update event with an eventId = {} from a user with an userId = {}, " +
-                "request body {}", eventId, userId, updateEventUserRequest);
-        return eventService.updateEvent(updateEventUserRequest, userId, eventId);
+    public EventFullDto updateEvent(@PathVariable Long userId, @PathVariable Long eventId,
+                                    @RequestBody @Valid EventUserRequestDto eventUserRequestDto) {
+        return eventService.updateEvent(userId, eventId, eventUserRequestDto);
     }
 
     @GetMapping("/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
-    public List<RequestDto> findRequestByEventId(@PathVariable long userId, @PathVariable long eventId) {
-        log.info("Received a GET request to find request by event id = {} from a user with an userId = {}",
-                eventId, userId);
-        return eventService.findRequestByEventId(userId, eventId);
+    public List<RequestDto> getRequestByEventId(@PathVariable Long userId, @PathVariable Long eventId) {
+        return eventService.getRequestByEventId(userId, eventId);
     }
 
     @PatchMapping("/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
-    public RequestStatusDto updateRequestByEventId(@RequestBody
-                                                                    @Valid
-                                                                        RequestUpdateStatusDto updateRequests,
-                                                   @PathVariable long userId,
-                                                   @PathVariable long eventId) {
-        log.info("Received a PATCH request to update request with an eventId = {} from a user with an userId = {}, " +
-                "request body {}", eventId, userId, updateRequests);
-        return eventService.updateRequestByEventId(updateRequests, userId, eventId);
+    public RequestStatusDto updateRequestByEventId(@PathVariable Long userId, @PathVariable Long eventId,
+                                                   @RequestBody @Valid RequestUpdateStatusDto requestUpdateStatusDto) {
+        return eventService.updateRequestByEventId(userId, eventId, requestUpdateStatusDto);
     }
 }
