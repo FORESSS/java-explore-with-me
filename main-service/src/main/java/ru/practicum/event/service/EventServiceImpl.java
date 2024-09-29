@@ -209,9 +209,7 @@ public class EventServiceImpl implements EventService {
             builder.and(event.category.id.in(categories));
         }
         if (rangeStart != null && rangeEnd != null) {
-            if (rangeStart.isAfter(rangeEnd)) {
-                throw new DateException("Start time after end time");
-            }
+            validator.checkEventDate(rangeStart, rangeEnd);
             builder.and(event.eventDate.between(rangeStart, rangeEnd));
         } else if (rangeStart == null && rangeEnd != null) {
             builder.and(event.eventDate.between(LocalDateTime.MIN, rangeEnd));

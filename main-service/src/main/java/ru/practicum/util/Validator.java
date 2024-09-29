@@ -146,6 +146,12 @@ public class Validator {
         }
     }
 
+    public void checkEventDate(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) {
+            throw new DateException("Некорректная дата");
+        }
+    }
+
     public void checkEventState(State state) {
         if (state.equals(State.PUBLISHED)) {
             throw new RestrictionsViolationException("Событие в опубликованном состоянии не может быть изменено");
