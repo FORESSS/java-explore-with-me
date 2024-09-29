@@ -8,17 +8,13 @@ import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.model.Request;
-import ru.practicum.request.model.Status;
 import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -36,9 +32,6 @@ public class Validator {
     }
 
     public void checkEventId(long eventId) {
-        if (!eventRepository.existsById(eventId)) {
-            throw new NotFoundException(String.format("Событие с id: %d не найдено", eventId));
-        }
     }
 
     public void checkCategoryId(long catId) {
@@ -48,25 +41,17 @@ public class Validator {
     }
 
     public void checkRequestId(long requestId) {
-        if (!requestsRepository.existsById(requestId)) {
-            throw new NotFoundException(String.format("Запрос с id: %d не найден", requestId));
-        }
     }
 
     public void checkCompilationId(long compId) {
-        if (!compilationRepository.existsById(compId)) {
-            throw new NotFoundException(String.format("Подборка с id: %d не найдена", compId));
-        }
     }
 
     public User validateAndGetUser(long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id: %d не найден", userId)));
+        return null;
     }
 
     public Event validateAndGetEvent(long eventId) {
-        return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(String.format("Событие с id: %d не найдено", eventId)));
+        return null;
     }
 
     public Category validateAndGetCategory(long catId) {
@@ -75,13 +60,11 @@ public class Validator {
     }
 
     public Request validateAndGetRequest(long requestId) {
-        return requestsRepository.findById(requestId)
-                .orElseThrow(() -> new NotFoundException(String.format("Запрос с id: %d не найден", requestId)));
+        return null;
     }
 
     public Compilation validateAndGetCompilation(long compId) {
-        return compilationRepository.findById(compId)
-                .orElseThrow(() -> new NotFoundException(String.format("Подборка с id: %d не найдена", compId)));
+        return null;
     }
 
     public void checkEmail(User user) {
@@ -108,31 +91,6 @@ public class Validator {
     public void checkCategory(long catId) {
         if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
             throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
-        }
-    }
-
-    public void checkRequest(long userId, long eventId) {
-        requestsRepository.findByEventIdAndRequesterId(eventId, userId).ifPresent(
-                r -> {
-                    throw new RestrictionsViolationException("Запрос уже создан");
-                });
-        eventRepository.findByIdAndInitiatorId(eventId, userId).ifPresent(
-                r -> {
-                    throw new RestrictionsViolationException(String.format("Пользователь с id: %d уже создал событие", userId));
-                });
-    }
-
-    public void checkEventPublished(Event event) {
-        if (!event.getState().equals(State.PUBLISHED)) {
-            throw new RestrictionsViolationException(String.format("Событие с id: %d не опубликовано", event.getId()));
-        }
-    }
-
-    public void checkRequestLimit(long eventId, Event event) {
-        List<Request> confirmedRequests = requestsRepository.findAllByStatusAndEventId(Status.CONFIRMED, eventId);
-        if ((!event.getParticipantLimit().equals(0L))
-                && (event.getParticipantLimit() == confirmedRequests.size())) {
-            throw new RestrictionsViolationException("Превышен лимит запросов");
         }
     }
 }

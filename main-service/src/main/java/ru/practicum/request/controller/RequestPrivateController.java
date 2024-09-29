@@ -1,6 +1,7 @@
 package ru.practicum.request.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -11,26 +12,30 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users/{userId}/requests")
-@RequiredArgsConstructor
 @Validated
+@Slf4j
+@RequiredArgsConstructor
 public class RequestPrivateController {
     private final RequestService requestService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<RequestDto> getAllRequests(@PathVariable Long userId) {
+        log.info("getAllRequests {}", userId);
         return requestService.getAllRequests(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RequestDto addRequest(@PathVariable Long userId, @RequestParam Long eventId) {
+    public RequestDto addRequest(@PathVariable Long userId,
+                                 @RequestParam Long eventId) {
+        log.info("addRequest {} for event {}", userId, eventId);
         return requestService.addRequest(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
-    @ResponseStatus(HttpStatus.OK)
-    public RequestDto cancelRequest(@PathVariable Long userId, @PathVariable Long requestId) {
+    public RequestDto cancelRequest(@PathVariable Long userId,
+                                    @PathVariable Long requestId) {
+        log.info("cancelRequest {} for request {}", userId, requestId);
         return requestService.cancelRequest(userId, requestId);
     }
 }
