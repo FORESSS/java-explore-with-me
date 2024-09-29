@@ -33,7 +33,7 @@ public class EventPrivateController {
     @GetMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto getEventById(@PathVariable Long userId, @PathVariable Long eventId,
-                                     HttpServletRequest request) throws InterruptedException {
+                                     HttpServletRequest request) {
         return eventService.getEventById(userId, eventId, request);
     }
 
