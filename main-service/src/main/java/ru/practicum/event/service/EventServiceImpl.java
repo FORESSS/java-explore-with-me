@@ -25,7 +25,7 @@ import ru.practicum.exception.DateException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.request.dto.RequestDto;
-import ru.practicum.request.dto.RequestStatusResultDto;
+import ru.practicum.request.dto.RequestStatusDto;
 import ru.practicum.request.dto.RequestUpdateStatusDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
@@ -227,9 +227,9 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public RequestStatusResultDto updateRequestByEventId(RequestUpdateStatusDto updateRequests,
-                                                         long userId,
-                                                         long eventId) {
+    public RequestStatusDto updateRequestByEventId(RequestUpdateStatusDto updateRequests,
+                                                   long userId,
+                                                   long eventId) {
         log.info("The beginning of the process of update a requests");
 
         if (!userRepository.existsById(userId)) {
@@ -259,7 +259,7 @@ public class EventServiceImpl implements EventService {
         }
 
         log.info("The requests was updated");
-        return requestMapper.toRequestStatusResultDto(null, requests);
+        return requestMapper.toRequestStatusDto(null, requests);
     }
 
     @Override

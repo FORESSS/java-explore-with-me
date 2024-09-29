@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
 import ru.practicum.request.dto.RequestDto;
-import ru.practicum.request.dto.RequestStatusResultDto;
+import ru.practicum.request.dto.RequestStatusDto;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
 
@@ -34,5 +34,5 @@ public interface RequestMapper {
 
     @Mapping(target = "confirmedRequests", expression = "java(getConfirmedRequests(requests))")
     @Mapping(target = "rejectedRequests", expression = "java(getRejectedRequests(requests))")
-    RequestStatusResultDto toRequestStatusResultDto(Integer dummy, List<Request> requests);
+    RequestStatusDto toRequestStatusDto(Integer dummy, List<Request> requests);
 }

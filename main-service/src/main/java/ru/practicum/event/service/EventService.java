@@ -4,7 +4,7 @@ import ru.practicum.event.dto.*;
 import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.model.State;
 import ru.practicum.request.dto.RequestUpdateStatusDto;
-import ru.practicum.request.dto.RequestStatusResultDto;
+import ru.practicum.request.dto.RequestStatusDto;
 import ru.practicum.request.dto.RequestDto;
 
 import java.time.LocalDateTime;
@@ -21,9 +21,9 @@ public interface EventService {
 
     List<RequestDto> findRequestByEventId(long userId, long eventId);
 
-    RequestStatusResultDto updateRequestByEventId(RequestUpdateStatusDto updateRequest,
-                                                  long userId,
-                                                  long eventId);
+    RequestStatusDto updateRequestByEventId(RequestUpdateStatusDto updateRequest,
+                                            long userId,
+                                            long eventId);
 
     List<EventShortDto> getAllPublicEvents(String text, List<Long> categories, Boolean paid,
                                            LocalDateTime rangeStart, LocalDateTime rangeEnd,
