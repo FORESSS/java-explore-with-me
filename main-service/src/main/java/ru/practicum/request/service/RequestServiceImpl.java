@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.repository.EventRepository;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
 import ru.practicum.request.repository.RequestsRepository;
 import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
 import ru.practicum.util.Validator;
 
 import java.time.LocalDateTime;
@@ -24,8 +22,6 @@ import java.util.List;
 public class RequestServiceImpl implements RequestService {
     private final RequestsRepository requestsRepository;
     private final RequestMapper requestMapper;
-    private final UserRepository userRepository;
-    private final EventRepository eventRepository;
     private final Validator validator;
 
     @Override
