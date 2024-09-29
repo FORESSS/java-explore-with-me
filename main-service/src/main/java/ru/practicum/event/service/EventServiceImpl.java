@@ -166,22 +166,13 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toEventFullDto(event);
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<RequestDto> getRequestByEventId(long userId, long eventId) {
-        log.info("The beginning of the process of finding a requests");
-
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User with id=" + userId + " was not found");
-        }
-
-        if (!eventRepository.existsById(eventId)) {
-            throw new NotFoundException("Event with id=" + eventId + " was not found");
-        }
-
+    @Transactional(readOnly = true)
+    public List<RequestDto> getRequestsByEventId(long userId, long eventId) {
+        validator.checkUserId(userId);
+        validator.checkEventId(eventId);
         List<Request> requests = requestsRepository.findByEventId(eventId);
-
-        log.info("The requests was found");
+        log.info("Получение списка запросов для события с id: {}", eventId);
         return requestMapper.toListRequestDto(requests);
     }
 
