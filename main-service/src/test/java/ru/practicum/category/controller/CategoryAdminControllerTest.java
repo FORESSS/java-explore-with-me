@@ -42,7 +42,7 @@ public class CategoryAdminControllerTest {
     }
 
     @Test
-    public void testAddCategory() throws Exception {
+    public void addCategoryTest() throws Exception {
         when(categoryService.addCategory(any(RequestCategoryDto.class)))
                 .thenReturn(categoryDto);
         mockMvc.perform(post("/admin/categories")
@@ -56,7 +56,7 @@ public class CategoryAdminControllerTest {
     }
 
     @Test
-    public void testUpdateCategory() throws Exception {
+    public void updateCategoryTest() throws Exception {
         when(categoryService.updateCategory(anyLong(), any(RequestCategoryDto.class)))
                 .thenReturn(categoryDto);
 
@@ -71,7 +71,7 @@ public class CategoryAdminControllerTest {
     }
 
     @Test
-    public void testDeleteCategory() throws Exception {
+    public void deleteCategoryTest() throws Exception {
         mockMvc.perform(delete("/admin/categories/1"))
                 .andExpect(status().isNoContent());
 

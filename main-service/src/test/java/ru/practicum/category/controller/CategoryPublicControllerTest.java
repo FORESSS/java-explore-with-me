@@ -38,7 +38,7 @@ public class CategoryPublicControllerTest {
     }
 
     @Test
-    public void testGetAllCategories() throws Exception {
+    public void getAllCategoriesTest() throws Exception {
         List<CategoryDto> categories = Collections.singletonList(categoryDto);
         Mockito.when(categoryService.getAllCategories(any(Integer.class), any(Integer.class)))
                 .thenReturn(categories);
@@ -53,7 +53,7 @@ public class CategoryPublicControllerTest {
     }
 
     @Test
-    public void testGetCategoryById() throws Exception {
+    public void getCategoryByIdTest() throws Exception {
         Mockito.when(categoryService.getCategoryById(1L))
                 .thenReturn(categoryDto);
         mockMvc.perform(get("/categories/1"))

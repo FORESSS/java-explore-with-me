@@ -50,7 +50,7 @@ public class StatsControllerTest {
     }
 
     @Test
-    public void testSaveEndpointHit() throws Exception {
+    public void saveEndpointHitTest() throws Exception {
         mockMvc.perform(post("/hit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(endpointHitDto)))
@@ -60,7 +60,7 @@ public class StatsControllerTest {
     }
 
     @Test
-    public void testGetViewStats() throws Exception {
+    public void getViewStatsTest() throws Exception {
         List<ViewStatsDto> viewStatsList = Arrays.asList(viewStatsDto);
         Mockito.when(statsService.getViewStats(any(String.class), any(String.class), any(List.class), any(Boolean.class)))
                 .thenReturn(viewStatsList);
