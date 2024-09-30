@@ -41,28 +41,29 @@ public class CompilationAdminControllerTest {
         newCompilationDto = new NewCompilationDto();
         newCompilationDto.setEvents(List.of(1L, 2L, 3L));
         newCompilationDto.setPinned(true);
-        newCompilationDto.setTitle("Test Compilation");
+        newCompilationDto.setTitle("Compilation");
 
         updateCompilationDto = new UpdateCompilationDto();
         updateCompilationDto.setEvents(List.of(1L, 2L, 3L));
         updateCompilationDto.setPinned(true);
-        updateCompilationDto.setTitle("Updated Test Compilation");
+        updateCompilationDto.setTitle("Compilation");
 
         eventShortDto = new EventShortDto();
         eventShortDto.setId(1L);
-        eventShortDto.setTitle("Test Event");
+        eventShortDto.setTitle("Event");
 
         compilationDto = new CompilationDto();
         compilationDto.setId(1L);
         compilationDto.setEvents(List.of(eventShortDto));
         compilationDto.setPinned(true);
-        compilationDto.setTitle("Test Compilation");
+        compilationDto.setTitle("Compilation");
     }
 
     @Test
     public void addCompilationTest() throws Exception {
         Mockito.when(compilationService.addCompilation(any(NewCompilationDto.class)))
                 .thenReturn(compilationDto);
+
         mockMvc.perform(post("/admin/compilations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newCompilationDto)))
@@ -70,7 +71,7 @@ public class CompilationAdminControllerTest {
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.events[0].id", is(1)))
                 .andExpect(jsonPath("$.pinned", is(true)))
-                .andExpect(jsonPath("$.title", is("Test Compilation")));
+                .andExpect(jsonPath("$.title", is("Compilation")));
 
         Mockito.verify(compilationService).addCompilation(any(NewCompilationDto.class));
     }
@@ -79,6 +80,7 @@ public class CompilationAdminControllerTest {
     public void updateCompilationTest() throws Exception {
         Mockito.when(compilationService.updateCompilation(any(Long.class), any(UpdateCompilationDto.class)))
                 .thenReturn(compilationDto);
+
         mockMvc.perform(patch("/admin/compilations/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateCompilationDto)))
@@ -86,7 +88,7 @@ public class CompilationAdminControllerTest {
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.events[0].id", is(1)))
                 .andExpect(jsonPath("$.pinned", is(true)))
-                .andExpect(jsonPath("$.title", is("Test Compilation"))); // Обновили ожидаемое значение
+                .andExpect(jsonPath("$.title", is("Compilation")));
 
         Mockito.verify(compilationService).updateCompilation(any(Long.class), any(UpdateCompilationDto.class));
     }

@@ -40,8 +40,8 @@ class EventRepositoryTest {
         entityManager.persist(category);
 
         location = new Location();
-        location.setLat(56.0f);
-        location.setLon(38.0f);
+        location.setLat(55.86f);
+        location.setLon(37.32f);
         entityManager.persist(location);
 
         event = new Event();

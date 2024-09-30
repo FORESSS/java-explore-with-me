@@ -14,7 +14,7 @@ import ru.practicum.event.enums.EventPublicSort;
 import ru.practicum.event.service.EventService;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -36,18 +36,19 @@ public class EventPublicControllerTest {
     public void setup() {
         eventFullDto = new EventFullDto();
         eventFullDto.setId(1L);
-        eventFullDto.setTitle("Test Event");
+        eventFullDto.setTitle("Event");
 
         eventShortDto = new EventShortDto();
         eventShortDto.setId(1L);
-        eventShortDto.setTitle("Test Event");
+        eventShortDto.setTitle("Event");
     }
 
     @Test
     public void getAllPublicEventsTest() throws Exception {
-        List<EventShortDto> eventShortDtos = Arrays.asList(eventShortDto);
-        Mockito.when(eventService.getAllPublicEvents(any(String.class), any(List.class), any(Boolean.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Boolean.class), any(EventPublicSort.class), any(Integer.class), any(Integer.class), any()))
-                .thenReturn(eventShortDtos);
+        List<EventShortDto> eventShortDtos = Collections.singletonList(eventShortDto);
+        Mockito.when(eventService.getAllPublicEvents(any(String.class), any(List.class), any(Boolean.class),
+                any(LocalDateTime.class), any(LocalDateTime.class), any(Boolean.class),
+                any(EventPublicSort.class), any(Integer.class), any(Integer.class), any())).thenReturn(eventShortDtos);
 
         mockMvc.perform(get("/events")
                         .param("text", "test")
@@ -61,7 +62,9 @@ public class EventPublicControllerTest {
                         .param("size", "10"))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).getAllPublicEvents(any(String.class), any(List.class), any(Boolean.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Boolean.class), any(EventPublicSort.class), any(Integer.class), any(Integer.class), any());
+        Mockito.verify(eventService).getAllPublicEvents(any(String.class), any(List.class), any(Boolean.class),
+                any(LocalDateTime.class), any(LocalDateTime.class), any(Boolean.class), any(EventPublicSort.class),
+                any(Integer.class), any(Integer.class), any());
     }
 
     @Test

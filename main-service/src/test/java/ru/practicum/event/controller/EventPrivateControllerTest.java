@@ -9,18 +9,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.EventUserRequestDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Location;
+import ru.practicum.event.model.State;
 import ru.practicum.event.service.EventService;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.dto.RequestStatusDto;
 import ru.practicum.request.dto.RequestUpdateStatusDto;
+import ru.practicum.request.model.Status;
+import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,54 +48,53 @@ public class EventPrivateControllerTest {
     @BeforeEach
     public void setup() {
         newEventDto = new NewEventDto();
-        newEventDto.setAnnotation("annotation");
+        newEventDto.setAnnotation("Annotation");
         newEventDto.setCategory(1L);
-        newEventDto.setDescription("description");
+        newEventDto.setDescription("Description");
         newEventDto.setEventDate(LocalDateTime.now());
         newEventDto.setPaid(false);
         newEventDto.setParticipantLimit(10L);
         newEventDto.setRequestModeration(true);
-        newEventDto.setTitle("title");
+        newEventDto.setTitle("Title");
 
         eventFullDto = new EventFullDto();
         eventFullDto.setId(1L);
-        eventFullDto.setAnnotation("annotation");
-        eventFullDto.setCategory(new ru.practicum.category.dto.CategoryDto());
+        eventFullDto.setAnnotation("Annotation");
+        eventFullDto.setCategory(new CategoryDto());
         eventFullDto.setConfirmedRequests(0L);
         eventFullDto.setCreatedOn(LocalDateTime.now());
-        eventFullDto.setDescription("description");
+        eventFullDto.setDescription("Description");
         eventFullDto.setEventDate(LocalDateTime.now());
-        eventFullDto.setInitiator(new ru.practicum.user.dto.UserShortDto());
-        eventFullDto.setLocation(new ru.practicum.event.model.Location());
+        eventFullDto.setInitiator(new UserShortDto());
+        eventFullDto.setLocation(new Location());
         eventFullDto.setPaid(false);
         eventFullDto.setParticipantLimit(10L);
         eventFullDto.setPublishedOn(LocalDateTime.now());
         eventFullDto.setRequestModeration(true);
-        eventFullDto.setState(ru.practicum.event.model.State.PENDING);
+        eventFullDto.setState(State.PENDING);
         eventFullDto.setTitle("title");
         eventFullDto.setViews(0L);
 
         eventUserRequestDto = new EventUserRequestDto();
-        eventUserRequestDto.setAnnotation("annotation");
+        eventUserRequestDto.setAnnotation("Annotation");
         eventUserRequestDto.setCategory(1L);
-        eventUserRequestDto.setDescription("description");
+        eventUserRequestDto.setDescription("Description");
         eventUserRequestDto.setEventDate(LocalDateTime.now());
         eventUserRequestDto.setPaid(false);
         eventUserRequestDto.setParticipantLimit(10L);
         eventUserRequestDto.setRequestModeration(true);
-        eventUserRequestDto.setTitle("title");
+        eventUserRequestDto.setTitle("Title");
 
         requestUpdateStatusDto = new RequestUpdateStatusDto();
         requestUpdateStatusDto.setRequestIds(Collections.emptySet());
-        requestUpdateStatusDto.setStatus(ru.practicum.request.model.Status.CONFIRMED);
+        requestUpdateStatusDto.setStatus(Status.CONFIRMED);
     }
 
     @Test
     public void addEventTest() throws Exception {
-        newEventDto.setDescription("Описание события, которое должно быть не менее 20 символов");
-        newEventDto.setAnnotation("Аннотация события, которое должно быть не менее 20 символов");
-        newEventDto.setLocation(new Location(1L, 10.0f, 20.0f));
-
+        newEventDto.setDescription("12345 12345 12345 12345");
+        newEventDto.setAnnotation("12345 12345 12345 12345");
+        newEventDto.setLocation(new Location(1L, 55.86f, 37.32f));
         when(eventService.addEvent(anyLong(), any(NewEventDto.class))).thenReturn(eventFullDto);
 
         mockMvc.perform(post("/users/1/events")
@@ -106,7 +108,6 @@ public class EventPrivateControllerTest {
     @Test
     public void getEventByIdTest() throws Exception {
         when(eventService.getEventById(anyLong(), anyLong(), any())).thenReturn(eventFullDto);
-
         mockMvc.perform(get("/users/1/events/1"))
                 .andExpect(status().isOk());
 
@@ -115,8 +116,9 @@ public class EventPrivateControllerTest {
 
     @Test
     public void getEventsByUserTest() throws Exception {
-        List<EventShortDto> eventShortDtos = Arrays.asList(new EventShortDto());
+        List<EventShortDto> eventShortDtos = List.of(new EventShortDto());
         when(eventService.getEventsByUser(anyLong(), anyInt(), anyInt(), any())).thenReturn(eventShortDtos);
+
         mockMvc.perform(get("/users/1/events")
                         .param("from", "0")
                         .param("size", "10"))
@@ -127,9 +129,8 @@ public class EventPrivateControllerTest {
 
     @Test
     public void updateEventTest() throws Exception {
-        eventUserRequestDto.setAnnotation("Annotation of the event, which should be at least 20 characters");
-        eventUserRequestDto.setDescription("Description of the event, which should be at least 20 characters");
-
+        eventUserRequestDto.setAnnotation("12345 12345 12345 12345");
+        eventUserRequestDto.setDescription("12345 12345 12345 12345");
         when(eventService.updateEvent(anyLong(), anyLong(), any(EventUserRequestDto.class))).thenReturn(eventFullDto);
 
         mockMvc.perform(patch("/users/1/events/1")
@@ -142,7 +143,7 @@ public class EventPrivateControllerTest {
 
     @Test
     public void getRequestByEventIdTest() throws Exception {
-        List<RequestDto> requestDtos = Arrays.asList(new RequestDto());
+        List<RequestDto> requestDtos = List.of(new RequestDto());
         when(eventService.getRequestsByEventId(anyLong(), anyLong())).thenReturn(requestDtos);
 
         mockMvc.perform(get("/users/1/events/1/requests"))

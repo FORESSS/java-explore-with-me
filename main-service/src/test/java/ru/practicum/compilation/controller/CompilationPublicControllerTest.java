@@ -36,24 +36,25 @@ public class CompilationPublicControllerTest {
     public void setup() {
         eventShortDto = new EventShortDto();
         eventShortDto.setId(1L);
-        eventShortDto.setTitle("Test Event");
+        eventShortDto.setTitle("Event");
 
         compilationDto = new CompilationDto();
         compilationDto.setId(1L);
         compilationDto.setEvents(List.of(eventShortDto));
         compilationDto.setPinned(true);
-        compilationDto.setTitle("Test Compilation");
+        compilationDto.setTitle("Compilation");
     }
 
     @Test
     public void getAllCompilationsTest() throws Exception {
         Mockito.when(compilationService.getAllCompilations(eq(null), anyInt(), anyInt()))
                 .thenReturn(Collections.emptyList());
+
         mockMvc.perform(get("/compilations")
                         .param("from", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", is(0))); // Проверяем, что список пустой
+                .andExpect(jsonPath("$.length()", is(0)));
 
         Mockito.verify(compilationService).getAllCompilations(eq(null), anyInt(), anyInt());
     }
@@ -62,12 +63,13 @@ public class CompilationPublicControllerTest {
     public void getCompilationByIdTest() throws Exception {
         Mockito.when(compilationService.getCompilationById(anyLong()))
                 .thenReturn(compilationDto);
+
         mockMvc.perform(get("/compilations/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.events[0].id", is(1)))
                 .andExpect(jsonPath("$.pinned", is(true)))
-                .andExpect(jsonPath("$.title", is("Test Compilation")));
+                .andExpect(jsonPath("$.title", is("Compilation")));
 
         Mockito.verify(compilationService).getCompilationById(anyLong());
     }

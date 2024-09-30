@@ -34,7 +34,7 @@ public class CategoryPublicControllerTest {
     public void setup() {
         categoryDto = new CategoryDto();
         categoryDto.setId(1L);
-        categoryDto.setName("Test Category");
+        categoryDto.setName("Category");
     }
 
     @Test
@@ -42,12 +42,13 @@ public class CategoryPublicControllerTest {
         List<CategoryDto> categories = Collections.singletonList(categoryDto);
         Mockito.when(categoryService.getAllCategories(any(Integer.class), any(Integer.class)))
                 .thenReturn(categories);
+
         mockMvc.perform(get("/categories")
                         .param("from", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].name", is("Test Category")));
+                .andExpect(jsonPath("$[0].name", is("Category")));
 
         Mockito.verify(categoryService).getAllCategories(any(Integer.class), any(Integer.class));
     }
@@ -56,10 +57,11 @@ public class CategoryPublicControllerTest {
     public void getCategoryByIdTest() throws Exception {
         Mockito.when(categoryService.getCategoryById(1L))
                 .thenReturn(categoryDto);
+
         mockMvc.perform(get("/categories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("Test Category")));
+                .andExpect(jsonPath("$.name", is("Category")));
 
         Mockito.verify(categoryService).getCategoryById(1L);
     }
