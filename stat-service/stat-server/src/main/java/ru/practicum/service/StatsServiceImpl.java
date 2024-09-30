@@ -5,13 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import ru.practicum.Constants;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
+import ru.practicum.util.StatConstants;
+import ru.practicum.util.StatValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +24,7 @@ public class StatsServiceImpl implements StatsService {
     private final StatsRepository statsRepository;
     private final EndpointHitMapper endpointHitMapper;
     private final ViewStatsMapper viewStatsMapper;
+    private final StatValidator validator;
 
     @Override
     @Transactional
@@ -34,24 +36,23 @@ public class StatsServiceImpl implements StatsService {
     @Override
     @Transactional(readOnly = true)
     public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
-        List<ViewStats> listViewStats;
+        LocalDateTime startTime = parseTime(start);
+        LocalDateTime endTime = parseTime(end);
+        validator.checkDateTime(startTime, endTime);
         if (CollectionUtils.isEmpty(uris)) {
             uris = statsRepository.findUniqueUri();
         }
+        List<ViewStats> listViewStats;
         if (unique) {
-            listViewStats = statsRepository.findViewStatsByUniqueIp(parseTime(start),
-                    parseTime(end),
-                    uris);
+            listViewStats = statsRepository.findViewStatsByUniqueIp(startTime, endTime, uris);
         } else {
-            listViewStats = statsRepository.findViewStatsByUri(parseTime(start),
-                    parseTime(end),
-                    uris);
+            listViewStats = statsRepository.findViewStatsByUri(startTime, endTime, uris);
         }
         log.info("Получение статистики");
         return viewStatsMapper.toListViewStatsDto(listViewStats);
     }
 
     private LocalDateTime parseTime(String time) {
-        return LocalDateTime.parse(time, Constants.FORMATTER);
+        return LocalDateTime.parse(time, StatConstants.FORMATTER);
     }
 }
