@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto update(long catId, RequestCategoryDto requestCategoryDto) {
         Category updateCategory = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
-        if (validator.isCategoryExists(catId, requestCategoryDto)) {
+        if (!validator.isCategoryExists(catId, requestCategoryDto)) {
             throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", requestCategoryDto.getName()));
         }
         updateCategory.setName(requestCategoryDto.getName());
@@ -54,10 +54,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void delete(long catId) {
-        if (validator.isValidCategoryId(catId)) {
+        if (!validator.isValidCategoryId(catId)) {
             throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
         }
-        if (validator.isCategoryExists(catId)) {
+        if (!validator.isCategoryExists(catId)) {
             throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
         }
         categoryRepository.deleteById(catId);
