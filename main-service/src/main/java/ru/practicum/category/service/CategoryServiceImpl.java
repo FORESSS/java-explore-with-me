@@ -11,6 +11,8 @@ import ru.practicum.category.dto.RequestCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.util.Validator;
 
 import java.util.Collections;
@@ -28,7 +30,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto add(RequestCategoryDto requestCategoryDto) {
         Category category = categoryMapper.toCategory(requestCategoryDto);
-        validator.checkCategory(category);
+        if (!validator.isCategoryExists(category)) {
+            throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", category.getName()));
+        }
         categoryRepository.save(category);
         log.info("Категория с id: {} создана", category.getId());
         return categoryMapper.toCategoryDto(category);
@@ -37,8 +41,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto update(long catId, RequestCategoryDto requestCategoryDto) {
-        Category updateCategory = validator.validateAndGetCategory(catId);
-        validator.checkCategory(catId, requestCategoryDto);
+        Category updateCategory = categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
+        if (validator.isCategoryExists(catId, requestCategoryDto)) {
+            throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", requestCategoryDto.getName()));
+        }
         updateCategory.setName(requestCategoryDto.getName());
         log.info("Категория с id: {} обновлена", catId);
         return categoryMapper.toCategoryDto(updateCategory);
@@ -47,8 +54,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void delete(long catId) {
-        validator.checkCategoryId(catId);
-        validator.checkCategory(catId);
+        if (validator.isValidCategoryId(catId)) {
+            throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
+        }
+        if (validator.isCategoryExists(catId)) {
+            throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
+        }
         categoryRepository.deleteById(catId);
         log.info("Категория с id: {} удалена", catId);
     }
@@ -71,7 +82,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public CategoryDto findById(long catId) {
-        Category category = validator.validateAndGetCategory(catId);
+        Category category = categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
         log.info("Получение категории с id: {}", catId);
         return categoryMapper.toCategoryDto(category);
     }
