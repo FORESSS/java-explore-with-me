@@ -50,7 +50,7 @@ public class RequestServiceImpl implements RequestService {
         }
         User user = validateAndGetUser(userId);
         Event event = validateAndGetEvent(eventId);
-        if (!validator.checkRequestLimit(event)) {
+        if (validator.checkRequestLimit(event)) {
             throw new RestrictionsViolationException("Превышен лимит запросов");
         }
         if (!validator.checkRequestConditions(eventId)) {
@@ -73,7 +73,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public RequestDto cancel(long userId, long requestId) {
-        if (!validator.isValidUserId(userId)) {
+        if (validator.isValidUserId(userId)) {
             throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
         }
         Request request = validateAndGetRequest(userId);
