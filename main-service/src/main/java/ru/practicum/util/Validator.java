@@ -65,6 +65,21 @@ public class Validator {
         return userRepository.findUserByEmail(user.getEmail()).isEmpty();
     }
 
+    public boolean checkRequest(long userId, long eventId) {
+        return requestsRepository.findByRequesterIdAndEventId(userId, eventId).isEmpty()
+                && eventRepository.findByInitiatorIdAndId(userId, eventId).isEmpty();
+    }
+
+    public boolean checkRequestConditions(long eventId) {
+        return eventRepository.findById(eventId).orElseThrow().getState().equals(State.PUBLISHED);
+    }
+
+    public boolean checkRequestLimit(Event event) {
+        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(event.getId(), Status.CONFIRMED);
+        return event.getParticipantLimit() == 0L || confirmedRequests.size() < event.getParticipantLimit();
+    }
+
+
     public void checkUserId(long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
@@ -119,6 +134,7 @@ public class Validator {
                 .orElseThrow(() -> new NotFoundException(String.format("Подборка с id: %d не найдена", compId)));
     }
 
+
 //    public void checkEmail(User user) {
 //        userRepository.findUserByEmail(user.getEmail()).ifPresent(u -> {
 //            throw new RestrictionsViolationException("Email уже используется");
@@ -146,32 +162,32 @@ public class Validator {
 //        }
 //    }
 
-    public void checkRequest(long userId, long eventId) {
-        requestsRepository.findByRequesterIdAndEventId(userId, eventId).ifPresent(
-                r -> {
-                    throw new RestrictionsViolationException(String.format(
-                            "Запрос пользователя с id: %d для события с id: %d уже существует", userId, eventId));
-                });
-        eventRepository.findByInitiatorIdAndId(userId, eventId).ifPresent(
-                r -> {
-                    throw new RestrictionsViolationException(String.format(
-                            "Пользователь с id: %d инициирует событие с id: %d", userId, eventId));
-                });
-    }
+//    public void checkRequest(long userId, long eventId) {
+//        requestsRepository.findByRequesterIdAndEventId(userId, eventId).ifPresent(
+//                r -> {
+//                    throw new RestrictionsViolationException(String.format(
+//                            "Запрос пользователя с id: %d для события с id: %d уже существует", userId, eventId));
+//                });
+//        eventRepository.findByInitiatorIdAndId(userId, eventId).ifPresent(
+//                r -> {
+//                    throw new RestrictionsViolationException(String.format(
+//                            "Пользователь с id: %d инициирует событие с id: %d", userId, eventId));
+//                });
+//    }
 
-    public void checkRequestConditions(long eventId) {
-        if (!eventRepository.findById(eventId).orElseThrow().getState().equals(State.PUBLISHED)) {
-            throw new RestrictionsViolationException(String.format("Событие с id: %d не опубликовано", eventId));
-        }
-    }
-
-    public void checkRequestLimit(Event event) {
-        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(event.getId(), Status.CONFIRMED);
-        if ((!event.getParticipantLimit().equals(0L))
-                && (event.getParticipantLimit() == confirmedRequests.size())) {
-            throw new RestrictionsViolationException("Превышен лимит запросов");
-        }
-    }
+//    public void checkRequestConditions(long eventId) {
+//        if (!eventRepository.findById(eventId).orElseThrow().getState().equals(State.PUBLISHED)) {
+//            throw new RestrictionsViolationException(String.format("Событие с id: %d не опубликовано", eventId));
+//        }
+//    }
+//
+//    public void checkRequestLimit(Event event) {
+//        List<Request> confirmedRequests = requestsRepository.findAllByEventIdAndStatus(event.getId(), Status.CONFIRMED);
+//        if ((!event.getParticipantLimit().equals(0L))
+//                && (event.getParticipantLimit() == confirmedRequests.size())) {
+//            throw new RestrictionsViolationException("Превышен лимит запросов");
+//        }
+//    }
 
     public void checkEventDate(LocalDateTime eventDate) {
         if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
