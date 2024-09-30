@@ -48,10 +48,8 @@ public class Validator {
         return categoryRepository.existsById(catId);
     }
 
-    public void checkCompilationId(long compId) {
-        if (!compilationRepository.existsById(compId)) {
-            throw new NotFoundException(String.format("Подборка с id: %d не найдена", compId));
-        }
+    public boolean isValidCompilationId(long compId) {
+        return compilationRepository.existsById(compId);
     }
 
     public User validateAndGetUser(long userId) {

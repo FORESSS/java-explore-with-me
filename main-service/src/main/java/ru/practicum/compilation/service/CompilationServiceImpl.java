@@ -13,6 +13,7 @@ import ru.practicum.compilation.mapper.CompilationMapper;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.NotFoundException;
 import ru.practicum.util.Validator;
 
 import java.util.Collections;
@@ -45,7 +46,8 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public CompilationDto update(long compId, UpdateCompilationDto updateCompilationDto) {
-        Compilation compilation = validator.validateAndGetCompilation(compId);
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(String.format("Подборка с id: %d не найдена", compId)));
         if (!CollectionUtils.isEmpty(updateCompilationDto.getEvents())) {
             compilation.setEvents(eventRepository.findAllByIdIn(updateCompilationDto.getEvents()));
         }
@@ -62,7 +64,9 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public void delete(long compId) {
-        validator.checkCompilationId(compId);
+        if (!validator.isValidCompilationId(compId)) {
+            throw new NotFoundException(String.format("Подборка с id: %d не найдена", compId));
+        }
         compilationRepository.deleteById(compId);
         log.info("Подборка событий с id: {} удалена", compId);
     }
@@ -86,7 +90,8 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional(readOnly = true)
     public CompilationDto findById(long compId) {
-        Compilation compilation = validator.validateAndGetCompilation(compId);
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(String.format("Подборка с id: %d не найдена", compId)));
         log.info("Получение подборки событий с id: {}", compId);
         return compilationMapper.toCompilationDto(compilation);
     }
