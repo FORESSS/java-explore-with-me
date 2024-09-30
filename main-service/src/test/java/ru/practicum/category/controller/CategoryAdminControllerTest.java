@@ -43,7 +43,7 @@ public class CategoryAdminControllerTest {
 
     @Test
     public void addCategoryTest() throws Exception {
-        when(categoryService.addCategory(any(RequestCategoryDto.class)))
+        when(categoryService.add(any(RequestCategoryDto.class)))
                 .thenReturn(categoryDto);
 
         mockMvc.perform(post("/admin/categories")
@@ -53,12 +53,12 @@ public class CategoryAdminControllerTest {
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Category")));
 
-        Mockito.verify(categoryService).addCategory(any(RequestCategoryDto.class));
+        Mockito.verify(categoryService).add(any(RequestCategoryDto.class));
     }
 
     @Test
     public void updateCategoryTest() throws Exception {
-        when(categoryService.updateCategory(anyLong(), any(RequestCategoryDto.class)))
+        when(categoryService.update(anyLong(), any(RequestCategoryDto.class)))
                 .thenReturn(categoryDto);
 
         mockMvc.perform(patch("/admin/categories/1")
@@ -68,7 +68,7 @@ public class CategoryAdminControllerTest {
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Category")));
 
-        Mockito.verify(categoryService).updateCategory(anyLong(), any(RequestCategoryDto.class));
+        Mockito.verify(categoryService).update(anyLong(), any(RequestCategoryDto.class));
     }
 
     @Test
@@ -76,6 +76,6 @@ public class CategoryAdminControllerTest {
         mockMvc.perform(delete("/admin/categories/1"))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(categoryService).deleteCategory(anyLong());
+        Mockito.verify(categoryService).delete(anyLong());
     }
 }

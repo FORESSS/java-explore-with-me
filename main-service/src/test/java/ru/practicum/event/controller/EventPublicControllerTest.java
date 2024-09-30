@@ -46,7 +46,7 @@ public class EventPublicControllerTest {
     @Test
     public void getAllPublicEventsTest() throws Exception {
         List<EventShortDto> eventShortDtos = Collections.singletonList(eventShortDto);
-        Mockito.when(eventService.getAllPublicEvents(any(String.class), any(List.class), any(Boolean.class),
+        Mockito.when(eventService.findPublicEvents(any(String.class), any(List.class), any(Boolean.class),
                 any(LocalDateTime.class), any(LocalDateTime.class), any(Boolean.class),
                 any(EventPublicSort.class), any(Integer.class), any(Integer.class), any())).thenReturn(eventShortDtos);
 
@@ -62,19 +62,19 @@ public class EventPublicControllerTest {
                         .param("size", "10"))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).getAllPublicEvents(any(String.class), any(List.class), any(Boolean.class),
+        Mockito.verify(eventService).findPublicEvents(any(String.class), any(List.class), any(Boolean.class),
                 any(LocalDateTime.class), any(LocalDateTime.class), any(Boolean.class), any(EventPublicSort.class),
                 any(Integer.class), any(Integer.class), any());
     }
 
     @Test
     public void getPublicEventByIdTest() throws Exception {
-        Mockito.when(eventService.getPublicEventById(any(Long.class), any()))
+        Mockito.when(eventService.findPublicEventById(any(Long.class), any()))
                 .thenReturn(eventFullDto);
 
         mockMvc.perform(get("/events/1"))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).getPublicEventById(any(Long.class), any());
+        Mockito.verify(eventService).findPublicEventById(any(Long.class), any());
     }
 }

@@ -40,7 +40,7 @@ public class CategoryPublicControllerTest {
     @Test
     public void getAllCategoriesTest() throws Exception {
         List<CategoryDto> categories = Collections.singletonList(categoryDto);
-        Mockito.when(categoryService.getAllCategories(any(Integer.class), any(Integer.class)))
+        Mockito.when(categoryService.find(any(Integer.class), any(Integer.class)))
                 .thenReturn(categories);
 
         mockMvc.perform(get("/categories")
@@ -50,12 +50,12 @@ public class CategoryPublicControllerTest {
                 .andExpect(jsonPath("$[0].id", is(1)))
                 .andExpect(jsonPath("$[0].name", is("Category")));
 
-        Mockito.verify(categoryService).getAllCategories(any(Integer.class), any(Integer.class));
+        Mockito.verify(categoryService).find(any(Integer.class), any(Integer.class));
     }
 
     @Test
     public void getCategoryByIdTest() throws Exception {
-        Mockito.when(categoryService.getCategoryById(1L))
+        Mockito.when(categoryService.findById(1L))
                 .thenReturn(categoryDto);
 
         mockMvc.perform(get("/categories/1"))
@@ -63,6 +63,6 @@ public class CategoryPublicControllerTest {
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Category")));
 
-        Mockito.verify(categoryService).getCategoryById(1L);
+        Mockito.verify(categoryService).findById(1L);
     }
 }

@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getAllUsers(List<Long> ids, int from, int size) {
+    public List<UserDto> find(List<Long> ids, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
         List<User> users;
         if (CollectionUtils.isEmpty(ids)) {
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto createUser(UserRequestDto requestDto) {
+    public UserDto add(UserRequestDto requestDto) {
         User user = userMapper.toUser(requestDto);
         validator.checkEmail(user);
         userRepository.save(user);
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(long userId) {
+    public void delete(long userId) {
         validator.checkUserId(userId);
         userRepository.deleteById(userId);
         log.info("Пользователь с id: {} удалён", userId);

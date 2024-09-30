@@ -44,7 +44,7 @@ public class RequestPrivateControllerTest {
     @Test
     public void getAllRequestsTest() throws Exception {
         List<RequestDto> requestDtos = Collections.singletonList(requestDto);
-        Mockito.when(requestService.getAllRequests(any(Long.class)))
+        Mockito.when(requestService.find(any(Long.class)))
                 .thenReturn(requestDtos);
 
         mockMvc.perform(get("/users/1/requests")
@@ -54,12 +54,12 @@ public class RequestPrivateControllerTest {
                 .andExpect(jsonPath("$[0].event", is(1)))
                 .andExpect(jsonPath("$[0].requester", is(1)));
 
-        Mockito.verify(requestService).getAllRequests(any(Long.class));
+        Mockito.verify(requestService).find(any(Long.class));
     }
 
     @Test
     public void addRequestTest() throws Exception {
-        Mockito.when(requestService.addRequest(any(Long.class), any(Long.class)))
+        Mockito.when(requestService.add(any(Long.class), any(Long.class)))
                 .thenReturn(requestDto);
 
         mockMvc.perform(post("/users/1/requests")
@@ -70,12 +70,12 @@ public class RequestPrivateControllerTest {
                 .andExpect(jsonPath("$.event", is(1)))
                 .andExpect(jsonPath("$.requester", is(1)));
 
-        Mockito.verify(requestService).addRequest(any(Long.class), any(Long.class));
+        Mockito.verify(requestService).add(any(Long.class), any(Long.class));
     }
 
     @Test
     public void cancelRequestTest() throws Exception {
-        Mockito.when(requestService.cancelRequest(any(Long.class), any(Long.class)))
+        Mockito.when(requestService.cancel(any(Long.class), any(Long.class)))
                 .thenReturn(requestDto);
 
         mockMvc.perform(patch("/users/1/requests/1/cancel")
@@ -85,6 +85,6 @@ public class RequestPrivateControllerTest {
                 .andExpect(jsonPath("$.event", is(1)))
                 .andExpect(jsonPath("$.requester", is(1)));
 
-        Mockito.verify(requestService).cancelRequest(any(Long.class), any(Long.class));
+        Mockito.verify(requestService).cancel(any(Long.class), any(Long.class));
     }
 }

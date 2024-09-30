@@ -83,7 +83,7 @@ public class EventAdminControllerTest {
         eventAdminRequestDto.setRequestModeration(true);
         eventAdminRequestDto.setTitle("Title");
 
-        when(eventService.updateEventAdmin(anyLong(), any(EventAdminRequestDto.class)))
+        when(eventService.updateEventByAdmin(anyLong(), any(EventAdminRequestDto.class)))
                 .thenReturn(eventFullDto);
 
         mockMvc.perform(patch("/admin/events/1")
@@ -92,13 +92,13 @@ public class EventAdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)));
 
-        Mockito.verify(eventService).updateEventAdmin(anyLong(), any(EventAdminRequestDto.class));
+        Mockito.verify(eventService).updateEventByAdmin(anyLong(), any(EventAdminRequestDto.class));
     }
 
     @Test
     public void getAllAdminEventsTest() throws Exception {
         List<EventFullDto> eventFullDtos = Collections.singletonList(eventFullDto);
-        when(eventService.getAllAdminEvents(any(List.class), any(State.class), any(List.class), any(LocalDateTime.class),
+        when(eventService.findAdminEvents(any(List.class), any(State.class), any(List.class), any(LocalDateTime.class),
                 any(LocalDateTime.class), anyInt(), anyInt())).thenReturn(eventFullDtos);
 
         mockMvc.perform(get("/admin/events")
@@ -111,7 +111,7 @@ public class EventAdminControllerTest {
                         .param("size", "10"))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).getAllAdminEvents(any(List.class), any(State.class), any(List.class),
+        Mockito.verify(eventService).findAdminEvents(any(List.class), any(State.class), any(List.class),
                 any(LocalDateTime.class), any(LocalDateTime.class), anyInt(), anyInt());
     }
 }

@@ -49,7 +49,7 @@ public class UserAdminControllerTest {
     @Test
     public void getAllUsersTest() throws Exception {
         List<UserDto> users = Collections.singletonList(userDto);
-        Mockito.when(userService.getAllUsers(any(List.class), anyInt(), anyInt()))
+        Mockito.when(userService.find(any(List.class), anyInt(), anyInt()))
                 .thenReturn(users);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/users")
@@ -61,12 +61,12 @@ public class UserAdminControllerTest {
                 .andExpect(jsonPath("$[0].email", is("test@test.com")))
                 .andExpect(jsonPath("$[0].name", is("User")));
 
-        Mockito.verify(userService).getAllUsers(any(List.class), anyInt(), anyInt());
+        Mockito.verify(userService).find(any(List.class), anyInt(), anyInt());
     }
 
     @Test
     public void createUserTest() throws Exception {
-        Mockito.when(userService.createUser(any(UserRequestDto.class)))
+        Mockito.when(userService.add(any(UserRequestDto.class)))
                 .thenReturn(userDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/admin/users")
@@ -77,7 +77,7 @@ public class UserAdminControllerTest {
                 .andExpect(jsonPath("$.email", is("test@test.com")))
                 .andExpect(jsonPath("$.name", is("User")));
 
-        Mockito.verify(userService).createUser(any(UserRequestDto.class));
+        Mockito.verify(userService).add(any(UserRequestDto.class));
     }
 
     @Test
@@ -85,6 +85,6 @@ public class UserAdminControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/admin/users/{userId}", 1L))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(userService).deleteUser(1L);
+        Mockito.verify(userService).delete(1L);
     }
 }

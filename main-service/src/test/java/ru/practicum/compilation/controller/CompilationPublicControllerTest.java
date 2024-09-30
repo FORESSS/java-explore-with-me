@@ -47,7 +47,7 @@ public class CompilationPublicControllerTest {
 
     @Test
     public void getAllCompilationsTest() throws Exception {
-        Mockito.when(compilationService.getAllCompilations(eq(null), anyInt(), anyInt()))
+        Mockito.when(compilationService.find(eq(null), anyInt(), anyInt()))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/compilations")
@@ -56,12 +56,12 @@ public class CompilationPublicControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()", is(0)));
 
-        Mockito.verify(compilationService).getAllCompilations(eq(null), anyInt(), anyInt());
+        Mockito.verify(compilationService).find(eq(null), anyInt(), anyInt());
     }
 
     @Test
     public void getCompilationByIdTest() throws Exception {
-        Mockito.when(compilationService.getCompilationById(anyLong()))
+        Mockito.when(compilationService.findById(anyLong()))
                 .thenReturn(compilationDto);
 
         mockMvc.perform(get("/compilations/1"))
@@ -71,6 +71,6 @@ public class CompilationPublicControllerTest {
                 .andExpect(jsonPath("$.pinned", is(true)))
                 .andExpect(jsonPath("$.title", is("Compilation")));
 
-        Mockito.verify(compilationService).getCompilationById(anyLong());
+        Mockito.verify(compilationService).findById(anyLong());
     }
 }

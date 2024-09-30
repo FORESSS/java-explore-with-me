@@ -18,19 +18,19 @@ public class RequestPrivateController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RequestDto> getAllRequests(@PathVariable Long userId) {
-        return requestService.getAllRequests(userId);
+    public List<RequestDto> find(@PathVariable Long userId) {
+        return requestService.find(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RequestDto addRequest(@PathVariable Long userId, @RequestParam Long eventId) {
-        return requestService.addRequest(userId, eventId);
+    public RequestDto add(@PathVariable Long userId, @RequestParam Long eventId) {
+        return requestService.add(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
     @ResponseStatus(HttpStatus.OK)
-    public RequestDto cancelRequest(@PathVariable Long userId, @PathVariable Long requestId) {
-        return requestService.cancelRequest(userId, requestId);
+    public RequestDto cancel(@PathVariable Long userId, @PathVariable Long requestId) {
+        return requestService.cancel(userId, requestId);
     }
 }

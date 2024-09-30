@@ -61,7 +61,7 @@ public class CompilationAdminControllerTest {
 
     @Test
     public void addCompilationTest() throws Exception {
-        Mockito.when(compilationService.addCompilation(any(NewCompilationDto.class)))
+        Mockito.when(compilationService.add(any(NewCompilationDto.class)))
                 .thenReturn(compilationDto);
 
         mockMvc.perform(post("/admin/compilations")
@@ -73,12 +73,12 @@ public class CompilationAdminControllerTest {
                 .andExpect(jsonPath("$.pinned", is(true)))
                 .andExpect(jsonPath("$.title", is("Compilation")));
 
-        Mockito.verify(compilationService).addCompilation(any(NewCompilationDto.class));
+        Mockito.verify(compilationService).add(any(NewCompilationDto.class));
     }
 
     @Test
     public void updateCompilationTest() throws Exception {
-        Mockito.when(compilationService.updateCompilation(any(Long.class), any(UpdateCompilationDto.class)))
+        Mockito.when(compilationService.update(any(Long.class), any(UpdateCompilationDto.class)))
                 .thenReturn(compilationDto);
 
         mockMvc.perform(patch("/admin/compilations/1")
@@ -90,7 +90,7 @@ public class CompilationAdminControllerTest {
                 .andExpect(jsonPath("$.pinned", is(true)))
                 .andExpect(jsonPath("$.title", is("Compilation")));
 
-        Mockito.verify(compilationService).updateCompilation(any(Long.class), any(UpdateCompilationDto.class));
+        Mockito.verify(compilationService).update(any(Long.class), any(UpdateCompilationDto.class));
     }
 
     @Test
@@ -98,6 +98,6 @@ public class CompilationAdminControllerTest {
         mockMvc.perform(delete("/admin/compilations/1"))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(compilationService).deleteCompilation(any(Long.class));
+        Mockito.verify(compilationService).delete(any(Long.class));
     }
 }

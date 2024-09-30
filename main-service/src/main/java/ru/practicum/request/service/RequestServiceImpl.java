@@ -26,7 +26,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RequestDto> getAllRequests(long userId) {
+    public List<RequestDto> find(long userId) {
         validator.checkUserId(userId);
         List<Request> requests = requestsRepository.findAllByRequesterId(userId);
         log.info("Получение всех запросов пользователя с id: {}", userId);
@@ -35,7 +35,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public RequestDto addRequest(long userId, long eventId) {
+    public RequestDto add(long userId, long eventId) {
         validator.checkRequest(userId, eventId);
         User user = validator.validateAndGetUser(userId);
         Event event = validator.validateAndGetEvent(eventId);
@@ -57,7 +57,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public RequestDto cancelRequest(long userId, long requestId) {
+    public RequestDto cancel(long userId, long requestId) {
         validator.checkUserId(userId);
         Request request = validator.validateAndGetRequest(requestId);
         request.setStatus(Status.CANCELED);

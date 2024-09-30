@@ -53,7 +53,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto addEvent(long userId, NewEventDto newEventDto) {
+    public EventFullDto add(long userId, NewEventDto newEventDto) {
         User initiator = validator.validateAndGetUser(userId);
         Category category = validator.validateAndGetCategory(newEventDto.getCategory());
         validator.checkEventDate(newEventDto.getEventDate());
@@ -82,7 +82,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public EventFullDto getEventById(long userId, long eventId, HttpServletRequest request) {
+    public EventFullDto findById(long userId, long eventId, HttpServletRequest request) {
         validator.checkUserId(userId);
         Event event = validator.validateAndGetEvent(eventId);
         List<ViewStatsDto> viewStats = getViewStats(List.of(event));
@@ -99,7 +99,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventShortDto> getEventsByUser(long userId, int from, int size, HttpServletRequest request) {
+    public List<EventShortDto> findByUser(long userId, int from, int size, HttpServletRequest request) {
         validator.checkUserId(userId);
         PageRequest pageRequest = PageRequest.of(from, size);
         BooleanExpression byUserId = event.initiator.id.eq(userId);
@@ -114,7 +114,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto updateEvent(long userId, long eventId, EventUserRequestDto eventUserRequestDto) {
+    public EventFullDto update(long userId, long eventId, EventUserRequestDto eventUserRequestDto) {
         validator.checkUserId(userId);
         Event event = validator.validateAndGetEvent(eventId);
         validator.checkEventState(event.getState());
@@ -159,7 +159,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RequestDto> getRequestsByEventId(long userId, long eventId) {
+    public List<RequestDto> findRequestsByEventId(long userId, long eventId) {
         validator.checkUserId(userId);
         validator.checkEventId(eventId);
         List<Request> requests = requestsRepository.findByEventId(eventId);
@@ -185,8 +185,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventFullDto> getAllAdminEvents(List<Long> users, State state, List<Long> categories,
-                                                LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+    public List<EventFullDto> findAdminEvents(List<Long> users, State state, List<Long> categories,
+                                              LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
         Page<Event> pageEvents;
         PageRequest pageRequest = getCustomPage(from, size, null);
         BooleanBuilder builder = new BooleanBuilder();
@@ -220,7 +220,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto updateEventAdmin(long eventId, EventAdminRequestDto eventAdminRequestDto) {
+    public EventFullDto updateEventByAdmin(long eventId, EventAdminRequestDto eventAdminRequestDto) {
         Event event = validator.validateAndGetEvent(eventId);
         if (eventAdminRequestDto.getAnnotation() != null && !eventAdminRequestDto.getAnnotation().isBlank()) {
             event.setAnnotation(eventAdminRequestDto.getAnnotation());
@@ -260,9 +260,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventShortDto> getAllPublicEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
-                                                  LocalDateTime rangeEnd, boolean onlyAvailable, EventPublicSort sort,
-                                                  int from, int size, HttpServletRequest request) {
+    public List<EventShortDto> findPublicEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+                                                LocalDateTime rangeEnd, boolean onlyAvailable, EventPublicSort sort,
+                                                int from, int size, HttpServletRequest request) {
         validator.checkEventDate(rangeStart, rangeEnd);
         Page<Event> events;
         PageRequest pageRequest = getCustomPage(from, size, sort);
@@ -298,7 +298,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public EventFullDto getPublicEventById(long id, HttpServletRequest request) {
+    public EventFullDto findPublicEventById(long id, HttpServletRequest request) {
         Event event = validator.validateAndGetPublishedEvent(id);
         setViews(List.of(event));
         statClient.saveHit(appConfig.getAppName(), request);

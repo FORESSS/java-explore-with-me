@@ -22,21 +22,21 @@ public class UserAdminController {
     @GetMapping
     @Validated
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> getAllUsers(@RequestParam(required = false) List<Long> ids,
-                                     @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                     @RequestParam(defaultValue = "10") @Positive Integer size) {
-        return userService.getAllUsers(ids, from, size);
+    public List<UserDto> find(@RequestParam(required = false) List<Long> ids,
+                              @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                              @RequestParam(defaultValue = "10") @Positive Integer size) {
+        return userService.find(ids, from, size);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@RequestBody @Valid UserRequestDto userRequestDto) {
-        return userService.createUser(userRequestDto);
+    public UserDto add(@RequestBody @Valid UserRequestDto userRequestDto) {
+        return userService.add(userRequestDto);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    public void delete(@PathVariable Long userId) {
+        userService.delete(userId);
     }
 }

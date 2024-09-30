@@ -26,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDto addCategory(RequestCategoryDto requestCategoryDto) {
+    public CategoryDto add(RequestCategoryDto requestCategoryDto) {
         Category category = categoryMapper.toCategory(requestCategoryDto);
         validator.checkCategory(category);
         categoryRepository.save(category);
@@ -36,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDto updateCategory(long catId, RequestCategoryDto requestCategoryDto) {
+    public CategoryDto update(long catId, RequestCategoryDto requestCategoryDto) {
         Category updateCategory = validator.validateAndGetCategory(catId);
         validator.checkCategory(catId, requestCategoryDto);
         updateCategory.setName(requestCategoryDto.getName());
@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void deleteCategory(long catId) {
+    public void delete(long catId) {
         validator.checkCategoryId(catId);
         validator.checkCategory(catId);
         categoryRepository.deleteById(catId);
@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryDto> getAllCategories(int from, int size) {
+    public List<CategoryDto> find(int from, int size) {
         PageRequest pageRequest = PageRequest.of(from, size);
         Page<Category> pageCategories = categoryRepository.findAll(pageRequest);
         List<Category> categories;
@@ -70,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryDto getCategoryById(long catId) {
+    public CategoryDto findById(long catId) {
         Category category = validator.validateAndGetCategory(catId);
         log.info("Получение категории с id: {}", catId);
         return categoryMapper.toCategoryDto(category);

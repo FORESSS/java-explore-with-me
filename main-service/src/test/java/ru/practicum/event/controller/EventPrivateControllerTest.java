@@ -95,61 +95,61 @@ public class EventPrivateControllerTest {
         newEventDto.setDescription("12345 12345 12345 12345");
         newEventDto.setAnnotation("12345 12345 12345 12345");
         newEventDto.setLocation(new Location(1L, 55.86f, 37.32f));
-        when(eventService.addEvent(anyLong(), any(NewEventDto.class))).thenReturn(eventFullDto);
+        when(eventService.add(anyLong(), any(NewEventDto.class))).thenReturn(eventFullDto);
 
         mockMvc.perform(post("/users/1/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newEventDto)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(eventService).addEvent(anyLong(), any(NewEventDto.class));
+        Mockito.verify(eventService).add(anyLong(), any(NewEventDto.class));
     }
 
     @Test
     public void getEventByIdTest() throws Exception {
-        when(eventService.getEventById(anyLong(), anyLong(), any())).thenReturn(eventFullDto);
+        when(eventService.findById(anyLong(), anyLong(), any())).thenReturn(eventFullDto);
         mockMvc.perform(get("/users/1/events/1"))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).getEventById(anyLong(), anyLong(), any());
+        Mockito.verify(eventService).findById(anyLong(), anyLong(), any());
     }
 
     @Test
     public void getEventsByUserTest() throws Exception {
         List<EventShortDto> eventShortDtos = List.of(new EventShortDto());
-        when(eventService.getEventsByUser(anyLong(), anyInt(), anyInt(), any())).thenReturn(eventShortDtos);
+        when(eventService.findByUser(anyLong(), anyInt(), anyInt(), any())).thenReturn(eventShortDtos);
 
         mockMvc.perform(get("/users/1/events")
                         .param("from", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).getEventsByUser(anyLong(), anyInt(), anyInt(), any());
+        Mockito.verify(eventService).findByUser(anyLong(), anyInt(), anyInt(), any());
     }
 
     @Test
     public void updateEventTest() throws Exception {
         eventUserRequestDto.setAnnotation("12345 12345 12345 12345");
         eventUserRequestDto.setDescription("12345 12345 12345 12345");
-        when(eventService.updateEvent(anyLong(), anyLong(), any(EventUserRequestDto.class))).thenReturn(eventFullDto);
+        when(eventService.update(anyLong(), anyLong(), any(EventUserRequestDto.class))).thenReturn(eventFullDto);
 
         mockMvc.perform(patch("/users/1/events/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(eventUserRequestDto)))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).updateEvent(anyLong(), anyLong(), any(EventUserRequestDto.class));
+        Mockito.verify(eventService).update(anyLong(), anyLong(), any(EventUserRequestDto.class));
     }
 
     @Test
     public void getRequestByEventIdTest() throws Exception {
         List<RequestDto> requestDtos = List.of(new RequestDto());
-        when(eventService.getRequestsByEventId(anyLong(), anyLong())).thenReturn(requestDtos);
+        when(eventService.findRequestsByEventId(anyLong(), anyLong())).thenReturn(requestDtos);
 
         mockMvc.perform(get("/users/1/events/1/requests"))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).getRequestsByEventId(anyLong(), anyLong());
+        Mockito.verify(eventService).findRequestsByEventId(anyLong(), anyLong());
     }
 
     @Test

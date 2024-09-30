@@ -29,7 +29,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
+    public CompilationDto add(NewCompilationDto newCompilationDto) {
         Compilation compilation = compilationMapper.toCompilation(newCompilationDto);
         List<Long> ids = newCompilationDto.getEvents();
         if (!CollectionUtils.isEmpty(ids)) {
@@ -44,7 +44,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public CompilationDto updateCompilation(long compId, UpdateCompilationDto updateCompilationDto) {
+    public CompilationDto update(long compId, UpdateCompilationDto updateCompilationDto) {
         Compilation compilation = validator.validateAndGetCompilation(compId);
         if (!CollectionUtils.isEmpty(updateCompilationDto.getEvents())) {
             compilation.setEvents(eventRepository.findAllByIdIn(updateCompilationDto.getEvents()));
@@ -61,7 +61,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public void deleteCompilation(long compId) {
+    public void delete(long compId) {
         validator.checkCompilationId(compId);
         compilationRepository.deleteById(compId);
         log.info("Подборка событий с id: {} удалена", compId);
@@ -69,7 +69,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CompilationDto> getAllCompilations(Boolean pinned, int from, int size) {
+    public List<CompilationDto> find(Boolean pinned, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from, size);
         List<Compilation> compilations;
         if (pinned == null) {
@@ -85,7 +85,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional(readOnly = true)
-    public CompilationDto getCompilationById(long compId) {
+    public CompilationDto findById(long compId) {
         Compilation compilation = validator.validateAndGetCompilation(compId);
         log.info("Получение подборки событий с id: {}", compId);
         return compilationMapper.toCompilationDto(compilation);

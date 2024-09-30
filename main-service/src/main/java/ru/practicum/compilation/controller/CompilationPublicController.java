@@ -20,15 +20,15 @@ public class CompilationPublicController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CompilationDto> getAllCompilations(@RequestParam(required = false) Boolean pinned,
-                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                                   @RequestParam(defaultValue = "10") @Positive Integer size) {
-        return compilationService.getAllCompilations(pinned, from, size);
+    public List<CompilationDto> find(@RequestParam(required = false) Boolean pinned,
+                                     @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                     @RequestParam(defaultValue = "10") @Positive Integer size) {
+        return compilationService.find(pinned, from, size);
     }
 
     @GetMapping("/{compId}")
     @ResponseStatus(HttpStatus.OK)
-    public CompilationDto getCompilationById(@PathVariable Long compId) {
-        return compilationService.getCompilationById(compId);
+    public CompilationDto findById(@PathVariable Long compId) {
+        return compilationService.findById(compId);
     }
 }

@@ -20,14 +20,14 @@ public class CategoryPublicController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CategoryDto> getAllCategories(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                              @RequestParam(defaultValue = "10") @Positive Integer size) {
-        return categoryService.getAllCategories(from, size);
+    public List<CategoryDto> find(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                  @RequestParam(defaultValue = "10") @Positive Integer size) {
+        return categoryService.find(from, size);
     }
 
     @GetMapping("/{catId}")
     @ResponseStatus(HttpStatus.OK)
-    public CategoryDto getCategoryById(@PathVariable Long catId) {
-        return categoryService.getCategoryById(catId);
+    public CategoryDto findById(@PathVariable Long catId) {
+        return categoryService.findById(catId);
     }
 }
