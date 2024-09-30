@@ -47,8 +47,7 @@ public class StatsRepositoryTest {
         hit2.setIp("192.168.0.2");
         hit2.setTimestamp(LocalDateTime.now());
         statsRepository.save(hit2);
-        List<ViewStats> stats = statsRepository
-                .findViewStatsByUri(LocalDateTime.now().minusDays(2), LocalDateTime.now(), List.of("/test"));
+        List<ViewStats> stats = statsRepository.findViewStatsByUri(LocalDateTime.now().minusDays(2), LocalDateTime.now(), List.of("/test"));
 
         assertNotNull(stats);
         assertEquals(1, stats.size());

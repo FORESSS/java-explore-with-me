@@ -46,11 +46,7 @@ public class StatClient {
                 .retrieve()
                 .toBodilessEntity();
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            log.info("Сохранение информации о запросе");
-        } else {
-            log.error("Ошибка при сохранении информации, код ошибки: {}", response.getStatusCode());
-        }
+        validator.checkResponseStatus(response);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {

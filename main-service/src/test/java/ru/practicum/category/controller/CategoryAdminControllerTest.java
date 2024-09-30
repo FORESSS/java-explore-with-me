@@ -35,7 +35,7 @@ public class CategoryAdminControllerTest {
     @BeforeEach
     public void setup() {
         requestCategoryDto = new RequestCategoryDto();
-        requestCategoryDto.setName("Test Category");
+        requestCategoryDto.setName("TCategory");
         categoryDto = new CategoryDto();
         categoryDto.setId(1L);
         categoryDto.setName("Test Category");

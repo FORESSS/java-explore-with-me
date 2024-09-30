@@ -14,7 +14,7 @@ import ru.practicum.ViewStatsDto;
 import ru.practicum.service.StatsService;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -61,7 +61,7 @@ public class StatsControllerTest {
 
     @Test
     public void getViewStatsTest() throws Exception {
-        List<ViewStatsDto> viewStatsList = Arrays.asList(viewStatsDto);
+        List<ViewStatsDto> viewStatsList = Collections.singletonList(viewStatsDto);
         Mockito.when(statsService.getViewStats(any(String.class), any(String.class), any(List.class), any(Boolean.class)))
                 .thenReturn(viewStatsList);
 
