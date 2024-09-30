@@ -56,13 +56,13 @@ public class StatsControllerTest {
                         .content(objectMapper.writeValueAsString(endpointHitDto)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(statsService).saveEndpointHit(any(EndpointHitDto.class));
+        Mockito.verify(statsService).add(any(EndpointHitDto.class));
     }
 
     @Test
     public void getViewStatsTest() throws Exception {
         List<ViewStatsDto> viewStatsList = Collections.singletonList(viewStatsDto);
-        Mockito.when(statsService.getViewStats(any(String.class), any(String.class), any(List.class), any(Boolean.class)))
+        Mockito.when(statsService.find(any(String.class), any(String.class), any(List.class), any(Boolean.class)))
                 .thenReturn(viewStatsList);
 
         mockMvc.perform(get("/stats")
@@ -75,6 +75,6 @@ public class StatsControllerTest {
                 .andExpect(jsonPath("$[0].uri", is("/test-uri")))
                 .andExpect(jsonPath("$[0].hits", is(5)));
 
-        Mockito.verify(statsService).getViewStats(any(String.class), any(String.class), any(List.class), any(Boolean.class));
+        Mockito.verify(statsService).find(any(String.class), any(String.class), any(List.class), any(Boolean.class));
     }
 }

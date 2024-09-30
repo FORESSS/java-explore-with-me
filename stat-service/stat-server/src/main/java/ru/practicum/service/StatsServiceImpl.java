@@ -28,14 +28,14 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     @Transactional
-    public void saveEndpointHit(EndpointHitDto endpointHitDto) {
+    public void add(EndpointHitDto endpointHitDto) {
         log.info("Получен запрос для сохранения статистики");
         statsRepository.save(endpointHitMapper.toEndpointHit(endpointHitDto));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique) {
+    public List<ViewStatsDto> find(String start, String end, List<String> uris, boolean unique) {
         LocalDateTime startTime = parseTime(start);
         LocalDateTime endTime = parseTime(end);
         validator.checkDateTime(startTime, endTime);
