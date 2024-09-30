@@ -7,6 +7,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
 import ru.practicum.user.mapper.UserMapper;
@@ -42,7 +44,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto add(UserRequestDto requestDto) {
         User user = userMapper.toUser(requestDto);
-        validator.checkEmail(user);
+        if (!validator.isEmailAvailable(user.getEmail())) {
+            throw new RestrictionsViolationException("Email уже используется");
+        }
         userRepository.save(user);
         log.info("Пользователь с id: {} создан", user.getId());
         return userMapper.toUserDto(user);
@@ -51,7 +55,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(long userId) {
-        validator.checkUserId(userId);
+        if (!validator.isValidUserId(userId)) {
+            throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
+        }
         userRepository.deleteById(userId);
         log.info("Пользователь с id: {} удалён", userId);
     }

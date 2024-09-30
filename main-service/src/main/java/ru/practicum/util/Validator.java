@@ -32,10 +32,8 @@ public class Validator {
     private final RequestsRepository requestsRepository;
     private final CompilationRepository compilationRepository;
 
-    public void checkUserId(long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
-        }
+    public boolean isValidUserId(long userId) {
+        return userRepository.existsById(userId);
     }
 
     public void checkEventId(long eventId) {
@@ -82,10 +80,8 @@ public class Validator {
                 .orElseThrow(() -> new NotFoundException(String.format("Подборка с id: %d не найдена", compId)));
     }
 
-    public void checkEmail(User user) {
-        userRepository.findUserByEmail(user.getEmail()).ifPresent(u -> {
-            throw new RestrictionsViolationException("Email уже используется");
-        });
+    public boolean isEmailAvailable(String email) {
+        return userRepository.findUserByEmail(email).isEmpty();
     }
 
     public boolean isCategoryExists(Category category) {
