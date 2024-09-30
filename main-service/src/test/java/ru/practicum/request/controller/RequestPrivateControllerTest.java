@@ -13,7 +13,7 @@ import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.model.Status;
 import ru.practicum.request.service.RequestService;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -43,9 +43,10 @@ public class RequestPrivateControllerTest {
 
     @Test
     public void getAllRequestsTest() throws Exception {
-        List<RequestDto> requestDtos = Arrays.asList(requestDto);
+        List<RequestDto> requestDtos = Collections.singletonList(requestDto);
         Mockito.when(requestService.getAllRequests(any(Long.class)))
                 .thenReturn(requestDtos);
+
         mockMvc.perform(get("/users/1/requests")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -60,6 +61,7 @@ public class RequestPrivateControllerTest {
     public void addRequestTest() throws Exception {
         Mockito.when(requestService.addRequest(any(Long.class), any(Long.class)))
                 .thenReturn(requestDto);
+
         mockMvc.perform(post("/users/1/requests")
                         .param("eventId", "1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -75,6 +77,7 @@ public class RequestPrivateControllerTest {
     public void cancelRequestTest() throws Exception {
         Mockito.when(requestService.cancelRequest(any(Long.class), any(Long.class)))
                 .thenReturn(requestDto);
+
         mockMvc.perform(patch("/users/1/requests/1/cancel")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -22,12 +22,12 @@ public class CompilationRepositoryTest {
     void setUp() {
         compilation1 = new Compilation();
         compilation1.setPinned(true);
-        compilation1.setTitle("Test Compilation 1");
+        compilation1.setTitle("Compilation 1");
         compilationRepository.save(compilation1);
 
         compilation2 = new Compilation();
         compilation2.setPinned(false);
-        compilation2.setTitle("Test Compilation 2");
+        compilation2.setTitle("Compilation 2");
         compilationRepository.save(compilation2);
     }
 

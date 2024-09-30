@@ -15,7 +15,7 @@ import ru.practicum.event.model.State;
 import ru.practicum.event.service.EventService;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -71,9 +71,9 @@ public class EventAdminControllerTest {
     @Test
     public void updateEventAdminTest() throws Exception {
         EventAdminRequestDto eventAdminRequestDto = new EventAdminRequestDto();
-        eventAdminRequestDto.setAnnotation("Annotation".repeat(20)); // Длина аннотации должна быть не менее 20 символов
+        eventAdminRequestDto.setAnnotation("12345 12345 12345 12345");
         eventAdminRequestDto.setCategory(1L);
-        eventAdminRequestDto.setDescription("Description".repeat(20)); // Длина описания должна быть не менее 20 символов
+        eventAdminRequestDto.setDescription("12345 12345 12345 12345");
         eventAdminRequestDto.setEventDate(LocalDateTime.now());
         eventAdminRequestDto.setPaid(true);
         eventAdminRequestDto.setParticipantLimit(10L);
@@ -94,20 +94,22 @@ public class EventAdminControllerTest {
 
     @Test
     public void getAllAdminEventsTest() throws Exception {
-        List<EventFullDto> eventFullDtos = Arrays.asList(eventFullDto);
-        when(eventService.getAllAdminEvents(any(List.class), any(State.class), any(List.class), any(LocalDateTime.class), any(LocalDateTime.class), anyInt(), anyInt()))
+        List<EventFullDto> eventFullDtos = Collections.singletonList(eventFullDto);
+        when(eventService.getAllAdminEvents(any(List.class), any(State.class), any(List.class),
+                any(LocalDateTime.class), any(LocalDateTime.class), anyInt(), anyInt()))
                 .thenReturn(eventFullDtos);
 
         mockMvc.perform(get("/admin/events")
-                        .param("users", "1,2,3") // Передаем список пользователей
-                        .param("state", "PUBLISHED") // Передаем состояние
-                        .param("categories", "1,2,3") // Передаем список категорий
-                        .param("rangeStart", "2024-01-01T00:00:00") // Передаем начальную дату
-                        .param("rangeEnd", "2024-12-31T23:59:59") // Передаем конечную дату
+                        .param("users", "1,2,3")
+                        .param("state", "PUBLISHED")
+                        .param("categories", "1,2,3")
+                        .param("rangeStart", "2024-01-01T00:00:00")
+                        .param("rangeEnd", "2024-12-31T23:59:59")
                         .param("from", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk());
 
-        Mockito.verify(eventService).getAllAdminEvents(any(List.class), any(State.class), any(List.class), any(LocalDateTime.class), any(LocalDateTime.class), anyInt(), anyInt());
+        Mockito.verify(eventService).getAllAdminEvents(any(List.class), any(State.class), any(List.class),
+                any(LocalDateTime.class), any(LocalDateTime.class), anyInt(), anyInt());
     }
 }
