@@ -14,7 +14,7 @@ import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
 import ru.practicum.user.service.UserService;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -37,18 +37,18 @@ public class UserAdminControllerTest {
     @BeforeEach
     public void setup() {
         userRequestDto = new UserRequestDto();
-        userRequestDto.setEmail("test@test.ru");
-        userRequestDto.setName("User");
+        userRequestDto.setEmail("test@example.com");
+        userRequestDto.setName("Test User");
 
         userDto = new UserDto();
         userDto.setId(1L);
-        userDto.setEmail("test@test.com");
-        userDto.setName("User");
+        userDto.setEmail("test@example.com");
+        userDto.setName("Test User");
     }
 
     @Test
     public void getAllUsersTest() throws Exception {
-        List<UserDto> users = Collections.singletonList(userDto);
+        List<UserDto> users = Arrays.asList(userDto);
         Mockito.when(userService.getAllUsers(any(List.class), anyInt(), anyInt()))
                 .thenReturn(users);
 
@@ -58,8 +58,8 @@ public class UserAdminControllerTest {
                         .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].email", is("test@test.com")))
-                .andExpect(jsonPath("$[0].name", is("User")));
+                .andExpect(jsonPath("$[0].email", is("test@example.com")))
+                .andExpect(jsonPath("$[0].name", is("Test User")));
 
         Mockito.verify(userService).getAllUsers(any(List.class), anyInt(), anyInt());
     }
@@ -74,8 +74,8 @@ public class UserAdminControllerTest {
                         .content(objectMapper.writeValueAsString(userRequestDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.email", is("test@test.com")))
-                .andExpect(jsonPath("$.name", is("User")));
+                .andExpect(jsonPath("$.email", is("test@example.com")))
+                .andExpect(jsonPath("$.name", is("Test User")));
 
         Mockito.verify(userService).createUser(any(UserRequestDto.class));
     }

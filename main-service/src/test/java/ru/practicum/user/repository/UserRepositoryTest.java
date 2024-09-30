@@ -21,10 +21,10 @@ public class UserRepositoryTest {
     @Test
     void findUserByEmailTest() {
         User user = new User();
-        user.setEmail("test@test.ru");
-        user.setName("User");
+        user.setEmail("test@example.com");
+        user.setName("Test User");
         userRepository.save(user);
-        Optional<User> foundUser = userRepository.findUserByEmail("test@test.ru");
+        Optional<User> foundUser = userRepository.findUserByEmail("test@example.com");
 
         assertNotNull(foundUser);
         assertEquals(user.getEmail(), foundUser.get().getEmail());
@@ -34,12 +34,12 @@ public class UserRepositoryTest {
     @Test
     void findAllByIdInTest() {
         User user1 = new User();
-        user1.setEmail("user1@test.ru");
+        user1.setEmail("user1@example.com");
         user1.setName("User 1");
         userRepository.save(user1);
 
         User user2 = new User();
-        user2.setEmail("user2@test.ru");
+        user2.setEmail("user2@example.com");
         user2.setName("User 2");
         userRepository.save(user2);
 

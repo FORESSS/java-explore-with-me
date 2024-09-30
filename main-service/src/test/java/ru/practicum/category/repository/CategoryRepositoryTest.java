@@ -19,7 +19,7 @@ public class CategoryRepositoryTest {
     @Test
     void saveCategoryTest() {
         Category category = new Category();
-        category.setName("Category");
+        category.setName("Test Category");
         Category savedCategory = categoryRepository.save(category);
 
         assertNotNull(savedCategory.getId());
@@ -29,9 +29,9 @@ public class CategoryRepositoryTest {
     @Test
     void findCategoryByNameTest() {
         Category category = new Category();
-        category.setName("Category");
+        category.setName("Test Category");
         categoryRepository.save(category);
-        Optional<Category> foundCategory = categoryRepository.findCategoriesByNameContainingIgnoreCase("Category");
+        Optional<Category> foundCategory = categoryRepository.findCategoriesByNameContainingIgnoreCase("Test Category");
 
         assertNotNull(foundCategory);
         assertEquals(category.getName(), foundCategory.get().getName());
@@ -40,11 +40,11 @@ public class CategoryRepositoryTest {
     @Test
     void findAllCategoriesTest() {
         Category category1 = new Category();
-        category1.setName("Category 1");
+        category1.setName("Test Category 1");
         categoryRepository.save(category1);
 
         Category category2 = new Category();
-        category2.setName("Category 2");
+        category2.setName("Test Category 2");
         categoryRepository.save(category2);
         List<Category> categories = categoryRepository.findAll();
 

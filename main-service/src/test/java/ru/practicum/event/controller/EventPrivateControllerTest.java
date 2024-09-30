@@ -20,6 +20,7 @@ import ru.practicum.request.dto.RequestStatusDto;
 import ru.practicum.request.dto.RequestUpdateStatusDto;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,22 +45,22 @@ public class EventPrivateControllerTest {
     @BeforeEach
     public void setup() {
         newEventDto = new NewEventDto();
-        newEventDto.setAnnotation("Annotation");
+        newEventDto.setAnnotation("annotation");
         newEventDto.setCategory(1L);
-        newEventDto.setDescription("Description");
+        newEventDto.setDescription("description");
         newEventDto.setEventDate(LocalDateTime.now());
         newEventDto.setPaid(false);
         newEventDto.setParticipantLimit(10L);
         newEventDto.setRequestModeration(true);
-        newEventDto.setTitle("Title");
+        newEventDto.setTitle("title");
 
         eventFullDto = new EventFullDto();
         eventFullDto.setId(1L);
-        eventFullDto.setAnnotation("Annotation");
+        eventFullDto.setAnnotation("annotation");
         eventFullDto.setCategory(new ru.practicum.category.dto.CategoryDto());
         eventFullDto.setConfirmedRequests(0L);
         eventFullDto.setCreatedOn(LocalDateTime.now());
-        eventFullDto.setDescription("Description");
+        eventFullDto.setDescription("description");
         eventFullDto.setEventDate(LocalDateTime.now());
         eventFullDto.setInitiator(new ru.practicum.user.dto.UserShortDto());
         eventFullDto.setLocation(new ru.practicum.event.model.Location());
@@ -68,18 +69,18 @@ public class EventPrivateControllerTest {
         eventFullDto.setPublishedOn(LocalDateTime.now());
         eventFullDto.setRequestModeration(true);
         eventFullDto.setState(ru.practicum.event.model.State.PENDING);
-        eventFullDto.setTitle("Title");
+        eventFullDto.setTitle("title");
         eventFullDto.setViews(0L);
 
         eventUserRequestDto = new EventUserRequestDto();
-        eventUserRequestDto.setAnnotation("Annotation");
+        eventUserRequestDto.setAnnotation("annotation");
         eventUserRequestDto.setCategory(1L);
-        eventUserRequestDto.setDescription("Description");
+        eventUserRequestDto.setDescription("description");
         eventUserRequestDto.setEventDate(LocalDateTime.now());
         eventUserRequestDto.setPaid(false);
         eventUserRequestDto.setParticipantLimit(10L);
         eventUserRequestDto.setRequestModeration(true);
-        eventUserRequestDto.setTitle("Title");
+        eventUserRequestDto.setTitle("title");
 
         requestUpdateStatusDto = new RequestUpdateStatusDto();
         requestUpdateStatusDto.setRequestIds(Collections.emptySet());
@@ -88,8 +89,8 @@ public class EventPrivateControllerTest {
 
     @Test
     public void addEventTest() throws Exception {
-        newEventDto.setDescription("12345 12345 12345 12345");
-        newEventDto.setAnnotation("12345 12345 12345 12345");
+        newEventDto.setDescription("Описание события, которое должно быть не менее 20 символов");
+        newEventDto.setAnnotation("Аннотация события, которое должно быть не менее 20 символов");
         newEventDto.setLocation(new Location(1L, 10.0f, 20.0f));
 
         when(eventService.addEvent(anyLong(), any(NewEventDto.class))).thenReturn(eventFullDto);
@@ -114,7 +115,7 @@ public class EventPrivateControllerTest {
 
     @Test
     public void getEventsByUserTest() throws Exception {
-        List<EventShortDto> eventShortDtos = List.of(new EventShortDto());
+        List<EventShortDto> eventShortDtos = Arrays.asList(new EventShortDto());
         when(eventService.getEventsByUser(anyLong(), anyInt(), anyInt(), any())).thenReturn(eventShortDtos);
         mockMvc.perform(get("/users/1/events")
                         .param("from", "0")
@@ -126,8 +127,8 @@ public class EventPrivateControllerTest {
 
     @Test
     public void updateEventTest() throws Exception {
-        eventUserRequestDto.setAnnotation("12345 12345 12345 12345 12345");
-        eventUserRequestDto.setDescription("12345 12345 12345 12345 12345");
+        eventUserRequestDto.setAnnotation("Annotation of the event, which should be at least 20 characters");
+        eventUserRequestDto.setDescription("Description of the event, which should be at least 20 characters");
 
         when(eventService.updateEvent(anyLong(), anyLong(), any(EventUserRequestDto.class))).thenReturn(eventFullDto);
 
@@ -141,7 +142,7 @@ public class EventPrivateControllerTest {
 
     @Test
     public void getRequestByEventIdTest() throws Exception {
-        List<RequestDto> requestDtos = List.of(new RequestDto());
+        List<RequestDto> requestDtos = Arrays.asList(new RequestDto());
         when(eventService.getRequestsByEventId(anyLong(), anyLong())).thenReturn(requestDtos);
 
         mockMvc.perform(get("/users/1/events/1/requests"))
@@ -153,8 +154,7 @@ public class EventPrivateControllerTest {
     @Test
     public void updateRequestByEventIdTest() throws Exception {
         RequestStatusDto requestStatusDto = new RequestStatusDto();
-        when(eventService.updateRequestByEventId(anyLong(), anyLong(), any(RequestUpdateStatusDto.class)))
-                .thenReturn(requestStatusDto);
+        when(eventService.updateRequestByEventId(anyLong(), anyLong(), any(RequestUpdateStatusDto.class))).thenReturn(requestStatusDto);
 
         mockMvc.perform(patch("/users/1/events/1/requests")
                         .contentType(MediaType.APPLICATION_JSON)

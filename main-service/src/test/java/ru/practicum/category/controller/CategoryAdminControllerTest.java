@@ -35,23 +35,22 @@ public class CategoryAdminControllerTest {
     @BeforeEach
     public void setup() {
         requestCategoryDto = new RequestCategoryDto();
-        requestCategoryDto.setName("Category");
+        requestCategoryDto.setName("Test Category");
         categoryDto = new CategoryDto();
         categoryDto.setId(1L);
-        categoryDto.setName("Category");
+        categoryDto.setName("Test Category");
     }
 
     @Test
     public void addCategoryTest() throws Exception {
         when(categoryService.addCategory(any(RequestCategoryDto.class)))
                 .thenReturn(categoryDto);
-
         mockMvc.perform(post("/admin/categories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestCategoryDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("Category")));
+                .andExpect(jsonPath("$.name", is("Test Category")));
 
         Mockito.verify(categoryService).addCategory(any(RequestCategoryDto.class));
     }
@@ -66,7 +65,7 @@ public class CategoryAdminControllerTest {
                         .content(objectMapper.writeValueAsString(requestCategoryDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("Category")));
+                .andExpect(jsonPath("$.name", is("Test Category")));
 
         Mockito.verify(categoryService).updateCategory(anyLong(), any(RequestCategoryDto.class));
     }
