@@ -14,7 +14,7 @@ import ru.practicum.ViewStatsDto;
 import ru.practicum.service.StatsService;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -50,18 +50,18 @@ public class StatsControllerTest {
     }
 
     @Test
-    public void testSaveEndpointHit() throws Exception {
+    public void saveEndpointHitTest() throws Exception {
         mockMvc.perform(post("/hit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(endpointHitDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         Mockito.verify(statsService).saveEndpointHit(any(EndpointHitDto.class));
     }
 
     @Test
-    public void testGetViewStats() throws Exception {
-        List<ViewStatsDto> viewStatsList = Arrays.asList(viewStatsDto);
+    public void getViewStatsTest() throws Exception {
+        List<ViewStatsDto> viewStatsList = Collections.singletonList(viewStatsDto);
         Mockito.when(statsService.getViewStats(any(String.class), any(String.class), any(List.class), any(Boolean.class)))
                 .thenReturn(viewStatsList);
 
