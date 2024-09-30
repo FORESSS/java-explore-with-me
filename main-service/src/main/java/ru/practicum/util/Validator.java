@@ -36,10 +36,8 @@ public class Validator {
         return userRepository.existsById(userId);
     }
 
-    public void checkEventId(long eventId) {
-        if (!eventRepository.existsById(eventId)) {
-            throw new NotFoundException(String.format("Событие с id: %d не найдено", eventId));
-        }
+    public boolean isValidEventId(long eventId) {
+        return eventRepository.existsById(eventId);
     }
 
     public boolean isValidCategoryId(long catId) {
@@ -48,6 +46,47 @@ public class Validator {
 
     public boolean isValidCompilationId(long compId) {
         return compilationRepository.existsById(compId);
+    }
+
+    public boolean checkCategory(Category category) {
+        return categoryRepository.findCategoriesByNameContainingIgnoreCase(category.getName().toLowerCase()).isEmpty();
+    }
+
+    public boolean checkCategory(long catId, RequestCategoryDto requestCategoryDto) {
+        return categoryRepository.findCategoriesByNameContainingIgnoreCase(requestCategoryDto.getName().toLowerCase())
+                .stream().noneMatch(c -> c.getId() != catId);
+    }
+
+    public boolean checkCategory(long catId) {
+        return eventRepository.findAllByCategoryId(catId).isEmpty();
+    }
+
+    public boolean checkEmail(User user) {
+        return userRepository.findUserByEmail(user.getEmail()).isEmpty();
+    }
+
+    public void checkUserId(long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
+        }
+    }
+
+    public void checkEventId(long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException(String.format("Событие с id: %d не найдено", eventId));
+        }
+    }
+
+    public void checkCategoryId(long catId) {
+        if (!categoryRepository.existsById(catId)) {
+            throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
+        }
+    }
+
+    public void checkCompilationId(long compId) {
+        if (!compilationRepository.existsById(compId)) {
+            throw new NotFoundException(String.format("Подборка с id: %d не найдена", compId));
+        }
     }
 
     public User validateAndGetUser(long userId) {
@@ -80,23 +119,32 @@ public class Validator {
                 .orElseThrow(() -> new NotFoundException(String.format("Подборка с id: %d не найдена", compId)));
     }
 
-    public boolean isEmailAvailable(String email) {
-        return userRepository.findUserByEmail(email).isEmpty();
-    }
+//    public void checkEmail(User user) {
+//        userRepository.findUserByEmail(user.getEmail()).ifPresent(u -> {
+//            throw new RestrictionsViolationException("Email уже используется");
+//        });
+//    }
 
-    public boolean isCategoryExists(Category category) {
-        return categoryRepository.findCategoriesByNameContainingIgnoreCase(category.getName().toLowerCase()).isEmpty();
-    }
+//    public void checkCategory(Category category) {
+//        categoryRepository.findCategoriesByNameContainingIgnoreCase(category.getName().toLowerCase()).ifPresent(c -> {
+//            throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", category.getName()));
+//        });
+//    }
 
-    public boolean isCategoryExists(long catId, RequestCategoryDto requestCategoryDto) {
-        return categoryRepository.findCategoriesByNameContainingIgnoreCase(requestCategoryDto.getName().toLowerCase())
-                .stream()
-                .noneMatch(c -> c.getId() != catId);
-    }
+//    public void checkCategory(long catId, RequestCategoryDto requestCategoryDto) {
+//        categoryRepository.findCategoriesByNameContainingIgnoreCase(
+//                requestCategoryDto.getName().toLowerCase()).ifPresent(c -> {
+//            if (c.getId() != catId) {
+//                throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", requestCategoryDto.getName()));
+//            }
+//        });
+//    }
 
-    public boolean isCategoryExists(long catId) {
-        return eventRepository.findAllByCategoryId(catId).isEmpty();
-    }
+//    public void checkCategory(long catId) {
+//        if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
+//            throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
+//        }
+//    }
 
     public void checkRequest(long userId, long eventId) {
         requestsRepository.findByRequesterIdAndEventId(userId, eventId).ifPresent(

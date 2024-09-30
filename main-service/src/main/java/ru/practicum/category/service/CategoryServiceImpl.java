@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto add(RequestCategoryDto requestCategoryDto) {
         Category category = categoryMapper.toCategory(requestCategoryDto);
-        if (!validator.isCategoryExists(category)) {
+        if (!validator.checkCategory(category)) {
             throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", category.getName()));
         }
         categoryRepository.save(category);
@@ -41,9 +41,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto update(long catId, RequestCategoryDto requestCategoryDto) {
-        Category updateCategory = categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
-        if (!validator.isCategoryExists(catId, requestCategoryDto)) {
+        Category updateCategory = validateAndGetCategory(catId);
+        if (!validator.checkCategory(catId, requestCategoryDto)) {
             throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", requestCategoryDto.getName()));
         }
         updateCategory.setName(requestCategoryDto.getName());
@@ -57,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (!validator.isValidCategoryId(catId)) {
             throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
         }
-        if (!validator.isCategoryExists(catId)) {
+        if (!validator.checkCategory(catId)) {
             throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
         }
         categoryRepository.deleteById(catId);
@@ -82,9 +81,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public CategoryDto findById(long catId) {
-        Category category = categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
+        Category category = validateAndGetCategory(catId);
         log.info("Получение категории с id: {}", catId);
         return categoryMapper.toCategoryDto(category);
+    }
+
+    private Category validateAndGetCategory(long catId) {
+        return categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(String.format("Категория с id: %d не найдена", catId)));
     }
 }

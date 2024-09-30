@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto add(UserRequestDto requestDto) {
         User user = userMapper.toUser(requestDto);
-        if (!validator.isEmailAvailable(user.getEmail())) {
+        if (!validator.checkEmail(user)) {
             throw new RestrictionsViolationException("Email уже используется");
         }
         userRepository.save(user);
