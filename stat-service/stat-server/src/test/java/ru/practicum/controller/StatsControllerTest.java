@@ -14,7 +14,7 @@ import ru.practicum.ViewStatsDto;
 import ru.practicum.service.StatsService;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -50,19 +50,19 @@ public class StatsControllerTest {
     }
 
     @Test
-    public void testSaveEndpointHit() throws Exception {
+    public void saveEndpointHitTest() throws Exception {
         mockMvc.perform(post("/hit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(endpointHitDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
-        Mockito.verify(statsService).saveEndpointHit(any(EndpointHitDto.class));
+        Mockito.verify(statsService).add(any(EndpointHitDto.class));
     }
 
     @Test
-    public void testGetViewStats() throws Exception {
-        List<ViewStatsDto> viewStatsList = Arrays.asList(viewStatsDto);
-        Mockito.when(statsService.getViewStats(any(String.class), any(String.class), any(List.class), any(Boolean.class)))
+    public void getViewStatsTest() throws Exception {
+        List<ViewStatsDto> viewStatsList = Collections.singletonList(viewStatsDto);
+        Mockito.when(statsService.find(any(String.class), any(String.class), any(List.class), any(Boolean.class)))
                 .thenReturn(viewStatsList);
 
         mockMvc.perform(get("/stats")
@@ -75,6 +75,6 @@ public class StatsControllerTest {
                 .andExpect(jsonPath("$[0].uri", is("/test-uri")))
                 .andExpect(jsonPath("$[0].hits", is(5)));
 
-        Mockito.verify(statsService).getViewStats(any(String.class), any(String.class), any(List.class), any(Boolean.class));
+        Mockito.verify(statsService).find(any(String.class), any(String.class), any(List.class), any(Boolean.class));
     }
 }

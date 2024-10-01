@@ -16,16 +16,16 @@ public class StatsController {
     private final StatsService statsService;
 
     @PostMapping("hit")
-    @ResponseStatus(HttpStatus.OK)
-    public void saveEndpointHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
-        statsService.saveEndpointHit(endpointHitDto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public void add(@RequestBody @Valid EndpointHitDto endpointHitDto) {
+        statsService.add(endpointHitDto);
     }
 
     @GetMapping("stats")
     @ResponseStatus(HttpStatus.OK)
-    public List<ViewStatsDto> getViewStats(@RequestParam String start, @RequestParam String end,
-                                           @RequestParam(required = false) List<String> uris,
-                                           @RequestParam(required = false) boolean unique) {
-        return statsService.getViewStats(start, end, uris, unique);
+    public List<ViewStatsDto> find(@RequestParam String start, @RequestParam String end,
+                                   @RequestParam(required = false) List<String> uris,
+                                   @RequestParam(required = false) boolean unique) {
+        return statsService.find(start, end, uris, unique);
     }
 }

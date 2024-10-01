@@ -6,7 +6,7 @@ import ru.practicum.ViewStatsDto;
 import java.util.List;
 
 public interface StatsService {
-    void saveEndpointHit(EndpointHitDto endpointHitDto);
+    void add(EndpointHitDto endpointHitDto);
 
-    List<ViewStatsDto> getViewStats(String start, String end, List<String> uris, boolean unique);
+    List<ViewStatsDto> find(String start, String end, List<String> uris, boolean unique);
 }
