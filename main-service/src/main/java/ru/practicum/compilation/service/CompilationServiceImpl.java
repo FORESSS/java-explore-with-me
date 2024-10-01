@@ -14,7 +14,6 @@ import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.util.Validator;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +25,6 @@ public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
     private final EventRepository eventRepository;
-    private final Validator validator;
 
     @Override
     @Transactional
@@ -63,7 +61,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public void delete(long compId) {
-        if (!validator.isValidCompilationId(compId)) {
+        if (!compilationRepository.existsById(compId)) {
             throw new NotFoundException(String.format("Подборка с id: %d не найдена", compId));
         }
         compilationRepository.deleteById(compId);

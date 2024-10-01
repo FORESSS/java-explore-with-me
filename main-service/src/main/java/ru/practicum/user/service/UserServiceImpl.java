@@ -14,7 +14,6 @@ import ru.practicum.user.dto.UserRequestDto;
 import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
-import ru.practicum.util.Validator;
 
 import java.util.List;
 
@@ -24,7 +23,6 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final Validator validator;
 
     @Override
     @Transactional(readOnly = true)
@@ -44,9 +42,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto add(UserRequestDto requestDto) {
         User user = userMapper.toUser(requestDto);
-        if (!validator.checkEmail(user)) {
+        userRepository.findUserByEmail(user.getEmail()).ifPresent(u -> {
             throw new RestrictionsViolationException("Email уже используется");
-        }
+        });
         userRepository.save(user);
         log.info("Пользователь с id: {} создан", user.getId());
         return userMapper.toUserDto(user);
@@ -55,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(long userId) {
-        if (!validator.isValidUserId(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
         }
         userRepository.deleteById(userId);

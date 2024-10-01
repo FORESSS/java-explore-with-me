@@ -11,9 +11,9 @@ import ru.practicum.category.dto.RequestCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
-import ru.practicum.util.Validator;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,16 +23,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
     private final CategoryMapper categoryMapper;
-    private final Validator validator;
 
     @Override
     @Transactional
     public CategoryDto add(RequestCategoryDto requestCategoryDto) {
         Category category = categoryMapper.toCategory(requestCategoryDto);
-        if (!validator.checkCategory(category)) {
+        categoryRepository.findCategoriesByNameContainingIgnoreCase(category.getName().toLowerCase()).ifPresent(c -> {
             throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", category.getName()));
-        }
+        });
         categoryRepository.save(category);
         log.info("Категория с id: {} создана", category.getId());
         return categoryMapper.toCategoryDto(category);
@@ -42,9 +42,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto update(long catId, RequestCategoryDto requestCategoryDto) {
         Category updateCategory = validateAndGetCategory(catId);
-        if (!validator.checkCategory(catId, requestCategoryDto)) {
-            throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", requestCategoryDto.getName()));
-        }
+        categoryRepository.findCategoriesByNameContainingIgnoreCase(
+                requestCategoryDto.getName().toLowerCase()).ifPresent(c -> {
+            if (c.getId() != catId) {
+                throw new RestrictionsViolationException(String.format("Категория с названием: %s уже существует", requestCategoryDto.getName()));
+            }
+        });
         updateCategory.setName(requestCategoryDto.getName());
         log.info("Категория с id: {} обновлена", catId);
         return categoryMapper.toCategoryDto(updateCategory);
@@ -53,10 +56,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void delete(long catId) {
-        if (!validator.isValidCategoryId(catId)) {
+        if (!categoryRepository.existsById(catId)) {
             throw new NotFoundException(String.format("Категория с id: %d не найдена", catId));
         }
-        if (!validator.checkCategory(catId)) {
+        if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
             throw new RestrictionsViolationException(String.format("Категория c id: %d уже существует", catId));
         }
         categoryRepository.deleteById(catId);
