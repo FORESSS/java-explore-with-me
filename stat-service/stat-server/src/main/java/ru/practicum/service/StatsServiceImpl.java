@@ -7,12 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
+import ru.practicum.exception.DateTimeException;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatsRepository;
 import ru.practicum.util.StatConstants;
-import ru.practicum.util.StatValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +24,6 @@ public class StatsServiceImpl implements StatsService {
     private final StatsRepository statsRepository;
     private final EndpointHitMapper endpointHitMapper;
     private final ViewStatsMapper viewStatsMapper;
-    private final StatValidator validator;
 
     @Override
     @Transactional
@@ -38,7 +37,9 @@ public class StatsServiceImpl implements StatsService {
     public List<ViewStatsDto> find(String start, String end, List<String> uris, boolean unique) {
         LocalDateTime startTime = parseTime(start);
         LocalDateTime endTime = parseTime(end);
-        validator.checkDateTime(startTime, endTime);
+        if (startTime.isAfter(endTime)) {
+            throw new DateTimeException("Некорректная дата");
+        }
         if (CollectionUtils.isEmpty(uris)) {
             uris = statsRepository.findUniqueUri();
         }

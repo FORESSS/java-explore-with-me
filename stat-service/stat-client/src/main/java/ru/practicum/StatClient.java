@@ -2,7 +2,6 @@ package ru.practicum;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -10,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.practicum.util.StatValidator;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -22,13 +20,9 @@ import static ru.practicum.util.StatConstants.FORMATTER;
 @Slf4j
 public class StatClient {
     private final RestClient restClient;
-    @Autowired
-    private final StatValidator validator;
 
-    public StatClient(@Value("${stat-server.url}") String serverUrl, StatValidator validator) {
+    public StatClient(@Value("${stat-server.url}") String serverUrl) {
         this.restClient = RestClient.create(serverUrl);
-        this.validator = validator;
-        log.info("Server stat run URL: {}", serverUrl);
     }
 
     public void saveHit(String app, HttpServletRequest request) {
@@ -46,18 +40,16 @@ public class StatClient {
                 .retrieve()
                 .toBodilessEntity();
 
-        validator.checkResponseStatus(response);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("Сохранение информации о запросе");
+        } else {
+            log.error("Ошибка при сохранении информации, код ошибки: {}", response.getStatusCode());
         }
     }
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, boolean unique) {
         log.info("Получение статистики для {}", uris);
-        validator.checkDateTime(start, end);
         try {
             return restClient.get()
                     .uri(uriBuilder ->
