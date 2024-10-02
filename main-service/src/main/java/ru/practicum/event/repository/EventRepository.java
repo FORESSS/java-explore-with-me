@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPredicateExecutor<Event> {
+    boolean existByIdAndState(long id, State state);
+
     Optional<Event> findByIdAndState(long id, State state);
 
     List<Event> findAllByIdIn(List<Long> ids);
