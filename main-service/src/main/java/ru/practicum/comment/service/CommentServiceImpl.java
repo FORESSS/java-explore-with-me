@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
         }
-        if (!eventRepository.existByIdAndState(eventId, State.PUBLISHED)) {
+        if (!eventRepository.existsByIdAndState(eventId, State.PUBLISHED)) {
             throw new NotFoundException(String.format("Опубликованное событие с id: %d не найдено", eventId));
         }
         Comment comment = commentMapper.toComment(newCommentDto);
@@ -76,7 +76,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public List<CommentDto> findByEvent(long eventId, int from, int size) {
-        Event event = validateAndGetPublishedEvent(eventId);
+        if (!eventRepository.existsByIdAndState(eventId, State.PUBLISHED)) {
+            throw new NotFoundException(String.format("Опубликованное событие с id: %d не найдено", eventId));
+        }
         List<Comment> comments = commentRepository.findAllByEventId(eventId, PageRequest.of(from / size, size)).getContent();
         log.info("Получение комментариев для события с id: {}", eventId);
         return commentMapper.toListCommentDto(comments);
