@@ -71,7 +71,7 @@ public class CommentRepositoryTest {
 
     @Test
     void findAllByEventIdTest() {
-        Page<Comment> comments = commentRepository.findAllByEventId(1L, PageRequest.of(0, 10));
+        Page<Comment> comments = commentRepository.findAllByEventId(event.getId(), PageRequest.of(0, 10));
 
         assertNotNull(comments);
         assertEquals(1, comments.getTotalElements());
@@ -79,7 +79,7 @@ public class CommentRepositoryTest {
 
     @Test
     void findAllByAuthorIdTest() {
-        Page<Comment> comments = commentRepository.findAllByAuthorId(2L, PageRequest.of(0, 10));
+        Page<Comment> comments = commentRepository.findAllByAuthorId(author.getId(), PageRequest.of(0, 10));
 
         assertNotNull(comments);
         assertEquals(1, comments.getTotalElements());
