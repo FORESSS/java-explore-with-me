@@ -70,6 +70,9 @@ public class EventServiceImpl implements EventService {
         if (newEventDto.getParticipantLimit() == null) {
             newEventDto.setParticipantLimit(0L);
         }
+        if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new DateException("Некорректная дата");
+        }
         Event newEvent = eventMapper.toEvent(newEventDto);
         newEvent.setCategory(category);
         newEvent.setCreatedOn(LocalDateTime.now());
