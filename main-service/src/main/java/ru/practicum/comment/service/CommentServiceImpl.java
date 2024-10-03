@@ -13,8 +13,8 @@ import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.DateException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
@@ -33,13 +33,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDto add(long userId, long eventId, NewCommentDto newCommentDto) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id: %d не найден", userId));
-        }
-        if (!eventRepository.existsByIdAndState(eventId, State.PUBLISHED)) {
-            throw new NotFoundException(String.format("Опубликованное событие с id: %d не найдено", eventId));
-        }
+        User author = validateAndGetUser(userId);
+        Event event = validateAndGetPublishedEvent(eventId);
         Comment comment = commentMapper.toComment(newCommentDto);
+        comment.setAuthor(author);
+        comment.setEvent(event);
+        comment.setCreated(LocalDateTime.now());
+        log.info("Сохраняем комментарий с полями: author={}, event={}, created={}", comment.getAuthor(), comment.getEvent(), comment.getCreated());
         commentRepository.save(comment);
         log.info("Комментарий с id: {} добавлен пользователем с id: {} к событию с id: {}", comment.getId(), userId, eventId);
         return commentMapper.toCommentDto(comment);
@@ -54,7 +54,7 @@ public class CommentServiceImpl implements CommentService {
         Event event = validateAndGetPublishedEvent(eventId);
         Comment comment = validateAndGetComment(commentId);
         if (comment.getEvent() != event) {
-            throw new RestrictionsViolationException("Комментарий другого события");
+            throw new DateException("Комментарий другого события");
         }
         comment.setText(newCommentDto.getText());
         comment.setEdited(LocalDateTime.now());
@@ -98,7 +98,7 @@ public class CommentServiceImpl implements CommentService {
         User author = validateAndGetUser(userId);
         Comment comment = validateAndGetComment(commentId);
         if (comment.getAuthor() != author) {
-            throw new RestrictionsViolationException("Только автор может удалить комментарий");
+            throw new DateException("Только автор может удалить комментарий");
         }
         commentRepository.deleteById(commentId);
         log.info("Комментарий с id: {} удален автором с id: {}", commentId, userId);

@@ -18,7 +18,7 @@ import ru.practicum.request.dto.RequestUpdateStatusDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("users/{userId}/events")
+@RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
 @Validated
 public class EventPrivateController {

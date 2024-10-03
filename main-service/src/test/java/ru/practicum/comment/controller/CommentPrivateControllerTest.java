@@ -28,7 +28,7 @@ public class CommentPrivateControllerTest {
     @BeforeEach
     void setup() {
         newCommentDto = new NewCommentDto();
-        newCommentDto.setText("Test comment");
+        newCommentDto.setText("Сomment");
     }
 
     @Test
