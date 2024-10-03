@@ -1,4 +1,11 @@
-DROP TABLE IF EXISTS users, categories, location, events, requests, compilations, compilations_events;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE IF EXISTS locations CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS compilations CASCADE;
+DROP TABLE IF EXISTS compilation_event CASCADE;
+DROP TABLE IF EXISTS requests CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -20,12 +27,12 @@ CREATE TABLE IF NOT EXISTS location (
 CREATE TABLE IF NOT EXISTS events (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   annotation VARCHAR(2000),
-  category_id BIGINT REFERENCES categories (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  category_id BIGINT REFERENCES categories (id) ON delete CASCADE ON update CASCADE,
   created_on TIMESTAMP NOT NULL,
   description VARCHAR(7000) NOT NULL,
   event_date TIMESTAMP NOT NULL,
-  initiator_id BIGINT REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  location_id BIGINT REFERENCES location (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  initiator_id BIGINT REFERENCES users (id) ON delete CASCADE ON update CASCADE,
+  location_id BIGINT REFERENCES location (id) ON delete CASCADE ON update CASCADE,
   paid BOOLEAN NOT NULL,
   participant_limit INTEGER NOT NULL,
   published_on TIMESTAMP,
@@ -38,8 +45,8 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE TABLE IF NOT EXISTS requests (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   created TIMESTAMP NOT NULL,
-  event_id BIGINT REFERENCES events (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  requester_id BIGINT REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  event_id BIGINT REFERENCES events (id) ON delete CASCADE ON update CASCADE,
+  requester_id BIGINT REFERENCES users (id) ON delete CASCADE ON update CASCADE,
   status VARCHAR(20) NOT NULL
 );
 
@@ -51,5 +58,15 @@ CREATE TABLE IF NOT EXISTS compilations (
 
 CREATE TABLE IF NOT EXISTS compilations_events (
   compilation_id BIGINT REFERENCES compilations (id),
-  event_id BIGINT REFERENCES events (id)
+  event_id BIGINT REFERENCES events (id),
+  PRIMARY KEY (compilation_id, event_id)
+);
+
+CREATE TABLE IF NOT EXISTS COMMENTS (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  text VARCHAR(3000) NOT NULL,
+  author_id BIGINT REFERENCES users(id) NOT NULL,
+  event_id BIGINT REFERENCES events(id) NOT NULL,
+  created TIMESTAMP NOT NULL,
+  edited TIMESTAMP
 );

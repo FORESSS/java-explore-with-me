@@ -61,9 +61,6 @@ public class EventServiceImpl implements EventService {
     public EventFullDto add(long userId, NewEventDto newEventDto) {
         User initiator = validateAndGetUser(userId);
         Category category = validateAndGetCategory(newEventDto.getCategory());
-        if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new DateException("Некорректная дата");
-        }
         if (newEventDto.getPaid() == null) {
             newEventDto.setPaid(false);
         }
@@ -72,6 +69,9 @@ public class EventServiceImpl implements EventService {
         }
         if (newEventDto.getParticipantLimit() == null) {
             newEventDto.setParticipantLimit(0L);
+        }
+        if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new DateException("Некорректная дата");
         }
         Event newEvent = eventMapper.toEvent(newEventDto);
         newEvent.setCategory(category);

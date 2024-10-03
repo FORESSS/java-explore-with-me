@@ -6,8 +6,9 @@
 
 ### Этап 2. Основной сервис
 
+### Этап 3. Дополнительная функциональность - Комментарии к событиям
+https://github.com/FORESSS/java-explore-with-me/pull/9
+
 <br><br/>
 Схема БД:
-
-![db_main.png](images/db_main.png)
-![db_stat.png](images/db_stat.png)
+![db.png](images/db.png)
