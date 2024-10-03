@@ -35,6 +35,9 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto add(long userId, long eventId, NewCommentDto newCommentDto) {
         User author = validateAndGetUser(userId);
         Event event = validateAndGetPublishedEvent(eventId);
+        if (!event.getState().equals(State.PUBLISHED)) {
+            throw new NotFoundException(String.format("Опубликованное событие с id: %d не найдено", eventId));
+        }
         Comment comment = commentMapper.toComment(newCommentDto);
         comment.setAuthor(author);
         comment.setEvent(event);
@@ -53,9 +56,6 @@ public class CommentServiceImpl implements CommentService {
         }
         Event event = validateAndGetPublishedEvent(eventId);
         Comment comment = validateAndGetComment(commentId);
-        if (comment.getText().isBlank()) {
-            throw new RestrictionsViolationException("Комментарий без текста");
-        }
         if (comment.getEvent() != event) {
             throw new RestrictionsViolationException("Комментарий другого события");
         }
