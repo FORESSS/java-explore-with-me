@@ -53,6 +53,9 @@ public class CommentServiceImpl implements CommentService {
         }
         Event event = validateAndGetPublishedEvent(eventId);
         Comment comment = validateAndGetComment(commentId);
+        if (comment.getText().isBlank()) {
+            throw new RestrictionsViolationException("Комментарий без текста");
+        }
         if (comment.getEvent() != event) {
             throw new RestrictionsViolationException("Комментарий другого события");
         }
